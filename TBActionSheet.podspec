@@ -15,7 +15,7 @@ s.source       = { :git => "https://github.com/yulingtianxia/TBActionSheet.git",
 s.platform     = :ios, '6.0'
 s.requires_arc = true
 
-s.source_files = 'TBAlertController/*','TBActionSheet/*','Utils/*'
+s.source_files = "TBAlertController/*","TBActionSheet/*","Utils/*"
 s.frameworks = 'Foundation', 'UIKit'
 
 end
