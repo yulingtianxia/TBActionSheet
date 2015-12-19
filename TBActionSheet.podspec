@@ -7,9 +7,9 @@ If you want your UIAlertController to be compatible with iOS7(even lower), you c
 DESC
 s.homepage     = "https://github.com/yulingtianxia/TBActionSheet"
 
-s.license      = 'MIT'
+s.license = { :type => 'MIT', :file => 'LICENSE' }
 s.author       = { "YangXiaoyu" => "yulingtianxia@gmail.com" }
-s.social_media_url = "https://twitter.com/yulingtianxia"
+s.social_media_url = "http://yulingtianxia.com"
 s.source       = { :git => "https://github.com/yulingtianxia/TBActionSheet.git", :tag => s.version.to_s }
 
 s.platform     = :ios, '6.0'
