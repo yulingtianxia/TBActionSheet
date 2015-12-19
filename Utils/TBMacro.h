@@ -1,5 +1,5 @@
 //
-//  TBMarcos.h
+//  TBMacro.h
 //  TBAlertControllerDemo
 //
 //  Created by skyline on 15/12/19.
@@ -26,11 +26,10 @@ _Pragma("clang diagnostic pop")
 
 #pragma mark - const values
 
-#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
-#define containerLeft (SCREEN_WIDTH-self.sheetWidth)/2
+#define kScreenWidth [UIScreen mainScreen].bounds.size.width
+#define kScreenHeight [UIScreen mainScreen].bounds.size.height
+#define kContainerLeft ((kScreenWidth - self.sheetWidth)/2)
 
-#define iOS7Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=7.0)
-#define iOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
-#define iOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)
-
+#define kiOS7Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=7.0)
+#define kiOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
+#define kiOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)

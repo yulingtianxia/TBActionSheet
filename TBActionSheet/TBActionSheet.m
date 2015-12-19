@@ -7,7 +7,7 @@
 
 #import "TBActionSheet.h"
 #import "UIImage+BoxBlur.h"
-#import "TBMarcos.h"
+#import "TBMacro.h"
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
@@ -194,7 +194,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _tintColor = [UIColor blackColor];
         _destructiveButtonColor = [UIColor redColor];
         _cancelButtonColor = [UIColor blackColor];
-        _sheetWidth = SCREEN_WIDTH-20;
+        _sheetWidth = kScreenWidth - 20;
         _backgroundTransparentEnabled = YES;
         _blurEffectEnabled = YES;
         _rectCornerEnabled = YES;
@@ -379,8 +379,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     
     //圆角处理和毛玻璃效果、背景颜色
 
-    self.actionContainer.frame = CGRectMake(containerLeft, SCREEN_HEIGHT, self.sheetWidth, lastY);
-    UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(containerLeft, SCREEN_HEIGHT-lastY, self.sheetWidth, lastY)];
+    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, lastY);
+    UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-lastY, self.sheetWidth, lastY)];
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
@@ -497,7 +497,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     [view addSubview:self];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        self.actionContainer.frame = CGRectMake(containerLeft, SCREEN_HEIGHT - lastY + self.bottomOffset - (!iOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -523,7 +523,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     }
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(containerLeft, SCREEN_HEIGHT, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
@@ -550,7 +550,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     }
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(containerLeft, SCREEN_HEIGHT, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
         self.visible = NO;
