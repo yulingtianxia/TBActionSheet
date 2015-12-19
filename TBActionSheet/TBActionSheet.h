@@ -1,6 +1,5 @@
 //
 //  TBActionSheet.h
-//  Tribe
 //
 //  Created by 杨萧玉 on 15/11/17.
 //  Copyright © 2015年 Tencent. All rights reserved.

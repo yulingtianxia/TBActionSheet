@@ -1,8 +1,9 @@
 Pod::Spec.new do |s|
 s.name         = "TBActionSheet"
-s.version      = "1.0.0"
+s.version      = "1.0.1"
 s.summary      = "A Custom UIActionSheet"
 s.description  = <<-DESC
+TBActionSheet is a custom action sheet. The default style is iOS9, you can make your own style.
 If you want your UIAlertController to be compatible with iOS7(even lower), you can just replace your UIAlertController with TBAlertController
 DESC
 s.homepage     = "https://github.com/yulingtianxia/TBActionSheet"

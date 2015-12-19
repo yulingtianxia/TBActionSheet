@@ -1,6 +1,5 @@
 //
 //  TBAlertController.m
-//  Tribe
 //
 //  Created by 杨萧玉 on 15/10/29.
 //  Copyright © 2015年 Tencent. All rights reserved.

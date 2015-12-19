@@ -1,6 +1,6 @@
 # TBActionSheet
 
-A Custom Action Sheet. The default style is iOS9, you can make your own style.  
+TBActionSheet is a custom action sheet. The default style is iOS9, you can make your own style.  
 
 This is the iOS9 style of `TBActionSheet` running on iOS7&iPhone 4s:
 
@@ -12,7 +12,12 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
 
+##Cocoapods
+
+Please search TBActionSheet
+
 ##Usage
+
 The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me. 
 
 ```
