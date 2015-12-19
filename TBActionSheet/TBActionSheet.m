@@ -593,7 +593,11 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 {
     UIView *view = [UIApplication sharedApplication].keyWindow.rootViewController.view;
     UIGraphicsBeginImageContext(view.bounds.size);
-    [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:NO];
+    if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
+        [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+    else /* iOS 6 */
+        [view.layer renderInContext:UIGraphicsGetCurrentContext()];
+
     UIImage *screenshotimage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
