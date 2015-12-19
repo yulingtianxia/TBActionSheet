@@ -19,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2D777CE81C2580FE0018A744 /* TBMarcos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBMarcos.h; sourceTree = "<group>"; };
 		A4910BF71C1FFD95009D25F9 /* TBAlertControllerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TBAlertControllerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4910BFB1C1FFD95009D25F9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A4910BFD1C1FFD95009D25F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -116,6 +117,7 @@
 			children = (
 				A4910C1E1C2001BC009D25F9 /* UIImage+BoxBlur.h */,
 				A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */,
+				2D777CE81C2580FE0018A744 /* TBMarcos.h */,
 			);
 			name = Utils;
 			path = ../../Utils;

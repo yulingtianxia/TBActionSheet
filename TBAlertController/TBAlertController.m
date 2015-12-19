@@ -6,10 +6,8 @@
 //
 
 #import "TBAlertController.h"
+#import "TBMarcos.h"
 #import <objc/runtime.h>
-
-#define iOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
-#define iOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 @interface UIViewController (TBAlertController)
