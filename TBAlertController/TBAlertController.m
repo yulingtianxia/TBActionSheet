@@ -6,10 +6,8 @@
 //
 
 #import "TBAlertController.h"
+#import "TBMacro.h"
 #import <objc/runtime.h>
-
-#define iOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
-#define iOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 @interface UIViewController (TBAlertController)
@@ -67,7 +65,7 @@
 {
     if ([viewControllerToPresent isKindOfClass:[TBAlertController class]]) {
         TBAlertController* controller = (TBAlertController *)viewControllerToPresent;
-        if (iOS8Later) {
+        if (kiOS8Later) {
             ((UIAlertController *)controller.adaptiveAlert).view.tintColor = controller.tintColor;
             [self tb_presentViewController:((TBAlertController *)viewControllerToPresent).adaptiveAlert animated:flag completion:completion];
         }
@@ -103,7 +101,7 @@
 @implementation TBAlertAction
 + (id)actionWithTitle:(NSString *)title style:(TBAlertActionStyle)style handler:(void (^)(TBAlertAction *))handler
 {
-    if (iOS8Later) {
+    if (kiOS8Later) {
         UIAlertActionStyle actionStyle = (NSInteger)style;
         return [UIAlertAction actionWithTitle:title style:actionStyle handler:(void (^ __nullable)(UIAlertAction *))handler];
     }
@@ -136,7 +134,7 @@
 {
     self = [super init];
     if (self) {
-        if (iOS8Later) {
+        if (kiOS8Later) {
             _adaptiveAlert = [[UIAlertController alloc] init];
         }
         else {
@@ -160,7 +158,7 @@
 {
     TBAlertController *controller = [[TBAlertController alloc] init];
     controller.preferredStyle = preferredStyle;
-    if (iOS8Later) {
+    if (kiOS8Later) {
         controller.adaptiveAlert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:(NSInteger)preferredStyle];
     }
     else {
@@ -190,7 +188,7 @@
 
 - (NSArray<UITextField *> *)textFields
 {
-    if (iOS8Later) {
+    if (kiOS8Later) {
         return ((UIAlertController *)self.adaptiveAlert).textFields;
     }
     else {
@@ -245,7 +243,7 @@
 
 - (UIAlertViewStyle)alertViewStyle
 {
-    if (!iOS8Later&&[self.adaptiveAlert isKindOfClass:[UIAlertView class]]) {
+    if (!kiOS8Later&&[self.adaptiveAlert isKindOfClass:[UIAlertView class]]) {
         return [self.adaptiveAlert alertViewStyle];
     }
     return 0;
@@ -253,14 +251,14 @@
 
 - (void)setAlertViewStyle:(UIAlertViewStyle)alertViewStyle
 {
-    if (!iOS8Later&&[self.adaptiveAlert isKindOfClass:[UIAlertView class]]) {
+    if (!kiOS8Later&&[self.adaptiveAlert isKindOfClass:[UIAlertView class]]) {
         [self.adaptiveAlert setAlertViewStyle:alertViewStyle];
     }
 }
 
 - (TBAlertAction *)preferredAction
 {
-    if (iOS9Later) {
+    if (kiOS9Later) {
         return (TBAlertAction *)[self.adaptiveAlert preferredAction];
     }
     return nil;
@@ -268,14 +266,14 @@
 
 - (void)setPreferredAction:(TBAlertAction *)preferredAction
 {
-    if (iOS9Later) {
+    if (kiOS9Later) {
         [self.adaptiveAlert setPreferredAction:preferredAction];
     }
 }
 
 - (void)addAction:(TBAlertAction *)action
 {
-    if (iOS8Later) {
+    if (kiOS8Later) {
         [self.adaptiveAlert addAction:(UIAlertAction *)action];
     }
     else {
@@ -309,7 +307,7 @@
 
 - (void)addTextFieldWithConfigurationHandler:(void (^)(UITextField * _Nonnull))configurationHandler
 {
-    if (iOS8Later) {
+    if (kiOS8Later) {
         [self.adaptiveAlert addTextFieldWithConfigurationHandler:configurationHandler];
     }
     else {
