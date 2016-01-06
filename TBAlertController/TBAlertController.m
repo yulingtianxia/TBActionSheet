@@ -164,7 +164,7 @@
     else {
         switch (preferredStyle) {
             case TBAlertControllerStyleActionSheet: {
-                controller.adaptiveAlert = [[UIActionSheet alloc] initWithTitle:title delegate:controller cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+                controller.adaptiveAlert = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"%@\n%@",title,message] delegate:controller cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
                 break;
             }
             case TBAlertControllerStyleAlert: {
