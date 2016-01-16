@@ -107,6 +107,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 @property (nonatomic) TBActionButtonStyle style;
 @property (nonatomic) TBActionButtonCorner corner;
+@property (nonatomic,nullable) UIColor *normalColor;
+@property (nonatomic,nullable) UIColor *highlightedColor;
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
 
@@ -120,10 +122,28 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     button.style = style;
     button.corner = TBActionButtonCornerNone;
     [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
     [button setBackgroundColor:[UIColor whiteColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
     return button;
+}
+
+- (void) setHighlighted:(BOOL)highlighted {
+    [super setHighlighted:highlighted];
+    if (highlighted) {
+        self.backgroundColor = self.highlightedColor;
+    }
+    else {
+        self.backgroundColor = self.normalColor;
+    }
+}
+
+- (void)setNormalColor:(UIColor *)normalColor
+{
+    _normalColor = normalColor;
+    self.backgroundColor = normalColor;
+    if (!self.highlightedColor) {
+        self.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+    }
 }
 
 @end
@@ -485,7 +505,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
                 [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
             }
             else {
-                obj.backgroundColor = self.backgroundColor;
+                obj.normalColor = self.backgroundColor;
+                obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
             //设置圆角，已知 bug：cancel 按钮不在末尾会导致圆角不正常，懒得改，因为 cancel 不放在末尾本身就不正常
             if (self.isRectCornerEnabled) {
