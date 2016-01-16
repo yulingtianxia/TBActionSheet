@@ -12,6 +12,8 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
 
+BTW, TBActionSheet also suppots BLOCK now!
+
 ##Cocoapods
 
 Please search TBActionSheet
@@ -32,6 +34,7 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 // destructive and cancel button which will be positioned based on HI requirements. buttons cannot be customized.
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title;
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style;    // returns index of button. 0 based.
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
 @property(nonatomic,readonly) NSInteger numberOfButtons;
 @property(nonatomic) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
