@@ -103,14 +103,15 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 /**
  *  可定制风格和圆角的按钮
  */
-@interface TBActionButton : UIButton
+@interface TBActionButton()
 
-@property (nonatomic) TBActionButtonStyle style;
 @property (nonatomic) TBActionButtonCorner corner;
 @property (nonatomic,nullable) UIColor *normalColor;
 @property (nonatomic,nullable) UIColor *highlightedColor;
+@property (nonatomic,nullable,strong,readwrite) void (^handler)(TBActionButton * _Nonnull button);
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler;
 
 @end
 
@@ -118,13 +119,24 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style
 {
+    return [TBActionButton buttonWithTitle:title style:style handler:nil];
+}
+
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
+{
     TBActionButton *button = [TBActionButton buttonWithType:UIButtonTypeCustom];
     button.style = style;
     button.corner = TBActionButtonCornerNone;
+    button.handler = handler;
     [button setTitle:title forState:UIControlStateNormal];
     [button setBackgroundColor:[UIColor whiteColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
     return button;
+}
+
+- (void)dealloc
+{
+    
 }
 
 - (void) setHighlighted:(BOOL)highlighted {
@@ -288,15 +300,17 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 - (NSInteger)addButtonWithTitle:(NSString *)title
 {
-    TBActionButton *button = [TBActionButton buttonWithTitle:title style:TBActionButtonStyleDefault];
-    [button addTarget:self action:@selector(checkButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self.buttons addObject:button];
-    return self.buttons.count - 1;
+    return [self addButtonWithTitle:title style:TBActionButtonStyleDefault];
 }
 
 - (NSInteger)addButtonWithTitle:(NSString *)title style:(TBActionButtonStyle)style
 {
-    TBActionButton *button = [TBActionButton buttonWithTitle:title style:style];
+    return [self addButtonWithTitle:title style:style handler:nil];
+}
+
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
+{
+    TBActionButton *button = [TBActionButton buttonWithTitle:title style:style handler:handler];
     [button addTarget:self action:@selector(checkButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.buttons addObject:button];
     NSInteger index = self.buttons.count - 1;
@@ -615,6 +629,10 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     NSUInteger index = [self.buttons indexOfObject:sender];
     if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
         [self.delegate actionSheet:self clickedButtonAtIndex:index];
+    }
+    if (sender.handler) {
+        __weak __typeof(TBActionButton *)weakSender = sender;
+        sender.handler(weakSender);
     }
     if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
         [self.delegate actionSheet:self willDismissWithButtonIndex:index];

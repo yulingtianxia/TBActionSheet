@@ -323,9 +323,9 @@
 
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    __weak __typeof(self)weakSelf = self;
+    __weak __typeof(TBAlertAction *)weakAction = self.mutableActions[buttonIndex];
     if (self.mutableActions[buttonIndex].handler) {
-        self.mutableActions[buttonIndex].handler(weakSelf.adaptiveAlert);
+        self.mutableActions[buttonIndex].handler(weakAction);
     }
 }
 
@@ -343,9 +343,9 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    __weak __typeof(self)weakSelf = self;
+    __weak __typeof(TBAlertAction *)weakAction = self.mutableActions[buttonIndex];
     if (self.mutableActions[buttonIndex].handler) {
-        self.mutableActions[buttonIndex].handler(weakSelf.adaptiveAlert);
+        self.mutableActions[buttonIndex].handler(weakAction);
     }
 }
 

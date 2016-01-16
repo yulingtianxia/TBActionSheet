@@ -15,6 +15,12 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 
 @protocol TBActionSheetDelegate;
 
+@interface TBActionButton : UIButton
+
+@property (nonatomic) TBActionButtonStyle style;
+@property (nonatomic,nullable,strong,readonly) void (^handler)(TBActionButton * _Nonnull button);
+@end
+
 @interface TBActionSheet : UIWindow
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
 @property(nonatomic,copy)  NSString * _Nullable  title;
@@ -26,6 +32,7 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 // destructive and cancel button which will be positioned based on HI requirements. buttons cannot be customized.
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title;
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style;    // returns index of button. 0 based.
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
 @property(nonatomic,readonly) NSInteger numberOfButtons;
 @property(nonatomic) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
