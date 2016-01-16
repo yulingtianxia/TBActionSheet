@@ -66,6 +66,10 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 @property(nonatomic,strong,nonnull) UIColor *destructiveButtonColor;
 @property(nonatomic,strong,nonnull) UIColor *cancelButtonColor;
 /**
+ *  分割线颜色
+ */
+@property(nonatomic,strong,nonnull) UIColor *separatorColor;
+/**
  *  按钮字体
  */
 @property(nonatomic,strong,nonnull) UIFont *buttonFont;
