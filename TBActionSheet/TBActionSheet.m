@@ -8,6 +8,7 @@
 #import "TBActionSheet.h"
 #import "UIImage+BoxBlur.h"
 #import "TBMacro.h"
+#import <objc/runtime.h>
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
@@ -64,6 +65,28 @@ const CGFloat sheetCornerRadius = 10.0f;
 - (void)setNoneCorner
 {
     self.layer.mask = nil;
+}
+
+@end
+
+#pragma mark - UIView (TBActionSheet)
+
+@interface UIView (TBActionSheet)
+@property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
+@end
+
+@implementation UIView (TBActionSheet)
+
+@dynamic tbActionSheet;
+
+- (TBActionSheet *)tbActionSheet
+{
+    return objc_getAssociatedObject(self, @selector(tbActionSheet));
+}
+
+- (void)setTbActionSheet:(TBActionSheet *)tbActionSheet
+{
+    objc_setAssociatedObject(self, @selector(tbActionSheet), tbActionSheet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -164,11 +187,13 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 #pragma mark - TBActionSheet
 
 @interface TBActionSheet ()
-@property(nonatomic,readwrite,getter=isVisible) BOOL visible;
+@property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionBackground * background;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
 @property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
-@property(nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
+@property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
+@property (nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
+@property (nonatomic,weak,nullable) UIView *owner;
 @end
 
 @implementation TBActionSheet
@@ -177,6 +202,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
+        [super setBackgroundColor:[UIColor clearColor]];
+        self.windowLevel = UIWindowLevelAlert;
         _background = [[TBActionBackground alloc] initWithFrame:[UIScreen mainScreen].bounds];
         _background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _background.userInteractionEnabled = YES;
@@ -185,6 +212,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _actionContainer.userInteractionEnabled = YES;
         [self addSubview:_actionContainer];
         _buttons = [NSMutableArray array];
+        _separators = [NSMutableArray array];
         //set default values
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
@@ -199,6 +227,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _blurEffectEnabled = YES;
         _rectCornerEnabled = YES;
         _backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
+        _separatorColor = [UIColor clearColor];
     }
     return self;
 }
@@ -288,8 +317,10 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 - (void)setButtonFont:(UIFont *)buttonFont
 {
-    for (TBActionButton *btn in self.buttons) {
-        btn.titleLabel.font = buttonFont;
+    if (buttonFont && [self buttonFont] != buttonFont) {
+        for (TBActionButton *btn in self.buttons) {
+            btn.titleLabel.font = buttonFont;
+        }
     }
 }
 
@@ -306,6 +337,16 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
     }
     return -1;
+}
+
+- (void)setSeparatorColor:(UIColor *)separatorColor
+{
+    if (separatorColor && separatorColor != _separatorColor) {
+        _separatorColor = separatorColor;
+        for (UIView *separator in self.separators) {
+            separator.backgroundColor = separatorColor;
+        }
+    }
 }
 
 #pragma mark show
@@ -331,14 +372,28 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         self.titleLabel.backgroundColor = [UIColor clearColor];
         self.actionContainer.header.frame = CGRectMake(0, lastY, self.sheetWidth, self.titleHeight);
         [self.actionContainer.header addSubview:self.titleLabel];
-        lastY = CGRectGetMaxY(self.actionContainer.header.frame) + smallFragment;
+        if (self.buttons.firstObject.style == TBActionButtonStyleCancel && !self.customView) {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
+            lastY = CGRectGetMaxY(self.actionContainer.header.frame) + bigFragment;
+        }
+        else {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
+            lastY = CGRectGetMaxY(self.actionContainer.header.frame) + smallFragment;
+        }
     }
     //处理自定义视图
     if (self.customView) {
         self.actionContainer.custom.frame = CGRectMake(0, lastY, self.sheetWidth, self.customView.frame.size.height);
         self.customView.center = CGPointMake(self.sheetWidth / 2, self.customView.frame.size.height/2);
         [self.actionContainer.custom addSubview:self.customView];
-        lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + smallFragment;
+        if (self.buttons.firstObject.style == TBActionButtonStyleCancel) {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
+            lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + bigFragment;
+        }
+        else {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
+            lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + smallFragment;
+        }
     }
     //计算按钮坐标并添加样式
     [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -346,6 +401,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
             case TBActionButtonStyleDefault: {
                 [obj setTitleColor:self.tintColor forState:UIControlStateNormal];
                 if (idx != 0) {
+                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
                     lastY += smallFragment;
                 }
                 break;
@@ -353,6 +409,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
             case TBActionButtonStyleCancel: {
                 [obj setTitleColor:self.cancelButtonColor forState:UIControlStateNormal];
                 if (idx != 0) {
+                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
                     lastY += bigFragment;
                 }
                 break;
@@ -360,6 +417,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
             case TBActionButtonStyleDestructive: {
                 [obj setTitleColor:self.destructiveButtonColor forState:UIControlStateNormal];
                 if (idx != 0) {
+                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
                     lastY += smallFragment;
                 }
                 break;
@@ -370,7 +428,9 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
         //上一个 button 如果是 cancel
         if (idx>0&&self.buttons[idx-1].style == TBActionButtonStyleCancel) {
-            lastY += bigFragment - smallFragment;
+            lastY -= smallFragment;
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
+            lastY += bigFragment;
         }
         obj.frame = CGRectMake(0, lastY, self.sheetWidth, self.buttonHeight);
         lastY = CGRectGetMaxY(obj.frame);
@@ -431,6 +491,22 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
             if (self.isRectCornerEnabled) {
                 if (self.buttons.count == 1) {
                     obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
+                    if (self.title) {
+                        if (self.customView) {
+                            [self.actionContainer.header setCornerOnTop];
+                        }
+                        else {
+                            [self.actionContainer.header setAllCorner];
+                        }
+                    }
+                    if (self.customView) {
+                        if (self.title) {
+                            [self.actionContainer.custom setCornerOnBottom];
+                        }
+                        else {
+                            [self.actionContainer.custom setAllCorner];
+                        }
+                    }
                 }
                 else if (obj.style == TBActionButtonStyleCancel) {
                     obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
@@ -492,9 +568,10 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
     });
     
-    
     //弹出 ActionSheet 动画
-    [view addSubview:self];
+    view.tbActionSheet = self;
+    self.owner = view;
+    [self makeKeyAndVisible];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
@@ -525,7 +602,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
-        [self removeFromSuperview];
+        self.hidden = YES;
+        self.owner.tbActionSheet = nil;
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
         }
@@ -552,12 +630,21 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
-        [self removeFromSuperview];
+        self.hidden = YES;
+        self.owner.tbActionSheet = nil;
         self.visible = NO;
     }];
 }
 
 #pragma mark help methods
+
+- (void)addSeparatorLineAt:(CGPoint) point isBigFragment:(BOOL) isBigFragment
+{
+    UIView *separatorLine = [[UIView alloc] initWithFrame:CGRectMake(point.x, point.y, self.sheetWidth, isBigFragment?bigFragment:smallFragment)];
+    separatorLine.backgroundColor = self.separatorColor;
+    [self.actionContainer addSubview:separatorLine];
+    [self.separators addObject:separatorLine];
+}
 
 /**
  *  从UIView 的一定区域截屏

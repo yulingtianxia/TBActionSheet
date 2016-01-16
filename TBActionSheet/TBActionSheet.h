@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 
 @protocol TBActionSheetDelegate;
 
-@interface TBActionSheet : UIView
+@interface TBActionSheet : UIWindow
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
 @property(nonatomic,copy)  NSString * _Nullable  title;
 
@@ -59,6 +59,10 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 @property(nonatomic,strong,nonnull) UIColor *tintColor;
 @property(nonatomic,strong,nonnull) UIColor *destructiveButtonColor;
 @property(nonatomic,strong,nonnull) UIColor *cancelButtonColor;
+/**
+ *  分割线颜色
+ */
+@property(nonatomic,strong,nonnull) UIColor *separatorColor;
 /**
  *  按钮字体
  */
