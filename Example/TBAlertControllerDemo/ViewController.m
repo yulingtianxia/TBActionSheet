@@ -27,6 +27,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 - (IBAction)clickActionSheet:(UIButton *)sender {
     TBActionSheet *actionSheet = [[TBActionSheet alloc] initWithTitle:@"八爪鱼" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:@"点我", nil];
     actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
@@ -67,7 +68,17 @@
 
 - (void)actionSheet:(TBActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    NSLog(@"%ld",(long)buttonIndex);
+    NSLog(@"click button:%ld",(long)buttonIndex);
+}
+
+- (void)actionSheet:(TBActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    NSLog(@"willDismiss");
+}
+
+- (void)actionSheet:(TBActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    NSLog(@"didDismiss");
 }
 
 @end

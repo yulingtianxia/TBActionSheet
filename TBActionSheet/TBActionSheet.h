@@ -2,7 +2,7 @@
 //  TBActionSheet.h
 //
 //  Created by 杨萧玉 on 15/11/17.
-//  Copyright © 2015年 Tencent. All rights reserved.
+//  Copyright © 2015年 yulingtianxia. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

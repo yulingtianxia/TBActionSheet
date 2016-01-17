@@ -2,7 +2,7 @@
 //  TBActionSheet.m
 //
 //  Created by 杨萧玉 on 15/11/17.
-//  Copyright © 2015年 Tencent. All rights reserved.
+//  Copyright © 2015年 yulingtianxia. All rights reserved.
 //
 
 #import "TBActionSheet.h"
@@ -627,22 +627,26 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 - (void)checkButtonTapped:(TBActionButton *)sender
 {
     NSUInteger index = [self.buttons indexOfObject:sender];
-    if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
-        [self.delegate actionSheet:self clickedButtonAtIndex:index];
-    }
-    if (sender.handler) {
-        __weak __typeof(TBActionButton *)weakSender = sender;
-        sender.handler(weakSender);
-    }
-    if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
-        [self.delegate actionSheet:self willDismissWithButtonIndex:index];
-    }
+    
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         self.hidden = YES;
         self.owner.tbActionSheet = nil;
+        
+        if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
+            [self.delegate actionSheet:self clickedButtonAtIndex:index];
+        }
+        if (sender.handler) {
+            __weak __typeof(TBActionButton *)weakSender = sender;
+            sender.handler(weakSender);
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
+            [self.delegate actionSheet:self willDismissWithButtonIndex:index];
+        }
+        
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
         }
@@ -657,20 +661,37 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
  */
 - (void)close
 {
-    if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
-        [self.delegate actionSheetCancel:self];
-    }
-    else if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
-        if ([self isIndexValid:self.cancelButtonIndex]) {
-            [self.delegate actionSheet:self clickedButtonAtIndex:self.cancelButtonIndex];
-        }
-    }
+    
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         self.hidden = YES;
         self.owner.tbActionSheet = nil;
+        
+        if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
+            [self.delegate actionSheetCancel:self];
+        }
+        else if ([self isIndexValid:self.cancelButtonIndex]) {
+            if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
+                [self.delegate actionSheet:self clickedButtonAtIndex:self.cancelButtonIndex];
+            }
+            
+            TBActionButton *button = self.buttons[self.cancelButtonIndex];
+            if (button.handler) {
+                __weak __typeof(TBActionButton *)weakButton = button;
+                button.handler(weakButton);
+            }
+            
+            if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
+                [self.delegate actionSheet:self willDismissWithButtonIndex:self.cancelButtonIndex];
+            }
+            
+            if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
+                [self.delegate actionSheet:self didDismissWithButtonIndex:self.cancelButtonIndex];
+            }
+        }
+
         self.visible = NO;
     }];
 }
