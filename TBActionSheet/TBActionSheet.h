@@ -24,8 +24,10 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 @interface TBActionSheet : UIWindow
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
 @property(nonatomic,copy)  NSString * _Nullable  title;
+@property(nonatomic,copy)  NSString * _Nullable  message;
 
 - (nonnull instancetype)initWithTitle:(nullable NSString *)title delegate:(nullable id <TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION;
+- (nonnull instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(nullable id <TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION;
 - (nonnull instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 // adds a button with the title. returns the index (0 based) of where it was added. buttons are displayed in the order added except for the
@@ -49,10 +51,6 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
  */
 @property(nonatomic) CGFloat buttonHeight;
 /**
- *  标题高度
- */
-@property(nonatomic) CGFloat titleHeight;
-/**
  *  actionsheet下方的 y 轴位移，向下为正，默认值为 -8
  */
 @property(nonatomic) CGFloat bottomOffset;
@@ -60,6 +58,10 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
  *  标题 UILabel
  */
 @property(nonatomic,strong,nullable,readonly) UILabel *titleLabel;
+/**
+ *  Message UILabel
+ */
+@property (nonatomic,strong,nullable,readonly) UILabel *messageLabel;
 /**
  *  文字颜色
  */

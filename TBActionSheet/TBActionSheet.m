@@ -14,6 +14,7 @@ const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
 const NSTimeInterval animationDuration = 0.2;
 const CGFloat sheetCornerRadius = 10.0f;
+const CGFloat titleHeight = 45;
 
 #pragma mark - UIView (RectCorner)
 
@@ -225,6 +226,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 @property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
 @property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
 @property (nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
+@property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
 @property (nonatomic,weak,nullable) UIView *owner;
 @end
 
@@ -249,7 +251,6 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
         _buttonHeight = 56;
-        _titleHeight = 45;
         _bottomOffset = - bigFragment;
         _tintColor = [UIColor blackColor];
         _destructiveButtonColor = [UIColor redColor];
@@ -266,9 +267,16 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 - (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
 {
+    self = [self initWithTitle:title message:nil delegate:delegate cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:destructiveButtonTitle otherButtonTitles:otherButtonTitles, nil];
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+{
     self = [self init];
     if (self) {
         _title = title;
+        _message = message;
         _delegate = delegate;
         
         if (destructiveButtonTitle) {
@@ -397,15 +405,46 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     //将视图从上到下排列，计算当前排列的纵坐标
     __block CGFloat lastY = 0;
     //处理标题
-    if (self.title) {
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.sheetWidth, self.titleHeight)];
+    if ([self hasTitle]) {
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, titleHeight)];
         self.titleLabel.textColor = [UIColor grayColor];
         self.titleLabel.text = self.title;
+        self.titleLabel.numberOfLines = 0;
         self.titleLabel.backgroundColor = [UIColor clearColor];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.titleLabel.backgroundColor = [UIColor clearColor];
-        self.actionContainer.header.frame = CGRectMake(0, lastY, self.sheetWidth, self.titleHeight);
         [self.actionContainer.header addSubview:self.titleLabel];
+        //给一个比较大的高度，宽度不变
+        CGSize size =CGSizeMake(self.sheetWidth,1000);
+        //获取当前文本的属性
+        NSDictionary * tdic = @{NSFontAttributeName:self.titleLabel.font};
+        //ios7方法，获取文本需要的size，限制宽度
+        CGSize actualsize =[self.title boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
+        self.titleLabel.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
+        lastY = CGRectGetMaxY(self.titleLabel.frame);
+    }
+    //处理 message
+    if ([self hasMessage]) {
+        self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, titleHeight)];
+        self.messageLabel.textColor = [UIColor grayColor];
+        self.messageLabel.text = self.message;
+        self.messageLabel.numberOfLines = 0;
+        self.messageLabel.backgroundColor = [UIColor clearColor];
+        self.messageLabel.textAlignment = NSTextAlignmentCenter;
+        self.messageLabel.backgroundColor = [UIColor clearColor];
+        [self.actionContainer.header addSubview:self.messageLabel];
+        //给一个比较大的高度，宽度不变
+        CGSize size =CGSizeMake(self.sheetWidth,1000);
+        //获取当前文本的属性
+        NSDictionary * tdic = @{NSFontAttributeName:self.messageLabel.font};
+        //ios7方法，获取文本需要的size，限制宽度
+        CGSize actualsize =[self.message boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
+        self.messageLabel.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
+        lastY = CGRectGetMaxY(self.messageLabel.frame);
+    }
+    //处理title与自定义视图间的分割线
+    if ([self hasHeader]) {
+        self.actionContainer.header.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
         if (self.buttons.firstObject.style == TBActionButtonStyleCancel && !self.customView) {
             [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
             lastY = CGRectGetMaxY(self.actionContainer.header.frame) + bigFragment;
@@ -486,7 +525,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
     }
     
-    if (self.title) {
+    if ([self hasHeader]) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.header.frame];
             UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:0.5 withTintColor:self.backgroundColor];
@@ -526,7 +565,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
             if (self.isRectCornerEnabled) {
                 if (self.buttons.count == 1) {
                     obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
-                    if (self.title) {
+                    if ([self hasHeader]) {
                         if (self.customView) {
                             [self.actionContainer.header setCornerOnTop];
                         }
@@ -535,7 +574,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
                         }
                     }
                     if (self.customView) {
-                        if (self.title) {
+                        if ([self hasHeader]) {
                             [self.actionContainer.custom setCornerOnBottom];
                         }
                         else {
@@ -549,7 +588,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
                         self.buttons[idx - 1].corner |= TBActionButtonCornerBottom;
                     }
                     else {
-                        if (self.title) {
+                        if ([self hasHeader]) {
                             [self.actionContainer.header setCornerOnBottom];
                         }
                         else if (self.customView) {
@@ -561,7 +600,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
                     }
                 }
                 else if (idx == 0) {
-                    if (self.title) {
+                    if ([self hasHeader]) {
                         [self.actionContainer.header setCornerOnTop];
                     }
                     else if (self.customView) {
@@ -697,6 +736,21 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 }
 
 #pragma mark help methods
+
+- (BOOL)hasTitle
+{
+    return self.title && self.title.length > 0;
+}
+
+- (BOOL)hasMessage
+{
+    return self.message && self.message.length > 0;
+}
+
+- (BOOL)hasHeader
+{
+    return [self hasTitle] || [self hasMessage];
+}
 
 - (void)addSeparatorLineAt:(CGPoint) point isBigFragment:(BOOL) isBigFragment
 {
