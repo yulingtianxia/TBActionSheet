@@ -14,7 +14,7 @@ const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
 const NSTimeInterval animationDuration = 0.2;
 const CGFloat sheetCornerRadius = 10.0f;
-const CGFloat titleHeight = 45;
+const CGFloat headerVerticalSpace = 10;
 
 #pragma mark - UIView (RectCorner)
 
@@ -261,6 +261,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _rectCornerEnabled = YES;
         _backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
         _separatorColor = [UIColor clearColor];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
     }
     return self;
 }
@@ -303,7 +305,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 - (void)dealloc
 {
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSInteger)addButtonWithTitle:(NSString *)title
@@ -406,8 +408,15 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     __block CGFloat lastY = 0;
     //处理标题
     if ([self hasTitle]) {
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, titleHeight)];
-        self.titleLabel.textColor = [UIColor grayColor];
+        lastY += headerVerticalSpace;
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
+        if ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.2) {
+            self.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
+        }
+        else {
+            self.titleLabel.font = [UIFont systemFontOfSize:13];
+        }
         self.titleLabel.text = self.title;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.backgroundColor = [UIColor clearColor];
@@ -425,8 +434,12 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     }
     //处理 message
     if ([self hasMessage]) {
-        self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, titleHeight)];
-        self.messageLabel.textColor = [UIColor grayColor];
+        if (![self hasTitle]) {
+            lastY += headerVerticalSpace;
+        }
+        self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        self.messageLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
+        self.messageLabel.font = [UIFont systemFontOfSize:13];
         self.messageLabel.text = self.message;
         self.messageLabel.numberOfLines = 0;
         self.messageLabel.backgroundColor = [UIColor clearColor];
@@ -444,6 +457,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     }
     //处理title与自定义视图间的分割线
     if ([self hasHeader]) {
+        lastY += headerVerticalSpace;
         self.actionContainer.header.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
         if (self.buttons.firstObject.style == TBActionButtonStyleCancel && !self.customView) {
             [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
@@ -642,9 +656,13 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
     });
     
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    self.transform = [self transformForOrientation:orientation];
+    
     //弹出 ActionSheet 动画
     view.tbActionSheet = self;
     self.owner = view;
+    
     [self makeKeyAndVisible];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
@@ -655,6 +673,91 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
         self.visible = YES;
     }];
+}
+
+#pragma mark handle orientation
+#define DegreesToRadians(degrees) (degrees * M_PI / 180)
+
+- (CGPoint)rotationPointForOrientation:(UIInterfaceOrientation) orientation
+{
+    CGFloat x,y;
+    CGFloat width = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.height : self.actionContainer.frame.size.width;
+    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
+    switch (orientation) {
+        case UIInterfaceOrientationLandscapeLeft:
+            x = width / 2 + (kScreenHeight - kScreenWidth) / 4;
+            y = -self.bottomOffset + height - (kScreenWidth + kScreenHeight) / 4;
+            return CGPointMake(x, y);
+        case UIInterfaceOrientationLandscapeRight:
+            x = width / 2 - (kScreenHeight - kScreenWidth) / 4;
+            y = -self.bottomOffset + height - (kScreenWidth + kScreenHeight) / 4;
+            return CGPointMake(x, y);
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return [self.actionContainer convertPoint:CGPointMake(kScreenWidth / 2, kScreenHeight / 2) fromView:self.background];
+        case UIInterfaceOrientationPortrait:
+        default:
+            return CGPointMake(0, 0);
+    }
+}
+
+- (CGAffineTransform)transformForOrientation:(UIInterfaceOrientation) orientation
+{
+    CGFloat halfWidth = self.frame.size.width / 2;
+    CGFloat halfHeight = self.frame.size.height / 2;
+    switch (orientation) {
+        case UIInterfaceOrientationLandscapeLeft: {
+            CGPoint point = CGPointMake(0, halfWidth-halfHeight);
+            return CGAffineTransformMakeOrientationAroundPoint(orientation, point);
+        }
+        case UIInterfaceOrientationLandscapeRight: {
+            CGPoint point = CGPointMake(halfHeight-halfWidth, 0);
+            return CGAffineTransformMakeOrientationAroundPoint(orientation, point);
+        }
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return CGAffineTransformMakeRotation(DegreesToRadians(180));
+            
+        case UIInterfaceOrientationPortrait:
+        default:
+            return CGAffineTransformMakeRotation(DegreesToRadians(0));
+    }
+}
+
+CGAffineTransform CGAffineTransformMakeOrientationAroundPoint(UIInterfaceOrientation orientation, CGPoint point)
+{
+    switch (orientation) {
+        case UIInterfaceOrientationLandscapeLeft:
+            return CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
+
+        case UIInterfaceOrientationLandscapeRight:
+            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
+            
+        case UIInterfaceOrientationPortraitUpsideDown:
+            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(180));
+            
+        case UIInterfaceOrientationPortrait:
+        default:
+            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(0));
+    }
+}
+
+CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat angle)
+{
+    CGFloat x = point.x;
+    CGFloat y = point.y;
+    CGAffineTransform  trans = CGAffineTransformMakeTranslation(x, y);
+    trans = CGAffineTransformRotate(trans,angle);
+    trans = CGAffineTransformTranslate(trans,-x, -y);
+    return trans;
+}
+
+- (void)statusBarDidChangeFrame:(NSNotification *)notification {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    CGPoint rotationPoint = [self rotationPointForOrientation:orientation];
+    CGFloat x = rotationPoint.x - self.actionContainer.bounds.size.width / 2;
+    CGFloat y = rotationPoint.y - self.actionContainer.bounds.size.height / 2;
+    CGPoint offset = CGPointMake(x, y);
+    self.actionContainer.transform = CGAffineTransformIdentity;
+    self.actionContainer.transform = CGAffineTransformMakeOrientationAroundPoint(orientation, offset);
 }
 
 #pragma mark handle button press
