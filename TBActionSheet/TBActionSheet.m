@@ -255,14 +255,14 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         _tintColor = [UIColor blackColor];
         _destructiveButtonColor = [UIColor redColor];
         _cancelButtonColor = [UIColor blackColor];
-        _sheetWidth = kScreenWidth - 20;
+        _sheetWidth = MIN(kScreenWidth, kScreenHeight) - 20;
         _backgroundTransparentEnabled = YES;
         _blurEffectEnabled = YES;
         _rectCornerEnabled = YES;
         _backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
         _separatorColor = [UIColor clearColor];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarWillChangeOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
     }
     return self;
 }
@@ -657,7 +657,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     });
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    self.transform = [self transformForOrientation:orientation];
+//    self.transform = [self transformForOrientation:orientation];
     
     //弹出 ActionSheet 动画
     view.tbActionSheet = self;
@@ -678,28 +678,6 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 #pragma mark handle orientation
 #define DegreesToRadians(degrees) (degrees * M_PI / 180)
 
-- (CGPoint)rotationPointForOrientation:(UIInterfaceOrientation) orientation
-{
-    CGFloat x,y;
-    CGFloat width = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.height : self.actionContainer.frame.size.width;
-    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
-    switch (orientation) {
-        case UIInterfaceOrientationLandscapeLeft:
-            x = width / 2 + (kScreenHeight - kScreenWidth) / 4;
-            y = -self.bottomOffset + height - (kScreenWidth + kScreenHeight) / 4;
-            return CGPointMake(x, y);
-        case UIInterfaceOrientationLandscapeRight:
-            x = width / 2 - (kScreenHeight - kScreenWidth) / 4;
-            y = -self.bottomOffset + height - (kScreenWidth + kScreenHeight) / 4;
-            return CGPointMake(x, y);
-        case UIInterfaceOrientationPortraitUpsideDown:
-            return [self.actionContainer convertPoint:CGPointMake(kScreenWidth / 2, kScreenHeight / 2) fromView:self.background];
-        case UIInterfaceOrientationPortrait:
-        default:
-            return CGPointMake(0, 0);
-    }
-}
-
 - (CGAffineTransform)transformForOrientation:(UIInterfaceOrientation) orientation
 {
     CGFloat halfWidth = self.frame.size.width / 2;
@@ -707,11 +685,11 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     switch (orientation) {
         case UIInterfaceOrientationLandscapeLeft: {
             CGPoint point = CGPointMake(0, halfWidth-halfHeight);
-            return CGAffineTransformMakeOrientationAroundPoint(orientation, point);
+            return CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
         }
         case UIInterfaceOrientationLandscapeRight: {
             CGPoint point = CGPointMake(halfHeight-halfWidth, 0);
-            return CGAffineTransformMakeOrientationAroundPoint(orientation, point);
+            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
         }
         case UIInterfaceOrientationPortraitUpsideDown:
             return CGAffineTransformMakeRotation(DegreesToRadians(180));
@@ -719,24 +697,6 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         case UIInterfaceOrientationPortrait:
         default:
             return CGAffineTransformMakeRotation(DegreesToRadians(0));
-    }
-}
-
-CGAffineTransform CGAffineTransformMakeOrientationAroundPoint(UIInterfaceOrientation orientation, CGPoint point)
-{
-    switch (orientation) {
-        case UIInterfaceOrientationLandscapeLeft:
-            return CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
-
-        case UIInterfaceOrientationLandscapeRight:
-            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
-            
-        case UIInterfaceOrientationPortraitUpsideDown:
-            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(180));
-            
-        case UIInterfaceOrientationPortrait:
-        default:
-            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(0));
     }
 }
 
@@ -750,14 +710,187 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     return trans;
 }
 
-- (void)statusBarDidChangeFrame:(NSNotification *)notification {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    CGPoint rotationPoint = [self rotationPointForOrientation:orientation];
-    CGFloat x = rotationPoint.x - self.actionContainer.bounds.size.width / 2;
-    CGFloat y = rotationPoint.y - self.actionContainer.bounds.size.height / 2;
+- (void)statusBarWillChangeOrientation:(NSNotification *)notification {
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation futureOrientation = ((NSNumber *)notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey]).integerValue;
+    [self rotateFromOrientation:currentOrientation toOrientation:futureOrientation];
+}
+
+- (CGFloat)screenHeight
+{
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (currentOrientation == UIInterfaceOrientationLandscapeLeft || currentOrientation == UIInterfaceOrientationLandscapeRight) {
+        return kScreenWidth;
+    }
+    else {
+        return kScreenHeight;
+    }
+}
+
+- (CGFloat)screenWidth
+{
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (currentOrientation == UIInterfaceOrientationLandscapeLeft || currentOrientation == UIInterfaceOrientationLandscapeRight) {
+        return kScreenHeight;
+    }
+    else {
+        return kScreenWidth;
+    }
+}
+
+- (void)rotateFromOrientation:(UIInterfaceOrientation) source toOrientation:(UIInterfaceOrientation) target
+{
+    typedef NS_ENUM(NSUInteger, RotationPoint) {
+        LeftPoint,
+        RightPoint,
+        CenterPoint,
+    };
+    
+    RotationPoint point;
+    CGFloat angle = DegreesToRadians(0);
+    
+    switch (source) {
+        case UIInterfaceOrientationPortrait: {
+            switch (target) {
+                case UIInterfaceOrientationPortraitUpsideDown: {
+                    point = CenterPoint;
+                    angle = DegreesToRadians(180);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeLeft: {
+                    point = LeftPoint;
+                    angle = -DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeRight: {
+                    point = RightPoint;
+                    angle = DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationPortrait:
+                case UIInterfaceOrientationUnknown:
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case UIInterfaceOrientationPortraitUpsideDown: {
+            switch (target) {
+                case UIInterfaceOrientationPortrait: {
+                    point = CenterPoint;
+                    angle = DegreesToRadians(180);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeLeft: {
+                    point = RightPoint;
+                    angle = DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeRight: {
+                    point = LeftPoint;
+                    angle = -DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationUnknown:
+                case UIInterfaceOrientationPortraitUpsideDown:
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case UIInterfaceOrientationLandscapeLeft: {
+            switch (target) {
+                case UIInterfaceOrientationPortrait: {
+                    point = LeftPoint;
+                    angle = DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationPortraitUpsideDown: {
+                    point = RightPoint;
+                    angle = -DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeRight: {
+                    point = CenterPoint;
+                    angle = DegreesToRadians(180);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeLeft:
+                case UIInterfaceOrientationUnknown:
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case UIInterfaceOrientationLandscapeRight: {
+            switch (target) {
+                case UIInterfaceOrientationPortrait: {
+                    point = RightPoint;
+                    angle = -DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationPortraitUpsideDown: {
+                    point = LeftPoint;
+                    angle = DegreesToRadians(90);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeLeft: {
+                    point = CenterPoint;
+                    angle = DegreesToRadians(180);
+                    break;
+                }
+                case UIInterfaceOrientationLandscapeRight:
+                case UIInterfaceOrientationUnknown:
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case UIInterfaceOrientationUnknown:
+        default: {
+            break;
+        }
+    }
+    
+    CGPoint rotationPoint;
+    CGFloat width = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.height : self.actionContainer.frame.size.width;
+    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
+    
+    CGFloat screenWidth = [self screenWidth];
+    CGFloat screenHeight = [self screenHeight];
+    
+    
+    switch (point) {
+        case LeftPoint: {
+            CGFloat x = width / 2 - (screenHeight - screenWidth) / 4;
+            CGFloat y = -self.bottomOffset + height - (screenWidth + screenHeight) / 4;
+            rotationPoint = CGPointMake(x, y);
+            break;
+        }
+        case RightPoint: {
+            CGFloat x = width / 2 + (screenHeight - screenWidth) / 4;
+            CGFloat y = -self.bottomOffset + height - (screenWidth + screenHeight) / 4;
+            rotationPoint = CGPointMake(x, y);
+            break;
+        }
+        case CenterPoint: {
+            rotationPoint = [self.actionContainer convertPoint:CGPointMake(screenWidth / 2, screenHeight / 2) fromView:self.background];
+            break;
+        }
+        default:
+            break;
+    }
+    
+    CGFloat x = rotationPoint.x - width / 2;
+    CGFloat y = rotationPoint.y - height / 2;
     CGPoint offset = CGPointMake(x, y);
-    self.actionContainer.transform = CGAffineTransformIdentity;
-    self.actionContainer.transform = CGAffineTransformMakeOrientationAroundPoint(orientation, offset);
+    
+    CGAffineTransform trans = CGAffineTransformMakeRotateAroundPoint(offset, angle);
+    self.actionContainer.transform = CGAffineTransformConcat(self.actionContainer.transform, trans);
 }
 
 #pragma mark handle button press
