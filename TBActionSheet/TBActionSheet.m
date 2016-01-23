@@ -234,11 +234,11 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 - (instancetype)init
 {
-    self = [super initWithFrame:[UIScreen mainScreen].bounds];
+    self = [super initWithFrame:CGRectMake(0, 0, [self screenWidth], [self screenHeight])];
     if (self) {
         [super setBackgroundColor:[UIColor clearColor]];
         self.windowLevel = UIWindowLevelAlert;
-        _background = [[TBActionBackground alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        _background = [[TBActionBackground alloc] initWithFrame:self.frame];
         _background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _background.userInteractionEnabled = YES;
         [self addSubview:_background];
@@ -404,6 +404,9 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
     //将视图从上到下排列，计算当前排列的纵坐标
     __block CGFloat lastY = 0;
     //处理标题
@@ -526,7 +529,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     
     //圆角处理和毛玻璃效果、背景颜色
 
-    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, lastY);
+    self.actionContainer.frame = CGRectMake(kContainerLeft, [self screenHeight], self.sheetWidth, lastY);
+    [self prepareActionContainerForOrientation:orientation];
     UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-lastY, self.sheetWidth, lastY)];
     
     if (!self.isBackgroundTransparentEnabled) {
@@ -656,9 +660,6 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
         }
     });
     
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-//    self.transform = [self transformForOrientation:orientation];
-    
     //弹出 ActionSheet 动画
     view.tbActionSheet = self;
     self.owner = view;
@@ -666,7 +667,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     [self makeKeyAndVisible];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        [self appearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -677,6 +679,45 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 
 #pragma mark handle orientation
 #define DegreesToRadians(degrees) (degrees * M_PI / 180)
+
+- (void)prepareActionContainerForOrientation:(UIInterfaceOrientation) orientation
+{
+    CGAffineTransform trans;
+    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
+    CGPoint point = CGPointMake(0, -height/2 - [self screenHeight] / 2);
+    switch (orientation) {
+        case UIInterfaceOrientationLandscapeLeft: {
+            trans = CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
+            trans = CGAffineTransformTranslate(trans, 0, -([self screenHeight]-[self screenWidth])/2);
+            break;
+        }
+        case UIInterfaceOrientationLandscapeRight: {
+            trans = CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
+            trans = CGAffineTransformTranslate(trans, 0, -([self screenHeight]-[self screenWidth])/2);
+            break;
+        }
+        case UIInterfaceOrientationPortraitUpsideDown: {
+            trans = CGAffineTransformMakeRotation(DegreesToRadians(180));
+            break;
+        }
+        case UIInterfaceOrientationPortrait:
+        default:
+            trans = CGAffineTransformMakeRotation(DegreesToRadians(0));
+            break;
+    }
+    self.actionContainer.transform = trans;
+}
+
+- (void)appearActionContainerForOrientation:(UIInterfaceOrientation) orientation
+{
+    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
+//    self.actionContainer.transform = CGAffineTransformTranslate(self.actionContainer.transform, 0, -height+self.bottomOffset);
+}
+
+- (void)disappearActionContainerForOrientation:(UIInterfaceOrientation) orientation
+{
+    CGAffineTransform trans;
+}
 
 - (CGAffineTransform)transformForOrientation:(UIInterfaceOrientation) orientation
 {
@@ -878,7 +919,9 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
             break;
         }
         case CenterPoint: {
-            rotationPoint = [self.actionContainer convertPoint:CGPointMake(screenWidth / 2, screenHeight / 2) fromView:self.background];
+            CGFloat x = width / 2;
+            CGFloat y = height - self.bottomOffset - kScreenHeight / 2;
+            rotationPoint = CGPointMake(x, y);
             break;
         }
         default:
@@ -890,7 +933,7 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     CGPoint offset = CGPointMake(x, y);
     
     CGAffineTransform trans = CGAffineTransformMakeRotateAroundPoint(offset, angle);
-    self.actionContainer.transform = CGAffineTransformConcat(self.actionContainer.transform, trans);
+    self.actionContainer.transform = CGAffineTransformConcat(trans, self.actionContainer.transform);
 }
 
 #pragma mark handle button press
@@ -905,7 +948,9 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         self.hidden = YES;
         self.owner.tbActionSheet = nil;
@@ -939,7 +984,9 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         self.hidden = YES;
         self.owner.tbActionSheet = nil;
