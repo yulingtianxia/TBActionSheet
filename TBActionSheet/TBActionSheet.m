@@ -711,7 +711,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 - (void)appearActionContainerForOrientation:(UIInterfaceOrientation) orientation
 {
     CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
-//    self.actionContainer.transform = CGAffineTransformTranslate(self.actionContainer.transform, 0, -height+self.bottomOffset);
+    self.actionContainer.transform = CGAffineTransformTranslate(self.actionContainer.transform, 0, -height+self.bottomOffset);
 }
 
 - (void)disappearActionContainerForOrientation:(UIInterfaceOrientation) orientation
