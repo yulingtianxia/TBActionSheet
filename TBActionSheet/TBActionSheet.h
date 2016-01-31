@@ -6,20 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TBActionButton.h"
 
-typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
-    TBActionButtonStyleDefault = 0,
-    TBActionButtonStyleCancel,
-    TBActionButtonStyleDestructive
-};
-
+@class TBActionContainer;
 @protocol TBActionSheetDelegate;
-
-@interface TBActionButton : UIButton
-
-@property (nonatomic) TBActionButtonStyle style;
-@property (nonatomic,nullable,strong,readonly) void (^handler)(TBActionButton * _Nonnull button);
-@end
 
 @interface TBActionSheet : UIWindow
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
@@ -100,7 +90,7 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
  *  自定义视图
  */
 @property(nonatomic,strong,nullable) UIView *customView;
-
+@property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
 @end
 
 @protocol TBActionSheetDelegate <NSObject>

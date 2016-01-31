@@ -9,6 +9,9 @@
 #import "UIImage+BoxBlur.h"
 #import "TBMacro.h"
 #import <objc/runtime.h>
+#import "TBActionSheet+Orientation.h"
+#import "TBActionContainer.h"
+#import "TBActionBackground.h"
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
@@ -92,137 +95,9 @@ const CGFloat headerVerticalSpace = 10;
 
 @end
 
-#pragma mark - TBActionButton
-
-typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
-    TBActionButtonCornerTop = 1 << 0,
-    TBActionButtonCornerBottom = 1 << 1,
-    TBActionButtonCornerNone = 0,
-    TBActionButtonCornerAll = TBActionButtonCornerTop|TBActionButtonCornerBottom,
-};
-
-/**
- *  可定制风格和圆角的按钮
- */
-@interface TBActionButton()
-
-@property (nonatomic) TBActionButtonCorner corner;
-@property (nonatomic,nullable) UIColor *normalColor;
-@property (nonatomic,nullable) UIColor *highlightedColor;
-@property (nonatomic,nullable,strong,readwrite) void (^handler)(TBActionButton * _Nonnull button);
-
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler;
-
-@end
-
-@implementation TBActionButton
-
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style
-{
-    return [TBActionButton buttonWithTitle:title style:style handler:nil];
-}
-
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
-{
-    TBActionButton *button = [TBActionButton buttonWithType:UIButtonTypeCustom];
-    button.style = style;
-    button.corner = TBActionButtonCornerNone;
-    button.handler = handler;
-    [button setTitle:title forState:UIControlStateNormal];
-    [button setBackgroundColor:[UIColor whiteColor]];
-    [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
-    return button;
-}
-
-- (void)dealloc
-{
-    
-}
-
-- (void) setHighlighted:(BOOL)highlighted {
-    [super setHighlighted:highlighted];
-    if (highlighted) {
-        self.backgroundColor = self.highlightedColor;
-    }
-    else {
-        self.backgroundColor = self.normalColor;
-    }
-}
-
-- (void)setNormalColor:(UIColor *)normalColor
-{
-    _normalColor = normalColor;
-    self.backgroundColor = normalColor;
-    if (!self.highlightedColor) {
-        self.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
-    }
-}
-
-@end
-
-#pragma mark - TBActionContainer
-/**
- *  容器类，用于包含所有按钮，可定制 header，custom 和 footer 三个 view
- */
-@interface TBActionContainer : UIImageView
-@property (nonnull,nonatomic,strong) UIImageView *header;
-@property (nonnull,nonatomic,strong) UIImageView *custom;
-@property (nonnull,nonatomic,strong) UIImageView *footer;
-
-- (nonnull instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-
-@end
-
-@implementation TBActionContainer
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        _header = [[UIImageView alloc] init];
-        _custom = [[UIImageView alloc] init];
-        _footer = [[UIImageView alloc] init];
-        _header.clipsToBounds = YES;
-        _custom.clipsToBounds = YES;
-        _footer.clipsToBounds = YES;
-        [self addSubview:_header];
-        [self addSubview:_custom];
-        [self addSubview:_footer];
-    }
-    return self;
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-
-}
-
-@end
-
-#pragma mark - TBActionBackground
-
-@interface TBActionBackground : UIImageView
-
-@end
-
-@implementation TBActionBackground
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    if ([self.superview respondsToSelector:@selector(close)]) {
-        [self.superview performSelector:@selector(close)];
-    }
-}
-
-@end
-
-#pragma mark - TBActionSheet
-
 @interface TBActionSheet ()
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionBackground * background;
-@property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
 @property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
 @property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
 @property (nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
@@ -667,8 +542,8 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     [self makeKeyAndVisible];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-        [self appearActionContainerForOrientation:orientation];
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+//        [self appearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -677,264 +552,7 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
     }];
 }
 
-#pragma mark handle orientation
-#define DegreesToRadians(degrees) (degrees * M_PI / 180)
 
-- (void)prepareActionContainerForOrientation:(UIInterfaceOrientation) orientation
-{
-    CGAffineTransform trans;
-    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
-    CGPoint point = CGPointMake(0, -height/2 - [self screenHeight] / 2);
-    switch (orientation) {
-        case UIInterfaceOrientationLandscapeLeft: {
-            trans = CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
-            trans = CGAffineTransformTranslate(trans, 0, -([self screenHeight]-[self screenWidth])/2);
-            break;
-        }
-        case UIInterfaceOrientationLandscapeRight: {
-            trans = CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
-            trans = CGAffineTransformTranslate(trans, 0, -([self screenHeight]-[self screenWidth])/2);
-            break;
-        }
-        case UIInterfaceOrientationPortraitUpsideDown: {
-            trans = CGAffineTransformMakeRotation(DegreesToRadians(180));
-            break;
-        }
-        case UIInterfaceOrientationPortrait:
-        default:
-            trans = CGAffineTransformMakeRotation(DegreesToRadians(0));
-            break;
-    }
-    self.actionContainer.transform = trans;
-}
-
-- (void)appearActionContainerForOrientation:(UIInterfaceOrientation) orientation
-{
-    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
-    self.actionContainer.transform = CGAffineTransformTranslate(self.actionContainer.transform, 0, -height+self.bottomOffset);
-}
-
-- (void)disappearActionContainerForOrientation:(UIInterfaceOrientation) orientation
-{
-    CGAffineTransform trans;
-}
-
-- (CGAffineTransform)transformForOrientation:(UIInterfaceOrientation) orientation
-{
-    CGFloat halfWidth = self.frame.size.width / 2;
-    CGFloat halfHeight = self.frame.size.height / 2;
-    switch (orientation) {
-        case UIInterfaceOrientationLandscapeLeft: {
-            CGPoint point = CGPointMake(0, halfWidth-halfHeight);
-            return CGAffineTransformMakeRotateAroundPoint(point, -DegreesToRadians(90));
-        }
-        case UIInterfaceOrientationLandscapeRight: {
-            CGPoint point = CGPointMake(halfHeight-halfWidth, 0);
-            return CGAffineTransformMakeRotateAroundPoint(point, DegreesToRadians(90));
-        }
-        case UIInterfaceOrientationPortraitUpsideDown:
-            return CGAffineTransformMakeRotation(DegreesToRadians(180));
-            
-        case UIInterfaceOrientationPortrait:
-        default:
-            return CGAffineTransformMakeRotation(DegreesToRadians(0));
-    }
-}
-
-CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat angle)
-{
-    CGFloat x = point.x;
-    CGFloat y = point.y;
-    CGAffineTransform  trans = CGAffineTransformMakeTranslation(x, y);
-    trans = CGAffineTransformRotate(trans,angle);
-    trans = CGAffineTransformTranslate(trans,-x, -y);
-    return trans;
-}
-
-- (void)statusBarWillChangeOrientation:(NSNotification *)notification {
-    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    UIInterfaceOrientation futureOrientation = ((NSNumber *)notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey]).integerValue;
-    [self rotateFromOrientation:currentOrientation toOrientation:futureOrientation];
-}
-
-- (CGFloat)screenHeight
-{
-    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if (currentOrientation == UIInterfaceOrientationLandscapeLeft || currentOrientation == UIInterfaceOrientationLandscapeRight) {
-        return kScreenWidth;
-    }
-    else {
-        return kScreenHeight;
-    }
-}
-
-- (CGFloat)screenWidth
-{
-    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if (currentOrientation == UIInterfaceOrientationLandscapeLeft || currentOrientation == UIInterfaceOrientationLandscapeRight) {
-        return kScreenHeight;
-    }
-    else {
-        return kScreenWidth;
-    }
-}
-
-- (void)rotateFromOrientation:(UIInterfaceOrientation) source toOrientation:(UIInterfaceOrientation) target
-{
-    typedef NS_ENUM(NSUInteger, RotationPoint) {
-        LeftPoint,
-        RightPoint,
-        CenterPoint,
-    };
-    
-    RotationPoint point;
-    CGFloat angle = DegreesToRadians(0);
-    
-    switch (source) {
-        case UIInterfaceOrientationPortrait: {
-            switch (target) {
-                case UIInterfaceOrientationPortraitUpsideDown: {
-                    point = CenterPoint;
-                    angle = DegreesToRadians(180);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeLeft: {
-                    point = LeftPoint;
-                    angle = -DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeRight: {
-                    point = RightPoint;
-                    angle = DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationPortrait:
-                case UIInterfaceOrientationUnknown:
-                default: {
-                    break;
-                }
-            }
-            break;
-        }
-        case UIInterfaceOrientationPortraitUpsideDown: {
-            switch (target) {
-                case UIInterfaceOrientationPortrait: {
-                    point = CenterPoint;
-                    angle = DegreesToRadians(180);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeLeft: {
-                    point = RightPoint;
-                    angle = DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeRight: {
-                    point = LeftPoint;
-                    angle = -DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationUnknown:
-                case UIInterfaceOrientationPortraitUpsideDown:
-                default: {
-                    break;
-                }
-            }
-            break;
-        }
-        case UIInterfaceOrientationLandscapeLeft: {
-            switch (target) {
-                case UIInterfaceOrientationPortrait: {
-                    point = LeftPoint;
-                    angle = DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationPortraitUpsideDown: {
-                    point = RightPoint;
-                    angle = -DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeRight: {
-                    point = CenterPoint;
-                    angle = DegreesToRadians(180);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeLeft:
-                case UIInterfaceOrientationUnknown:
-                default: {
-                    break;
-                }
-            }
-            break;
-        }
-        case UIInterfaceOrientationLandscapeRight: {
-            switch (target) {
-                case UIInterfaceOrientationPortrait: {
-                    point = RightPoint;
-                    angle = -DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationPortraitUpsideDown: {
-                    point = LeftPoint;
-                    angle = DegreesToRadians(90);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeLeft: {
-                    point = CenterPoint;
-                    angle = DegreesToRadians(180);
-                    break;
-                }
-                case UIInterfaceOrientationLandscapeRight:
-                case UIInterfaceOrientationUnknown:
-                default: {
-                    break;
-                }
-            }
-            break;
-        }
-        case UIInterfaceOrientationUnknown:
-        default: {
-            break;
-        }
-    }
-    
-    CGPoint rotationPoint;
-    CGFloat width = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.height : self.actionContainer.frame.size.width;
-    CGFloat height = fabs(self.actionContainer.transform.b) == 1 ? self.actionContainer.frame.size.width : self.actionContainer.frame.size.height;
-    
-    CGFloat screenWidth = [self screenWidth];
-    CGFloat screenHeight = [self screenHeight];
-    
-    
-    switch (point) {
-        case LeftPoint: {
-            CGFloat x = width / 2 - (screenHeight - screenWidth) / 4;
-            CGFloat y = -self.bottomOffset + height - (screenWidth + screenHeight) / 4;
-            rotationPoint = CGPointMake(x, y);
-            break;
-        }
-        case RightPoint: {
-            CGFloat x = width / 2 + (screenHeight - screenWidth) / 4;
-            CGFloat y = -self.bottomOffset + height - (screenWidth + screenHeight) / 4;
-            rotationPoint = CGPointMake(x, y);
-            break;
-        }
-        case CenterPoint: {
-            CGFloat x = width / 2;
-            CGFloat y = height - self.bottomOffset - kScreenHeight / 2;
-            rotationPoint = CGPointMake(x, y);
-            break;
-        }
-        default:
-            break;
-    }
-    
-    CGFloat x = rotationPoint.x - width / 2;
-    CGFloat y = rotationPoint.y - height / 2;
-    CGPoint offset = CGPointMake(x, y);
-    
-    CGAffineTransform trans = CGAffineTransformMakeRotateAroundPoint(offset, angle);
-    self.actionContainer.transform = CGAffineTransformConcat(trans, self.actionContainer.transform);
-}
 
 #pragma mark handle button press
 /**
@@ -948,9 +566,9 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
         UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        [self disappearActionContainerForOrientation:orientation];
+//        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         self.hidden = YES;
         self.owner.tbActionSheet = nil;
