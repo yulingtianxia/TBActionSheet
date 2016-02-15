@@ -14,6 +14,8 @@
 #pragma mark handle orientation
 #define DegreesToRadians(degrees) (degrees * M_PI / 180)
 
+
+
 - (void)prepareActionContainerForOrientation:(UIInterfaceOrientation) orientation
 {
     CGAffineTransform trans;
@@ -83,12 +85,6 @@ CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat 
     trans = CGAffineTransformRotate(trans,angle);
     trans = CGAffineTransformTranslate(trans,-x, -y);
     return trans;
-}
-
-- (void)statusBarWillChangeOrientation:(NSNotification *)notification {
-    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    UIInterfaceOrientation futureOrientation = ((NSNumber *)notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey]).integerValue;
-    [self rotateFromOrientation:currentOrientation toOrientation:futureOrientation];
 }
 
 - (CGFloat)screenHeight

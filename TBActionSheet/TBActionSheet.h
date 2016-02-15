@@ -11,10 +11,12 @@
 @class TBActionContainer;
 @protocol TBActionSheetDelegate;
 
-@interface TBActionSheet : UIWindow
+@interface TBActionSheet : UIView
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
 @property(nonatomic,copy)  NSString * _Nullable  title;
 @property(nonatomic,copy)  NSString * _Nullable  message;
+
+@property (weak, nonatomic, readonly) UIWindow *previousKeyWindow;
 
 - (nonnull instancetype)initWithTitle:(nullable NSString *)title delegate:(nullable id <TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION;
 - (nonnull instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(nullable id <TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION;
@@ -108,4 +110,8 @@
 - (void)actionSheet:(nonnull TBActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex; // before animation and hiding view
 - (void)actionSheet:(nonnull TBActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;  // after animation
 
+@end
+
+@interface UIView (TBActionSheet)
+@property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
 @end

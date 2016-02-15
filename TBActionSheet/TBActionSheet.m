@@ -12,6 +12,7 @@
 #import "TBActionSheet+Orientation.h"
 #import "TBActionContainer.h"
 #import "TBActionBackground.h"
+#import "TBActionSheetController.h"
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
@@ -75,9 +76,7 @@ const CGFloat headerVerticalSpace = 10;
 
 #pragma mark - UIView (TBActionSheet)
 
-@interface UIView (TBActionSheet)
-@property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
-@end
+
 
 @implementation UIView (TBActionSheet)
 
@@ -102,18 +101,19 @@ const CGFloat headerVerticalSpace = 10;
 @property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
 @property (nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
 @property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
-@property (nonatomic,weak,nullable) UIView *owner;
+@property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
+@property (strong, nonatomic) UIWindow *window;
 @end
 
 @implementation TBActionSheet
 
 - (instancetype)init
 {
-    self = [super initWithFrame:CGRectMake(0, 0, [self screenWidth], [self screenHeight])];
+    self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
         [super setBackgroundColor:[UIColor clearColor]];
-        self.windowLevel = UIWindowLevelAlert;
-        _background = [[TBActionBackground alloc] initWithFrame:self.frame];
+        
+        _background = [[TBActionBackground alloc] initWithFrame:self.bounds];
         _background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _background.userInteractionEnabled = YES;
         [self addSubview:_background];
@@ -137,7 +137,7 @@ const CGFloat headerVerticalSpace = 10;
         _backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
         _separatorColor = [UIColor clearColor];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarWillChangeOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
 }
@@ -268,7 +268,26 @@ const CGFloat headerVerticalSpace = 10;
     }
 }
 
+- (BOOL)isVisible
+{
+    // action sheet is visible iff it's associated with a window
+    return !!self.window;
+}
+
 #pragma mark show
+
+- (void)setUpNewWindow
+{
+    TBActionSheetController *actionSheetVC = [[TBActionSheetController alloc] initWithNibName:nil bundle:nil];
+    actionSheetVC.actionSheet = self;
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.window.opaque = NO;
+    self.window.rootViewController = actionSheetVC;
+    [self.window makeKeyAndVisible];
+}
+
 /**
  *  从一个 UIView 显示 ActionSheet
  *
@@ -276,6 +295,14 @@ const CGFloat headerVerticalSpace = 10;
  */
 - (void)showInView:(UIView *)view
 {
+    
+    if ([self isVisible]) {
+        return;
+    }
+    
+    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
+    [self setUpNewWindow];
+    
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
@@ -404,8 +431,8 @@ const CGFloat headerVerticalSpace = 10;
     
     //圆角处理和毛玻璃效果、背景颜色
 
-    self.actionContainer.frame = CGRectMake(kContainerLeft, [self screenHeight], self.sheetWidth, lastY);
-    [self prepareActionContainerForOrientation:orientation];
+    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, lastY);
+//    [self prepareActionContainerForOrientation:orientation];
     UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-lastY, self.sheetWidth, lastY)];
     
     if (!self.isBackgroundTransparentEnabled) {
@@ -536,13 +563,9 @@ const CGFloat headerVerticalSpace = 10;
     });
     
     //弹出 ActionSheet 动画
-    view.tbActionSheet = self;
-    self.owner = view;
-    
-    [self makeKeyAndVisible];
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - lastY + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 //        [self appearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
@@ -562,16 +585,21 @@ const CGFloat headerVerticalSpace = 10;
  */
 - (void)checkButtonTapped:(TBActionButton *)sender
 {
+    if (![self isVisible]) {
+        return;
+    }
+    
     NSUInteger index = [self.buttons indexOfObject:sender];
     
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+//        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
 //        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
-        self.hidden = YES;
-        self.owner.tbActionSheet = nil;
+        
+        self.window = nil;
+        [self.previousKeyWindow makeKeyAndVisible];
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
             [self.delegate actionSheet:self clickedButtonAtIndex:index];
@@ -599,15 +627,18 @@ const CGFloat headerVerticalSpace = 10;
  */
 - (void)close
 {
+    if (![self isVisible]) {
+        return;
+    }
     
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-//        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-        [self disappearActionContainerForOrientation:orientation];
+        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+//        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+//        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
-        self.hidden = YES;
-        self.owner.tbActionSheet = nil;
+        self.window = nil;
+        [self.previousKeyWindow makeKeyAndVisible];
         
         if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
             [self.delegate actionSheetCancel:self];
@@ -634,6 +665,24 @@ const CGFloat headerVerticalSpace = 10;
 
         self.visible = NO;
     }];
+}
+
+- (void)statusBarDidChangeOrientation:(NSNotification *)notification {
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    UIInterfaceOrientation oldOrientation = ((NSNumber *)notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey]).integerValue;
+    //    [self rotateFromOrientation:currentOrientation toOrientation:futureOrientation];
+    
+    self.transform = [self transformForOrientation:currentOrientation];
+    if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
+        self.bounds = CGRectMake(0, 0, [self screenWidth], [self screenHeight]);
+    }
+    else {
+        self.bounds = CGRectMake(0, 0, [self screenHeight], [self screenWidth]);
+    }
+    self.background.frame = self.bounds;
+    
+
+    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 }
 
 #pragma mark help methods
@@ -671,7 +720,7 @@ const CGFloat headerVerticalSpace = 10;
  */
 - (UIImage *)screenShotRect:(CGRect)aRect
 {
-    UIView *view = [UIApplication sharedApplication].keyWindow.rootViewController.view;
+    UIView *view = self.previousKeyWindow.rootViewController.view;
     UIGraphicsBeginImageContext(view.bounds.size);
     if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
         [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];

@@ -16,8 +16,6 @@
 
 CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat angle);
 
-
-- (void)statusBarWillChangeOrientation:(NSNotification *)notification;
 - (CGFloat)screenHeight;
 - (CGFloat)screenWidth;
 - (void)rotateFromOrientation:(UIInterfaceOrientation) source toOrientation:(UIInterfaceOrientation) target;

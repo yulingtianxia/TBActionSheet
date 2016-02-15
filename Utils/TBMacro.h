@@ -28,7 +28,7 @@ _Pragma("clang diagnostic pop")
 
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
-#define kContainerLeft (([self screenWidth] - self.sheetWidth)/2)
+#define kContainerLeft ((kScreenWidth - self.sheetWidth)/2)
 
 #define kiOS7Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=7.0)
 #define kiOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
