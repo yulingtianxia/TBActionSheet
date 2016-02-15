@@ -14,7 +14,7 @@ This repo also include `TBAlertController`, which unifies `UIAlertController`, `
 
 BTW, TBActionSheet also suppots BLOCK now!
 
-##Cocoapods
+##CocoaPods
 
 Please search TBActionSheet
 
