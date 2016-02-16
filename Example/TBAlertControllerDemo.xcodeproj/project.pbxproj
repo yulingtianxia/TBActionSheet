@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A46858321C5DF0B400A3F750 /* TBActionSheet+Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858311C5DF0B400A3F750 /* TBActionSheet+Orientation.m */; };
 		A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858341C5DF19A00A3F750 /* TBActionContainer.m */; };
 		A46858381C5DF1F000A3F750 /* TBActionBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858371C5DF1F000A3F750 /* TBActionBackground.m */; };
 		A468583B1C5DF23600A3F750 /* TBActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A468583A1C5DF23600A3F750 /* TBActionButton.m */; };
 		A477F6731C721C6F00BEB145 /* TBActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6701C721C6F00BEB145 /* TBActionSheetController.m */; };
 		A477F6741C721C6F00BEB145 /* UIWindow+TBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6721C721C6F00BEB145 /* UIWindow+TBAdditions.m */; };
+		A477F6771C734CF600BEB145 /* UIView+TBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */; };
 		A4910BFC1C1FFD95009D25F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910BFB1C1FFD95009D25F9 /* main.m */; };
 		A4910BFF1C1FFD95009D25F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910BFE1C1FFD95009D25F9 /* AppDelegate.m */; };
 		A4910C021C1FFD95009D25F9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C011C1FFD95009D25F9 /* ViewController.m */; };
@@ -26,8 +26,6 @@
 
 /* Begin PBXFileReference section */
 		2D34A2421C26214F00F0C801 /* TBMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBMacro.h; sourceTree = "<group>"; };
-		A46858301C5DF0B400A3F750 /* TBActionSheet+Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TBActionSheet+Orientation.h"; sourceTree = "<group>"; };
-		A46858311C5DF0B400A3F750 /* TBActionSheet+Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TBActionSheet+Orientation.m"; sourceTree = "<group>"; };
 		A46858331C5DF19A00A3F750 /* TBActionContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionContainer.h; sourceTree = "<group>"; };
 		A46858341C5DF19A00A3F750 /* TBActionContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionContainer.m; sourceTree = "<group>"; };
 		A46858361C5DF1F000A3F750 /* TBActionBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionBackground.h; sourceTree = "<group>"; };
@@ -38,6 +36,8 @@
 		A477F6701C721C6F00BEB145 /* TBActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionSheetController.m; sourceTree = "<group>"; };
 		A477F6711C721C6F00BEB145 /* UIWindow+TBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+TBAdditions.h"; sourceTree = "<group>"; };
 		A477F6721C721C6F00BEB145 /* UIWindow+TBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWindow+TBAdditions.m"; sourceTree = "<group>"; };
+		A477F6751C734CF600BEB145 /* UIView+TBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+TBAdditions.h"; sourceTree = "<group>"; };
+		A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+TBAdditions.m"; sourceTree = "<group>"; };
 		A4910BF71C1FFD95009D25F9 /* TBAlertControllerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TBAlertControllerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4910BFB1C1FFD95009D25F9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A4910BFD1C1FFD95009D25F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -125,8 +125,6 @@
 			children = (
 				A4910C1A1C1FFEC6009D25F9 /* TBActionSheet.h */,
 				A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */,
-				A46858301C5DF0B400A3F750 /* TBActionSheet+Orientation.h */,
-				A46858311C5DF0B400A3F750 /* TBActionSheet+Orientation.m */,
 				A46858331C5DF19A00A3F750 /* TBActionContainer.h */,
 				A46858341C5DF19A00A3F750 /* TBActionContainer.m */,
 				A46858361C5DF1F000A3F750 /* TBActionBackground.h */,
@@ -137,6 +135,8 @@
 				A477F6701C721C6F00BEB145 /* TBActionSheetController.m */,
 				A477F6711C721C6F00BEB145 /* UIWindow+TBAdditions.h */,
 				A477F6721C721C6F00BEB145 /* UIWindow+TBAdditions.m */,
+				A477F6751C734CF600BEB145 /* UIView+TBAdditions.h */,
+				A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */,
 			);
 			name = TBActionSheet;
 			path = ../../TBActionSheet;
@@ -227,8 +227,8 @@
 				A4910C201C2001BC009D25F9 /* UIImage+BoxBlur.m in Sources */,
 				A468583B1C5DF23600A3F750 /* TBActionButton.m in Sources */,
 				A4910C181C1FFEB4009D25F9 /* TBAlertController.m in Sources */,
+				A477F6771C734CF600BEB145 /* UIView+TBAdditions.m in Sources */,
 				A4910C021C1FFD95009D25F9 /* ViewController.m in Sources */,
-				A46858321C5DF0B400A3F750 /* TBActionSheet+Orientation.m in Sources */,
 				A4910BFF1C1FFD95009D25F9 /* AppDelegate.m in Sources */,
 				A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */,
 				A4910C1C1C1FFEC6009D25F9 /* TBActionSheet.m in Sources */,

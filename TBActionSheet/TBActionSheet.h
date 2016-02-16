@@ -92,7 +92,7 @@
  *  自定义视图
  */
 @property(nonatomic,strong,nullable) UIView *customView;
-@property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
+
 
 - (void)setUpStyle;
 @end
@@ -112,8 +112,4 @@
 - (void)actionSheet:(nonnull TBActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex; // before animation and hiding view
 - (void)actionSheet:(nonnull TBActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex;  // after animation
 
-@end
-
-@interface UIView (TBActionSheet)
-@property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
 @end

@@ -8,98 +8,24 @@
 #import "TBActionSheet.h"
 #import "UIImage+BoxBlur.h"
 #import "TBMacro.h"
-#import <objc/runtime.h>
-#import "TBActionSheet+Orientation.h"
 #import "TBActionContainer.h"
 #import "TBActionBackground.h"
 #import "TBActionSheetController.h"
 #import "UIWindow+TBAdditions.h"
+#import "UIView+TBAdditions.h"
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
 const NSTimeInterval animationDuration = 0.2;
-const CGFloat sheetCornerRadius = 10.0f;
+
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
 #define INIT_ACTIONCONTAINER_FRAME self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 
-#pragma mark - UIView (RectCorner)
-
-/**
- *  加圆角
- */
-@interface UIView (RectCorner)
-- (void)setCornerOnTop;
-- (void)setCornerOnBottom;
-- (void)setAllCorner;
-- (void)setNoneCorner;
-@end
-
-@implementation UIView (RectCorner)
-- (void)setCornerOnTop
-{
-    UIBezierPath *maskPath;
-    maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
-                                     byRoundingCorners:(UIRectCornerTopLeft | UIRectCornerTopRight)
-                                           cornerRadii:CGSizeMake(sheetCornerRadius, sheetCornerRadius)];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
-}
-
-- (void)setCornerOnBottom
-{
-    UIBezierPath *maskPath;
-    maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
-                                     byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight)
-                                           cornerRadii:CGSizeMake(sheetCornerRadius, sheetCornerRadius)];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
-}
-
-- (void)setAllCorner
-{
-    UIBezierPath *maskPath;
-    maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:sheetCornerRadius];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
-}
-
-- (void)setNoneCorner
-{
-    self.layer.mask = nil;
-}
-
-@end
-
-#pragma mark - UIView (TBActionSheet)
-
-
-
-@implementation UIView (TBActionSheet)
-
-@dynamic tbActionSheet;
-
-- (TBActionSheet *)tbActionSheet
-{
-    return objc_getAssociatedObject(self, @selector(tbActionSheet));
-}
-
-- (void)setTbActionSheet:(TBActionSheet *)tbActionSheet
-{
-    objc_setAssociatedObject(self, @selector(tbActionSheet), tbActionSheet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-@end
-
 @interface TBActionSheet ()
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
+@property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
 @property (nonatomic,nonnull,strong) TBActionBackground * background;
 @property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
 @property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
@@ -676,18 +602,9 @@ const CGFloat blurRadius = 0.7;
 }
 
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
-    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
-        self.bounds = CGRectMake(0, 0, [self screenWidth], [self screenHeight]);
-    }
-    else {
-        self.bounds = CGRectMake(0, 0, [self screenHeight], [self screenWidth]);
-    }
-    
+    self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
     INIT_ACTIONCONTAINER_FRAME
-    
-//    [self setUpStyle];
 }
 
 #pragma mark help methods
