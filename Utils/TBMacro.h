@@ -33,3 +33,5 @@ _Pragma("clang diagnostic pop")
 #define kiOS7Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=7.0)
 #define kiOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
 #define kiOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)

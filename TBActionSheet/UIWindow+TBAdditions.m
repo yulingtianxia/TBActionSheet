@@ -7,7 +7,7 @@
 //
 
 #import "UIWindow+TBAdditions.h"
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#import "TBMacro.h"
 
 @implementation UIWindow (TBAdditions)
 
@@ -38,7 +38,7 @@
     // source (under MIT license): https://github.com/shinydevelopment/SDScreenshotCapture/blob/master/SDScreenshotCapture/SDScreenshotCapture.m#L35
     
     // UIWindow doesn't have to be rotated on iOS 8+.
-    BOOL ignoreOrientation = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0");
+    BOOL ignoreOrientation = kiOS8Later;
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
@@ -72,7 +72,7 @@
     
     if([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
         [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
-    } else {
+    } else {/* iOS 6 */
         [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     }
     

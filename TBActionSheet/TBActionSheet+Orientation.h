@@ -9,14 +9,8 @@
 #import "TBActionSheet.h"
 
 @interface TBActionSheet (Orientation)
-- (void)prepareActionContainerForOrientation:(UIInterfaceOrientation) orientation;
-- (void)appearActionContainerForOrientation:(UIInterfaceOrientation) orientation;
-- (void)disappearActionContainerForOrientation:(UIInterfaceOrientation) orientation;
-- (CGAffineTransform)transformForOrientation:(UIInterfaceOrientation) orientation;
-
-CGAffineTransform CGAffineTransformMakeRotateAroundPoint(CGPoint point, CGFloat angle);
 
 - (CGFloat)screenHeight;
 - (CGFloat)screenWidth;
-- (void)rotateFromOrientation:(UIInterfaceOrientation) source toOrientation:(UIInterfaceOrientation) target;
+
 @end

@@ -13,12 +13,16 @@
 #import "TBActionContainer.h"
 #import "TBActionBackground.h"
 #import "TBActionSheetController.h"
+#import "UIWindow+TBAdditions.h"
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
 const NSTimeInterval animationDuration = 0.2;
 const CGFloat sheetCornerRadius = 10.0f;
 const CGFloat headerVerticalSpace = 10;
+const CGFloat blurRadius = 0.7;
+
+#define INIT_ACTIONCONTAINER_FRAME self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 
 #pragma mark - UIView (RectCorner)
 
@@ -134,7 +138,7 @@ const CGFloat headerVerticalSpace = 10;
         _backgroundTransparentEnabled = YES;
         _blurEffectEnabled = YES;
         _rectCornerEnabled = YES;
-        _backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
+        _backgroundColor = [UIColor colorWithWhite:1 alpha:0.65];
         _separatorColor = [UIColor clearColor];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
@@ -268,14 +272,10 @@ const CGFloat headerVerticalSpace = 10;
     }
 }
 
-- (BOOL)isVisible
-{
-    // action sheet is visible iff it's associated with a window
-    return !!self.window;
-}
-
-#pragma mark show
-
+#pragma mark show action
+/**
+ *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
+ */
 - (void)setUpNewWindow
 {
     TBActionSheetController *actionSheetVC = [[TBActionSheetController alloc] initWithNibName:nil bundle:nil];
@@ -289,26 +289,10 @@ const CGFloat headerVerticalSpace = 10;
 }
 
 /**
- *  从一个 UIView 显示 ActionSheet
- *
- *  @param view ActionSheet 的父 View
+ *  设定所有内容的布局
  */
-- (void)showInView:(UIView *)view
+- (void)setUpLayout
 {
-    
-    if ([self isVisible]) {
-        return;
-    }
-    
-    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
-    [self setUpNewWindow];
-    
-    if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
-        [self.delegate willPresentActionSheet:self];
-    }
-    
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    
     //将视图从上到下排列，计算当前排列的纵坐标
     __block CGFloat lastY = 0;
     //处理标题
@@ -429,15 +413,20 @@ const CGFloat headerVerticalSpace = 10;
         [self.actionContainer addSubview:obj];
     }];
     
-    //圆角处理和毛玻璃效果、背景颜色
-
     self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, lastY);
-//    [self prepareActionContainerForOrientation:orientation];
-    UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-lastY, self.sheetWidth, lastY)];
+}
+
+/**
+ *  设置毛玻璃效果、圆角、背景颜色等
+ */
+- (void)setUpStyle
+{
+    CGFloat containerHeight = self.actionContainer.bounds.size.height;
+    UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
-            UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:0.5 withTintColor:[self.backgroundColor colorWithAlphaComponent:0.5]];
+            UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.backgroundColor colorWithAlphaComponent:0.5]];
             self.actionContainer.image = backgroundImage;
         }
         else {
@@ -448,7 +437,7 @@ const CGFloat headerVerticalSpace = 10;
     if ([self hasHeader]) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.header.frame];
-            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:0.5 withTintColor:self.backgroundColor];
+            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
             self.actionContainer.header.image = backgroundImage;
         }
         else {
@@ -458,7 +447,7 @@ const CGFloat headerVerticalSpace = 10;
     if (self.customView) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.custom.frame];
-            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:0.5 withTintColor:self.backgroundColor];
+            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
             self.actionContainer.custom.image = backgroundImage;
         }
         else {
@@ -472,8 +461,8 @@ const CGFloat headerVerticalSpace = 10;
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
                 UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:obj.frame];
-                UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:0.5 withTintColor:self.backgroundColor];
-                UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:0.5 withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
+                UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
+                UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
                 [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                 [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
             }
@@ -481,7 +470,7 @@ const CGFloat headerVerticalSpace = 10;
                 obj.normalColor = self.backgroundColor;
                 obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
-            //设置圆角，已知 bug：cancel 按钮不在末尾会导致圆角不正常，懒得改，因为 cancel 不放在末尾本身就不正常
+            //设置圆角，已知 bug：cancel 按钮不在末尾会导致圆角不正常，懒得改，因为 cancel 不放在末尾本身就不正常(PS：但我又总觉得已经改好了)
             if (self.isRectCornerEnabled) {
                 if (self.buttons.count == 1) {
                     obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
@@ -561,12 +550,35 @@ const CGFloat headerVerticalSpace = 10;
             }
         }
     });
+}
+
+/**
+ *  从一个 UIView 显示 ActionSheet
+ *
+ *  @param view ActionSheet 的父 View
+ */
+- (void)showInView:(UIView *)view
+{
+    
+    if ([self isVisible]) {
+        return;
+    }
+    
+    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
+    [self setUpNewWindow];
+    
+    if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
+        [self.delegate willPresentActionSheet:self];
+    }
+    
+    [self setUpLayout];
+    
+    [self setUpStyle];
     
     //弹出 ActionSheet 动画
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-//        [self appearActionContainerForOrientation:orientation];
+        INIT_ACTIONCONTAINER_FRAME
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -574,8 +586,6 @@ const CGFloat headerVerticalSpace = 10;
         self.visible = YES;
     }];
 }
-
-
 
 #pragma mark handle button press
 /**
@@ -634,8 +644,6 @@ const CGFloat headerVerticalSpace = 10;
     [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-//        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-//        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
         self.window = nil;
         [self.previousKeyWindow makeKeyAndVisible];
@@ -669,23 +677,26 @@ const CGFloat headerVerticalSpace = 10;
 
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-    UIInterfaceOrientation oldOrientation = ((NSNumber *)notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey]).integerValue;
-    //    [self rotateFromOrientation:currentOrientation toOrientation:futureOrientation];
-    
-    self.transform = [self transformForOrientation:currentOrientation];
     if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
         self.bounds = CGRectMake(0, 0, [self screenWidth], [self screenHeight]);
     }
     else {
         self.bounds = CGRectMake(0, 0, [self screenHeight], [self screenWidth]);
     }
-    self.background.frame = self.bounds;
     
-
-    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height + self.bottomOffset - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+    self.background.frame = self.bounds;
+    INIT_ACTIONCONTAINER_FRAME
+    
+//    [self setUpStyle];
 }
 
 #pragma mark help methods
+
+- (BOOL)isVisible
+{
+    // action sheet is visible iff it's associated with a window
+    return !!self.window;
+}
 
 - (BOOL)hasTitle
 {
@@ -731,6 +742,7 @@ const CGFloat headerVerticalSpace = 10;
     UIGraphicsEndImageContext();
     
     return [self cutFromImage:screenshotimage inRect:aRect];
+//    return [self cutFromImage:[self.previousKeyWindow tb_snapshot] inRect:aRect];
 }
 /**
  *  从图片中切图
@@ -743,11 +755,13 @@ const CGFloat headerVerticalSpace = 10;
 - (UIImage *)cutFromImage:(UIImage *)image inRect:(CGRect) rect
 {
     CGImageRef imageRef = image.CGImage;
-    CGImageRef imageRefRect =CGImageCreateWithImageInRect(imageRef, rect);
-    UIImage *sendImage = [[UIImage alloc] initWithCGImage:imageRefRect];
+    CGRect transRect = CGRectMake(rect.origin.x*image.scale, rect.origin.y*image.scale, rect.size.width*image.scale, rect.size.height*image.scale);
+    CGImageRef imageRefRect =CGImageCreateWithImageInRect(imageRef, transRect);
+    UIImage *sendImage = [[UIImage alloc] initWithCGImage:imageRefRect scale:image.scale orientation:UIImageOrientationUp];
     NSData *imageViewData = UIImagePNGRepresentation(sendImage);
     CGImageRelease(imageRefRect);
     return [UIImage imageWithData:imageViewData];
+//    return sendImage;
 }
 
 - (BOOL)isIndexValid:(NSInteger) index

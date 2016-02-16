@@ -54,4 +54,9 @@
     }
     return [[window tb_viewControllerForStatusBarHidden] prefersStatusBarHidden];
 }
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [self.actionSheet setUpStyle];
+}
 @end

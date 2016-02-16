@@ -18,4 +18,5 @@
 /* blur the current image with a box blur algoritm and tint with a color */
 - (UIImage*)drn_boxblurImageWithBlur:(CGFloat)blur withTintColor:(UIColor*)tintColor;
 
+- (UIImage *)blurredImageWithRadius:(CGFloat)radius iterations:(NSUInteger)iterations tintColor:(UIColor *)tintColor;
 @end

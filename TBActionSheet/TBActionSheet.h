@@ -93,6 +93,8 @@
  */
 @property(nonatomic,strong,nullable) UIView *customView;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
+
+- (void)setUpStyle;
 @end
 
 @protocol TBActionSheetDelegate <NSObject>
