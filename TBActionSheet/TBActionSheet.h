@@ -15,7 +15,9 @@
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
 @property(nonatomic,copy)  NSString * _Nullable  title;
 @property(nonatomic,copy)  NSString * _Nullable  message;
-
+/**
+ *   标记藏于 ActionSheet 下面的 UIWindow
+ */
 @property (weak, nonatomic, readonly) UIWindow *previousKeyWindow;
 
 - (nonnull instancetype)initWithTitle:(nullable NSString *)title delegate:(nullable id <TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION;
@@ -96,8 +98,11 @@
  *  动画持续时长
  */
 @property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
-
+/**
+ *  设置毛玻璃效果、圆角、背景颜色等
+ */
 - (void)setUpStyle;
+
 @end
 
 @protocol TBActionSheetDelegate <NSObject>

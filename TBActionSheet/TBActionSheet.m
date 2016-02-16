@@ -208,6 +208,12 @@ const CGFloat blurRadius = 0.7;
     }
 }
 
+- (BOOL)isVisible
+{
+    // action sheet is visible iff it's associated with a window
+    return !!self.window;
+}
+
 #pragma mark show action
 /**
  *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
@@ -540,13 +546,8 @@ const CGFloat blurRadius = 0.7;
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-//        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-//        [self disappearActionContainerForOrientation:orientation];
     } completion:^(BOOL finished) {
-        
-        self.window = nil;
-        [self.previousKeyWindow makeKeyAndVisible];
-        
+        //这里之所以把各种 delegate 调用都放在动画完成后是有原因的：为了支持在回调方法中 show 另一个 actionsheet，系统的 UIActionSheet 的调用时机也是如此。
         if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
             [self.delegate actionSheet:self clickedButtonAtIndex:index];
         }
@@ -558,6 +559,9 @@ const CGFloat blurRadius = 0.7;
         if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self willDismissWithButtonIndex:index];
         }
+        
+        self.window.rootViewController = nil;
+        [self.previousKeyWindow makeKeyAndVisible];
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
@@ -581,7 +585,7 @@ const CGFloat blurRadius = 0.7;
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
-        self.window = nil;
+        self.window.rootViewController = nil;
         [self.previousKeyWindow makeKeyAndVisible];
         
         if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
@@ -618,12 +622,6 @@ const CGFloat blurRadius = 0.7;
 }
 
 #pragma mark help methods
-
-- (BOOL)isVisible
-{
-    // action sheet is visible iff it's associated with a window
-    return !!self.window;
-}
 
 - (BOOL)hasTitle
 {
