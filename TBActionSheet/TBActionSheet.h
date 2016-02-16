@@ -99,7 +99,7 @@
  */
 @property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
- *  设置毛玻璃效果、圆角、背景颜色等
+ *  重置毛玻璃效果、圆角、背景颜色等
  */
 - (void)setUpStyle;
 
