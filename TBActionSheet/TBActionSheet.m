@@ -16,7 +16,7 @@
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
-const NSTimeInterval animationDuration = 0.2;
+
 
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
@@ -37,6 +37,26 @@ const CGFloat blurRadius = 0.7;
 
 @implementation TBActionSheet
 
++ (void)initialize
+{
+    if (self != [TBActionSheet class]) {
+        return;
+    }
+    TBActionSheet *appearance = [self appearance];
+    appearance.buttonHeight = 56;
+    appearance.bottomOffset = - bigFragment;
+    appearance.tintColor = [UIColor blackColor];
+    appearance.destructiveButtonColor = [UIColor redColor];
+    appearance.cancelButtonColor = [UIColor blackColor];
+    appearance.sheetWidth = MIN(kScreenWidth, kScreenHeight) - 20;
+    appearance.backgroundTransparentEnabled = YES;
+    appearance.blurEffectEnabled = YES;
+    appearance.rectCornerEnabled = YES;
+    appearance.backgroundColor = [UIColor colorWithWhite:1 alpha:0.65];
+    appearance.separatorColor = [UIColor clearColor];
+    appearance.animationDuration = 0.2;
+}
+
 - (instancetype)init
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
@@ -55,17 +75,7 @@ const CGFloat blurRadius = 0.7;
         //set default values
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
-        _buttonHeight = 56;
-        _bottomOffset = - bigFragment;
-        _tintColor = [UIColor blackColor];
-        _destructiveButtonColor = [UIColor redColor];
-        _cancelButtonColor = [UIColor blackColor];
-        _sheetWidth = MIN(kScreenWidth, kScreenHeight) - 20;
-        _backgroundTransparentEnabled = YES;
-        _blurEffectEnabled = YES;
-        _rectCornerEnabled = YES;
-        _backgroundColor = [UIColor colorWithWhite:1 alpha:0.65];
-        _separatorColor = [UIColor clearColor];
+        
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
@@ -502,7 +512,7 @@ const CGFloat blurRadius = 0.7;
     [self setUpStyle];
     
     //弹出 ActionSheet 动画
-    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         INIT_ACTIONCONTAINER_FRAME
     } completion:^(BOOL finished) {
@@ -527,7 +537,7 @@ const CGFloat blurRadius = 0.7;
     
     NSUInteger index = [self.buttons indexOfObject:sender];
     
-    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 //        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -567,7 +577,7 @@ const CGFloat blurRadius = 0.7;
         return;
     }
     
-    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {

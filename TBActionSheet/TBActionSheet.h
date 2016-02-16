@@ -41,11 +41,11 @@
 /**
  *  按钮高度
  */
-@property(nonatomic) CGFloat buttonHeight;
+@property(nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
 /**
  *  actionsheet下方的 y 轴位移，向下为正，默认值为 -8
  */
-@property(nonatomic) CGFloat bottomOffset;
+@property(nonatomic) CGFloat bottomOffset UI_APPEARANCE_SELECTOR;
 /**
  *  标题 UILabel
  */
@@ -57,42 +57,45 @@
 /**
  *  文字颜色
  */
-@property(nonatomic,strong,nonnull) UIColor *tintColor;
-@property(nonatomic,strong,nonnull) UIColor *destructiveButtonColor;
-@property(nonatomic,strong,nonnull) UIColor *cancelButtonColor;
+@property(nonatomic,strong,nonnull) UIColor *tintColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic,strong,nonnull) UIColor *destructiveButtonColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic,strong,nonnull) UIColor *cancelButtonColor UI_APPEARANCE_SELECTOR;
 /**
  *  分割线颜色
  */
-@property(nonatomic,strong,nonnull) UIColor *separatorColor;
+@property(nonatomic,strong,nonnull) UIColor *separatorColor UI_APPEARANCE_SELECTOR;
 /**
  *  按钮字体
  */
-@property(nonatomic,strong,nonnull) UIFont *buttonFont;
+@property(nonatomic,strong,nonnull) UIFont *buttonFont UI_APPEARANCE_SELECTOR;
 /**
  *  sheet 的宽度，也就是按钮宽度
  */
-@property(nonatomic) CGFloat sheetWidth;
+@property(nonatomic) CGFloat sheetWidth UI_APPEARANCE_SELECTOR;
 /**
  *  是否让背景透明
  */
-@property(nonatomic, getter=isBackgroundTransparentEnabled) BOOL backgroundTransparentEnabled;
+@property(nonatomic, getter=isBackgroundTransparentEnabled) BOOL backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否启用毛玻璃效果
  */
-@property(nonatomic, getter=isBlurEffectEnabled) BOOL blurEffectEnabled;
+@property(nonatomic, getter=isBlurEffectEnabled) BOOL blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否使用圆角矩形
  */
-@property(nonatomic, getter=isRectCornerEnabled) BOOL rectCornerEnabled;
+@property(nonatomic, getter=isRectCornerEnabled) BOOL rectCornerEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  ActionSheet 的背景色，如果 useBlurEffect 为 YES，会与其效果混合。
  */
-@property(nonatomic,strong,nonnull) UIColor *backgroundColor;
+@property(nonatomic,strong,nonnull) UIColor *backgroundColor UI_APPEARANCE_SELECTOR;
 /**
  *  自定义视图
  */
 @property(nonatomic,strong,nullable) UIView *customView;
-
+/**
+ *  动画持续时长
+ */
+@property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 
 - (void)setUpStyle;
 @end
