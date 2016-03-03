@@ -15,6 +15,7 @@
 
 @interface UIView (TBActionSheet)
 @property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
+- (void)interruptGesture;
 @end
 
 #pragma mark - UIView (RectCorner)

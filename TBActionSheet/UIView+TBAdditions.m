@@ -31,6 +31,19 @@
     objc_setAssociatedObject(self, @selector(tbActionSheet), tbActionSheet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (void)interruptGesture
+{
+    for (UIGestureRecognizer *gesture in self.gestureRecognizers) {
+        if ([gesture isKindOfClass:[UITapGestureRecognizer class]] || [gesture isKindOfClass:[UIPanGestureRecognizer class]]) {
+            gesture.enabled = NO;
+            gesture.enabled = YES;
+        }
+    }
+    for (UIView *subview in self.subviews) {
+        [subview interruptGesture];
+    }
+}
+
 @end
 
 const CGFloat sheetCornerRadius = 10.0f;

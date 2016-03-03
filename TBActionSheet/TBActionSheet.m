@@ -75,6 +75,7 @@ const CGFloat blurRadius = 0.7;
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
         
+        [self setUpNewWindow];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
@@ -242,6 +243,12 @@ const CGFloat blurRadius = 0.7;
  */
 - (void)setUpNewWindow
 {
+    if ([self isVisible]) {
+        return;
+    }
+    
+    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
+    [self.previousKeyWindow interruptGesture];
     TBActionSheetController *actionSheetVC = [[TBActionSheetController alloc] initWithNibName:nil bundle:nil];
     actionSheetVC.actionSheet = self;
     
@@ -429,12 +436,13 @@ const CGFloat blurRadius = 0.7;
                 UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
                 [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                 [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
+                obj.backgroundColor = [UIColor clearColor];
             }
             else {
                 obj.normalColor = self.ambientColor;
                 obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
-            //设置圆角，已知 bug：cancel 按钮不在末尾会导致圆角不正常，懒得改，因为 cancel 不放在末尾本身就不正常(PS：但我又总觉得已经改好了)
+            //设置圆角
             if (self.isRectCornerEnabled) {
                 if (self.buttons.count == 1) {
                     obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
@@ -523,14 +531,6 @@ const CGFloat blurRadius = 0.7;
  */
 - (void)showInView:(UIView *)view
 {
-    
-    if ([self isVisible]) {
-        return;
-    }
-    
-    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
-    [self setUpNewWindow];
-    
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
