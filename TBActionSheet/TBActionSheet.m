@@ -61,8 +61,7 @@ const CGFloat blurRadius = 0.7;
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
     if (self) {
-        [super setBackgroundColor:[UIColor clearColor]];
-        
+        self.backgroundColor = [UIColor clearColor];
         _background = [[TBActionBackground alloc] initWithFrame:self.bounds];
         _background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _background.userInteractionEnabled = YES;
@@ -84,7 +83,30 @@ const CGFloat blurRadius = 0.7;
 
 - (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
 {
-    self = [self initWithTitle:title message:nil delegate:delegate cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:destructiveButtonTitle otherButtonTitles:otherButtonTitles, nil];
+    self = [self init];
+    if (self) {
+        _title = title;
+        _delegate = delegate;
+        
+        if (destructiveButtonTitle) {
+            _destructiveButtonIndex = [self addButtonWithTitle:destructiveButtonTitle style:TBActionButtonStyleDestructive];
+        }
+        
+        NSString* eachArg;
+        va_list argList;
+        if (otherButtonTitles) { // 第一个参数 otherButtonTitles 是不属于参数列表的,
+            [self addButtonWithTitle:otherButtonTitles style:TBActionButtonStyleDefault];
+            va_start(argList, otherButtonTitles);          // 从 otherButtonTitles 开始遍历参数，不包括 format 本身.
+            while ((eachArg = va_arg(argList, NSString*))) {// 从 args 中遍历出参数，NSString* 指明类型
+                [self addButtonWithTitle:eachArg style:TBActionButtonStyleDefault];
+            }
+            va_end(argList);
+        }
+        
+        if (cancelButtonTitle) {
+            _cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle style:TBActionButtonStyleCancel];
+        }
+    }
     return self;
 }
 
@@ -368,32 +390,32 @@ const CGFloat blurRadius = 0.7;
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
-            UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.backgroundColor colorWithAlphaComponent:0.5]];
+            UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.ambientColor colorWithAlphaComponent:0.5]];
             self.actionContainer.image = backgroundImage;
         }
         else {
-            self.actionContainer.backgroundColor = [self.backgroundColor colorWithAlphaComponent:0.5];
+            self.actionContainer.backgroundColor = [self.ambientColor colorWithAlphaComponent:0.5];
         }
     }
     
     if ([self hasHeader]) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.header.frame];
-            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
+            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
             self.actionContainer.header.image = backgroundImage;
         }
         else {
-            self.actionContainer.header.backgroundColor = self.backgroundColor;
+            self.actionContainer.header.backgroundColor = self.ambientColor;
         }
     }
     if (self.customView) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.custom.frame];
-            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
+            UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
             self.actionContainer.custom.image = backgroundImage;
         }
         else {
-            self.actionContainer.custom.backgroundColor = self.backgroundColor;
+            self.actionContainer.custom.backgroundColor = self.ambientColor;
         }
     }
     
@@ -403,13 +425,13 @@ const CGFloat blurRadius = 0.7;
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
                 UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:obj.frame];
-                UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.backgroundColor];
+                UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                 UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
                 [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                 [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
             }
             else {
-                obj.normalColor = self.backgroundColor;
+                obj.normalColor = self.ambientColor;
                 obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
             //设置圆角，已知 bug：cancel 按钮不在末尾会导致圆角不正常，懒得改，因为 cancel 不放在末尾本身就不正常(PS：但我又总觉得已经改好了)

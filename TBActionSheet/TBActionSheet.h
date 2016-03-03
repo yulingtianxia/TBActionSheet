@@ -87,9 +87,9 @@
  */
 @property(nonatomic, getter=isRectCornerEnabled) BOOL rectCornerEnabled UI_APPEARANCE_SELECTOR;
 /**
- *  ActionSheet 的背景色，如果 useBlurEffect 为 YES，会与其效果混合。
+ *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，会与其效果混合。
  */
-@property(nonatomic,strong,nonnull) UIColor *backgroundColor UI_APPEARANCE_SELECTOR;
+@property(nonatomic,strong,nonnull) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
 /**
  *  自定义视图
  */
