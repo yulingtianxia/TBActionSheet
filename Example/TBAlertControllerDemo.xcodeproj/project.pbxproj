@@ -117,7 +117,7 @@
 				A4910C171C1FFEB4009D25F9 /* TBAlertController.m */,
 			);
 			name = TBAlertController;
-			path = ../../TBAlertController;
+			path = ../../Source/TBAlertController;
 			sourceTree = "<group>";
 		};
 		A4910C191C1FFEB7009D25F9 /* TBActionSheet */ = {
@@ -139,7 +139,7 @@
 				A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */,
 			);
 			name = TBActionSheet;
-			path = ../../TBActionSheet;
+			path = ../../Source/TBActionSheet;
 			sourceTree = "<group>";
 		};
 		A4910C1D1C2001A0009D25F9 /* Utils */ = {
@@ -150,7 +150,7 @@
 				2D34A2421C26214F00F0C801 /* TBMacro.h */,
 			);
 			name = Utils;
-			path = ../../Utils;
+			path = ../../Source/Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
