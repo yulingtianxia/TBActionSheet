@@ -570,13 +570,6 @@ const CGFloat blurRadius = 0.7;
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
         //这里之所以把各种 delegate 调用都放在动画完成后是有原因的：为了支持在回调方法中 show 另一个 actionsheet，系统的 UIActionSheet 的调用时机也是如此。
-        if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
-            [self.delegate actionSheet:self clickedButtonAtIndex:index];
-        }
-        if (sender.handler) {
-            __weak __typeof(TBActionButton *)weakSender = sender;
-            sender.handler(weakSender);
-        }
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self willDismissWithButtonIndex:index];
@@ -584,6 +577,14 @@ const CGFloat blurRadius = 0.7;
         
         self.window.rootViewController = nil;
         [self.previousKeyWindow makeKeyAndVisible];
+        
+        if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
+            [self.delegate actionSheet:self clickedButtonAtIndex:index];
+        }
+        if (sender.handler) {
+            __weak __typeof(TBActionButton *)weakSender = sender;
+            sender.handler(weakSender);
+        }
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
