@@ -77,15 +77,15 @@
 /**
  *  是否让背景透明
  */
-@property(nonatomic, getter=isBackgroundTransparentEnabled) BOOL backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
+@property(nonatomic, getter=isBackgroundTransparentEnabled) NSInteger backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否启用毛玻璃效果
  */
-@property(nonatomic, getter=isBlurEffectEnabled) BOOL blurEffectEnabled UI_APPEARANCE_SELECTOR;
+@property(nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否使用圆角矩形
  */
-@property(nonatomic, getter=isRectCornerEnabled) BOOL rectCornerEnabled UI_APPEARANCE_SELECTOR;
+@property(nonatomic, getter=isRectCornerEnabled) NSInteger rectCornerEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，会与其效果混合。
  */
