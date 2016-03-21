@@ -8,14 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
 /**
  *  容器类，用于包含所有按钮，可定制 header，custom 和 footer 三个 view
  */
 @interface TBActionContainer : UIImageView
-@property (nonnull,nonatomic,strong) UIImageView *header;
-@property (nonnull,nonatomic,strong) UIImageView *custom;
-@property (nonnull,nonatomic,strong) UIImageView *footer;
+@property (nonatomic,strong) UIImageView *header;
+@property (nonatomic,strong) UIImageView *custom;
+@property (nonatomic,strong) UIImageView *footer;
 
-- (nonnull instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end
+
+NS_ASSUME_NONNULL_END

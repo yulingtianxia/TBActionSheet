@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
     TBActionButtonStyleDefault = 0,
     TBActionButtonStyleCancel,
@@ -26,8 +28,11 @@ typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
 @property (nonatomic,nullable) UIColor *normalColor;
 @property (nonatomic,nullable) UIColor *highlightedColor;
 @property (nonatomic) TBActionButtonStyle style;
-@property (nonatomic,nullable,strong,readonly) void (^handler)(TBActionButton * _Nonnull button);
+@property (nonatomic,nullable,strong,readonly) void (^handler)(TBActionButton * button);
 
-+ (nonnull instancetype)buttonWithTitle:(nonnull NSString *)title style:(TBActionButtonStyle)style;
-+ (nonnull instancetype)buttonWithTitle:(nonnull NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler;
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * button))handler;
 @end
+
+NS_ASSUME_NONNULL_END
+
