@@ -75,8 +75,6 @@ const CGFloat blurRadius = 0.7;
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
         
-        [self setUpNewWindow];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
@@ -523,6 +521,13 @@ const CGFloat blurRadius = 0.7;
         }
     });
 }
+/**
+ *  显示 ActionSheet
+ */
+- (void)show
+{
+    [self showInView:nil];
+}
 
 /**
  *  从一个 UIView 显示 ActionSheet
@@ -534,6 +539,8 @@ const CGFloat blurRadius = 0.7;
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
+    
+    [self setUpNewWindow];
     
     [self setUpLayout];
     

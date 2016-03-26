@@ -39,7 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
 @property(nonatomic,readonly,getter=isVisible) BOOL visible;
 
-- (void)showInView:(UIView *)view;
+/**
+ *  显示 ActionSheet
+ */
+- (void)show;
+- (void)showInView:(nullable UIView *)view;
 
 //custom UI
 /**
