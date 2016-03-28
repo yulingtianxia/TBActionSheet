@@ -264,6 +264,18 @@ const CGFloat blurRadius = 0.7;
 {
     //将视图从上到下排列，计算当前排列的纵坐标
     __block CGFloat lastY = 0;
+    //inline block, 减少代码冗余
+    void(^handleLabelFrameBlock)(UILabel *label, NSString *content) = ^(UILabel *label, NSString *content) {
+        //给一个比较大的高度，宽度不变
+        CGSize size =CGSizeMake(self.sheetWidth,1000);
+        //获取当前文本的属性
+        NSDictionary * tdic = @{NSFontAttributeName:label.font};
+        //ios7方法，获取文本需要的size，限制宽度
+        CGSize actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
+        label.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
+        lastY = CGRectGetMaxY(label.frame);
+    };
+    
     //处理标题
     if ([self hasTitle]) {
         lastY += headerVerticalSpace;
@@ -279,16 +291,9 @@ const CGFloat blurRadius = 0.7;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.backgroundColor = [UIColor clearColor];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
-        self.titleLabel.backgroundColor = [UIColor clearColor];
+
         [self.actionContainer.header addSubview:self.titleLabel];
-        //给一个比较大的高度，宽度不变
-        CGSize size =CGSizeMake(self.sheetWidth,1000);
-        //获取当前文本的属性
-        NSDictionary * tdic = @{NSFontAttributeName:self.titleLabel.font};
-        //ios7方法，获取文本需要的size，限制宽度
-        CGSize actualsize =[self.title boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
-        self.titleLabel.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
-        lastY = CGRectGetMaxY(self.titleLabel.frame);
+        handleLabelFrameBlock(self.titleLabel, self.title);
     }
     //处理 message
     if ([self hasMessage]) {
@@ -302,16 +307,9 @@ const CGFloat blurRadius = 0.7;
         self.messageLabel.numberOfLines = 0;
         self.messageLabel.backgroundColor = [UIColor clearColor];
         self.messageLabel.textAlignment = NSTextAlignmentCenter;
-        self.messageLabel.backgroundColor = [UIColor clearColor];
+
         [self.actionContainer.header addSubview:self.messageLabel];
-        //给一个比较大的高度，宽度不变
-        CGSize size =CGSizeMake(self.sheetWidth,1000);
-        //获取当前文本的属性
-        NSDictionary * tdic = @{NSFontAttributeName:self.messageLabel.font};
-        //ios7方法，获取文本需要的size，限制宽度
-        CGSize actualsize =[self.message boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
-        self.messageLabel.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
-        lastY = CGRectGetMaxY(self.messageLabel.frame);
+        handleLabelFrameBlock(self.messageLabel, self.message);
     }
     //处理title与自定义视图间的分割线
     if ([self hasHeader]) {
@@ -340,14 +338,27 @@ const CGFloat blurRadius = 0.7;
             lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + smallFragment;
         }
     }
+    
     //计算按钮坐标并添加样式
     [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        //inline block, 减少代码冗余
+        void(^addDefaultSeparatorBlock)(void) = ^() {
+            //上一个 button 如果是 cancel
+            if (idx>0&&self.buttons[idx-1].style == TBActionButtonStyleCancel) {
+                [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
+                lastY += bigFragment;
+            }
+            else {
+                [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
+                lastY += smallFragment;
+            }
+        };
+        
         switch (obj.style) {
             case TBActionButtonStyleDefault: {
                 [obj setTitleColor:self.tintColor forState:UIControlStateNormal];
                 if (idx != 0) {
-                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-                    lastY += smallFragment;
+                    addDefaultSeparatorBlock();
                 }
                 break;
             }
@@ -362,8 +373,7 @@ const CGFloat blurRadius = 0.7;
             case TBActionButtonStyleDestructive: {
                 [obj setTitleColor:self.destructiveButtonColor forState:UIControlStateNormal];
                 if (idx != 0) {
-                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-                    lastY += smallFragment;
+                    addDefaultSeparatorBlock();
                 }
                 break;
             }
@@ -371,12 +381,7 @@ const CGFloat blurRadius = 0.7;
                 break;
             }
         }
-        //上一个 button 如果是 cancel
-        if (idx>0&&self.buttons[idx-1].style == TBActionButtonStyleCancel) {
-            lastY -= smallFragment;
-            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-            lastY += bigFragment;
-        }
+        
         obj.frame = CGRectMake(0, lastY, self.sheetWidth, self.buttonHeight);
         lastY = CGRectGetMaxY(obj.frame);
         [self.actionContainer addSubview:obj];
