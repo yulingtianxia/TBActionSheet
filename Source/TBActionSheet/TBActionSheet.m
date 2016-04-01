@@ -691,13 +691,23 @@ const CGFloat blurRadius = 0.7;
  */
 - (UIImage *)screenShotRect:(CGRect)aRect
 {
-    UIView *view = self.previousKeyWindow.rootViewController.view;
+    // 获取最上层的 UIViewController
+    UIViewController *topController = self.previousKeyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    UIView *view = topController.view;
+    
     UIGraphicsBeginImageContext(view.bounds.size);
-    if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)])
-        [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
-    else /* iOS 6 */
+    if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
+        if (view.frame.size.width >= 1 && view.frame.size.height >= 1 ) { // resolve iOS7 size crash
+            [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
+        }
+    }
+    else {/* iOS 6 */
         [view.layer renderInContext:UIGraphicsGetCurrentContext()];
-
+    }
+    
     UIImage *screenshotimage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
