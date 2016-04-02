@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A45D8D161CB03BAE0004A958 /* ConditionerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A45D8D151CB03BAE0004A958 /* ConditionerView.xib */; };
 		A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858341C5DF19A00A3F750 /* TBActionContainer.m */; };
 		A46858381C5DF1F000A3F750 /* TBActionBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858371C5DF1F000A3F750 /* TBActionBackground.m */; };
 		A468583B1C5DF23600A3F750 /* TBActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A468583A1C5DF23600A3F750 /* TBActionButton.m */; };
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		2D34A2421C26214F00F0C801 /* TBMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBMacro.h; sourceTree = "<group>"; };
+		A45D8D151CB03BAE0004A958 /* ConditionerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConditionerView.xib; sourceTree = "<group>"; };
 		A46858331C5DF19A00A3F750 /* TBActionContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionContainer.h; sourceTree = "<group>"; };
 		A46858341C5DF19A00A3F750 /* TBActionContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionContainer.m; sourceTree = "<group>"; };
 		A46858361C5DF1F000A3F750 /* TBActionBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionBackground.h; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				A4910BFE1C1FFD95009D25F9 /* AppDelegate.m */,
 				A4910C001C1FFD95009D25F9 /* ViewController.h */,
 				A4910C011C1FFD95009D25F9 /* ViewController.m */,
+				A45D8D151CB03BAE0004A958 /* ConditionerView.xib */,
 				A4910C031C1FFD95009D25F9 /* Main.storyboard */,
 				A4910C061C1FFD95009D25F9 /* Assets.xcassets */,
 				A4910C081C1FFD95009D25F9 /* LaunchScreen.storyboard */,
@@ -211,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4910C0A1C1FFD95009D25F9 /* LaunchScreen.storyboard in Resources */,
+				A45D8D161CB03BAE0004A958 /* ConditionerView.xib in Resources */,
 				A4910C071C1FFD95009D25F9 /* Assets.xcassets in Resources */,
 				A4910C051C1FFD95009D25F9 /* Main.storyboard in Resources */,
 			);

@@ -2,7 +2,7 @@
 //  TBActionSheet.h
 //
 //  Created by 杨萧玉 on 15/11/17.
-//  Copyright © 2015年 yulingtianxia. All rights reserved.
+//  Copyright © 2015年 杨萧玉. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -89,11 +89,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
- *  圆角矩形半径
+ *  矩形圆角半径
  */
 @property(nonatomic,assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
 /**
- *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，会与其效果混合。
+ *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，在 iOS7 下会与其效果混合。
  */
 @property(nonatomic,strong) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
 /**
@@ -105,7 +105,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
- *  重置毛玻璃效果、圆角、背景颜色等
+ *  重置布局
+ */
+- (void)setUpLayout;
+/**
+ *  重置毛玻璃效果、圆角、背景颜色等风格
  */
 - (void)setUpStyle;
 

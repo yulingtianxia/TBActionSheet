@@ -29,7 +29,7 @@
 
 - (IBAction)clickActionSheet:(UIButton *)sender {
     TBActionSheet *actionSheet = [[TBActionSheet alloc] init];
-    actionSheet = [[TBActionSheet alloc] initWithTitle:@"八爪鱼" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:@"点我",@"再点我", nil];
+    actionSheet = [[TBActionSheet alloc] initWithTitle:@"八爪鱼" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
     actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
     [actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,self.leakTest);

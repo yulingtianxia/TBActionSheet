@@ -2,7 +2,7 @@
 //  TBActionSheet.m
 //
 //  Created by 杨萧玉 on 15/11/17.
-//  Copyright © 2015年 yulingtianxia. All rights reserved.
+//  Copyright © 2015年 杨萧玉. All rights reserved.
 //
 
 #import "TBActionSheet.h"
