@@ -7,16 +7,14 @@
 //
 
 #import "TBActionButton.h"
+#import "TBMacro.h"
 
 /**
  *  可定制风格和圆角的按钮
  */
 @interface TBActionButton()
 
-
 @property (nonatomic,nullable,strong,readwrite) void (^handler)(TBActionButton * _Nonnull button);
-
-
 
 @end
 
@@ -34,14 +32,14 @@
     button.corner = TBActionButtonCornerNone;
     button.handler = handler;
     [button setTitle:title forState:UIControlStateNormal];
-    [button setBackgroundColor:[UIColor whiteColor]];
+    [button setBackgroundColor:[UIColor clearColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
     return button;
 }
 
 - (void)dealloc
 {
-    
+
 }
 
 - (void) setHighlighted:(BOOL)highlighted {

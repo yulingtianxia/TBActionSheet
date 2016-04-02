@@ -51,9 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
 /**
- *  actionsheet下方的 y 轴位移，向下为正，默认值为 -8
+ *  actionsheet下方的 y 轴位移，向下为正，非负值无效，默认值为 -8
  */
-@property(nonatomic) CGFloat bottomOffset UI_APPEARANCE_SELECTOR;
+@property(nonatomic) CGFloat offsetY UI_APPEARANCE_SELECTOR;
 /**
  *  标题 UILabel
  */
@@ -89,9 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
- *  是否使用圆角矩形
+ *  圆角矩形半径
  */
-@property(nonatomic, getter=isRectCornerEnabled) NSInteger rectCornerEnabled UI_APPEARANCE_SELECTOR;
+@property(nonatomic,assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
 /**
  *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，会与其效果混合。
  */

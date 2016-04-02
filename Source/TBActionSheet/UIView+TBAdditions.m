@@ -46,37 +46,45 @@
 
 @end
 
-const CGFloat sheetCornerRadius = 10.0f;
 
 @implementation UIView (RectCorner)
-- (void)setCornerOnTop
+- (void)setTopCornerRadius:(CGFloat) radius
 {
+    if (radius < 0) {
+        return;
+    }
     UIBezierPath *maskPath;
     maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                      byRoundingCorners:(UIRectCornerTopLeft | UIRectCornerTopRight)
-                                           cornerRadii:CGSizeMake(sheetCornerRadius, sheetCornerRadius)];
+                                           cornerRadii:CGSizeMake(radius, radius)];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;
     maskLayer.path = maskPath.CGPath;
     self.layer.mask = maskLayer;
 }
 
-- (void)setCornerOnBottom
+- (void)setBottomCornerRadius:(CGFloat) radius
 {
+    if (radius < 0) {
+        return;
+    }
     UIBezierPath *maskPath;
     maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                      byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight)
-                                           cornerRadii:CGSizeMake(sheetCornerRadius, sheetCornerRadius)];
+                                           cornerRadii:CGSizeMake(radius, radius)];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;
     maskLayer.path = maskPath.CGPath;
     self.layer.mask = maskLayer;
 }
 
-- (void)setAllCorner
+- (void)setAllCornerRadius:(CGFloat) radius
 {
+    if (radius < 0) {
+        return;
+    }
     UIBezierPath *maskPath;
-    maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:sheetCornerRadius];
+    maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:radius];
     CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
     maskLayer.frame = self.bounds;
     maskLayer.path = maskPath.CGPath;

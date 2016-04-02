@@ -9,6 +9,7 @@
 #import "TBActionSheetController.h"
 #import "TBActionSheet.h"
 #import "UIWindow+TBAdditions.h"
+#import "TBMacro.h"
 
 @implementation TBActionSheetController
 
@@ -57,6 +58,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self.actionSheet setUpStyle];
+    if (self.actionSheet.blurEffectEnabled && !kiOS8Later) {
+        [self.actionSheet setUpStyle];
+    }
 }
 @end

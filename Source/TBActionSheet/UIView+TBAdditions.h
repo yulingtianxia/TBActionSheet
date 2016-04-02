@@ -24,8 +24,8 @@
  *  加圆角
  */
 @interface UIView (RectCorner)
-- (void)setCornerOnTop;
-- (void)setCornerOnBottom;
-- (void)setAllCorner;
+- (void)setTopCornerRadius:(CGFloat) radius;
+- (void)setBottomCornerRadius:(CGFloat) radius;
+- (void)setAllCornerRadius:(CGFloat) radius;
 - (void)setNoneCorner;
 @end

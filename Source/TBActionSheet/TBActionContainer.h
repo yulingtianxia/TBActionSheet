@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
+- (BOOL)useSystemBlurEffect;
+- (BOOL)useSystemBlurEffectUnderView:(UIView *)view;
+
 @end
 
 NS_ASSUME_NONNULL_END
