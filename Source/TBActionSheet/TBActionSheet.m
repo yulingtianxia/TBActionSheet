@@ -21,8 +21,6 @@ const CGFloat smallFragment = 0.5;
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
-#define INIT_ACTIONCONTAINER_FRAME self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
-
 @interface TBActionSheet ()
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
@@ -63,11 +61,8 @@ const CGFloat blurRadius = 0.7;
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         _background = [[TBActionBackground alloc] initWithFrame:self.bounds];
-        _background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        _background.userInteractionEnabled = YES;
         [self addSubview:_background];
-        _actionContainer = [[TBActionContainer alloc] init];
-        _actionContainer.userInteractionEnabled = YES;
+        _actionContainer = [[TBActionContainer alloc] initWithSheet:self];
         [self addSubview:_actionContainer];
         _buttons = [NSMutableArray array];
         _separators = [NSMutableArray array];
@@ -279,7 +274,9 @@ const CGFloat blurRadius = 0.7;
     //处理标题
     if ([self hasTitle]) {
         lastY += headerVerticalSpace;
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        if (!self.titleLabel) {
+            self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        }
         self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
         if ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.2) {
             self.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
@@ -300,7 +297,9 @@ const CGFloat blurRadius = 0.7;
         if (![self hasTitle]) {
             lastY += headerVerticalSpace;
         }
-        self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        if (!self.messageLabel) {
+            self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+        }
         self.messageLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
         self.messageLabel.font = [UIFont systemFontOfSize:13];
         self.messageLabel.text = self.message;
@@ -415,7 +414,8 @@ const CGFloat blurRadius = 0.7;
     }
     
     if ([self hasHeader]) {
-        [self.actionContainer.header setTopCornerRadius:self.rectCornerRadius];
+        self.actionContainer.header.tbRectCorner = TBRectCornerTop;
+        [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
                 UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.header.frame];
@@ -430,7 +430,8 @@ const CGFloat blurRadius = 0.7;
     
     if (self.customView) {
         if (![self hasHeader]) {
-            [self.actionContainer.custom setTopCornerRadius:self.rectCornerRadius];
+            self.actionContainer.custom.tbRectCorner = TBRectCornerTop;
+            [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
         }
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
@@ -450,73 +451,47 @@ const CGFloat blurRadius = 0.7;
         //设置圆角
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.buttons.count == 1) {
-                obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
+                obj.tbRectCorner = TBRectCornerTop|TBRectCornerBottom;
                 if ([self hasHeader]) {
-                    if (self.customView) {
-                        [self.actionContainer.header setTopCornerRadius:self.rectCornerRadius];
-                    }
-                    else {
-                        [self.actionContainer.header setAllCornerRadius:self.rectCornerRadius];
-                    }
+                    self.actionContainer.header.tbRectCorner = self.customView ? TBRectCornerTop : TBRectCornerAll;
                 }
                 if (self.customView) {
-                    if ([self hasHeader]) {
-                        [self.actionContainer.custom setBottomCornerRadius:self.rectCornerRadius];
-                    }
-                    else {
-                        [self.actionContainer.custom setAllCornerRadius:self.rectCornerRadius];
-                    }
+                    self.actionContainer.custom.tbRectCorner = [self hasHeader] ? TBRectCornerBottom : TBRectCornerAll;
                 }
             }
             else if (obj.style == TBActionButtonStyleCancel) {
-                obj.corner = TBActionButtonCornerTop|TBActionButtonCornerBottom;
+                obj.tbRectCorner = TBRectCornerTop|TBRectCornerBottom;
                 if (idx >= 1) {
-                    self.buttons[idx - 1].corner |= TBActionButtonCornerBottom;
+                    self.buttons[idx - 1].tbRectCorner |= TBRectCornerBottom;
                 }
                 else {
                     if ([self hasHeader]) {
-                        [self.actionContainer.header setBottomCornerRadius:self.rectCornerRadius];
+                        self.actionContainer.header.tbRectCorner = TBRectCornerBottom;
                     }
                     else if (self.customView) {
-                        [self.actionContainer.custom setBottomCornerRadius:self.rectCornerRadius];
+                        self.actionContainer.custom.tbRectCorner = TBRectCornerBottom;
                     }
                 }
                 if (idx + 1 <= self.buttons.count - 1) {
-                    self.buttons[idx + 1].corner |= TBActionButtonCornerTop;
+                    self.buttons[idx + 1].tbRectCorner |= TBRectCornerTop;
                 }
             }
             else if (idx == 0) {
                 if (![self hasHeader] && !self.customView) {
-                    obj.corner |= TBActionButtonCornerTop;
+                    obj.tbRectCorner |= TBRectCornerTop;
                 }
             }
             else if (idx == self.buttons.count - 1) {
-                obj.corner |= TBActionButtonCornerBottom;
+                obj.tbRectCorner |= TBRectCornerBottom;
             }
         }];
+        
+        [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
+        [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
         for (TBActionButton *btn in self.buttons) {
-            switch (btn.corner) {
-                case TBActionButtonCornerTop: {
-                    [btn setTopCornerRadius:self.rectCornerRadius];
-                    break;
-                }
-                case TBActionButtonCornerBottom: {
-                    [btn setBottomCornerRadius:self.rectCornerRadius];
-                    break;
-                }
-                case TBActionButtonCornerNone: {
-                    [btn setNoneCorner];
-                    break;
-                }
-                case TBActionButtonCornerAll: {
-                    [btn setAllCornerRadius:self.rectCornerRadius];
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
+            [btn setCornerRadius:self.rectCornerRadius];
         }
+        
         //设置背景风格
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
@@ -535,6 +510,11 @@ const CGFloat blurRadius = 0.7;
             }
         }];
     });
+}
+
+- (void)setUpContainerFrame
+{
+    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 }
 /**
  *  显示 ActionSheet
@@ -564,7 +544,7 @@ const CGFloat blurRadius = 0.7;
     //弹出 ActionSheet 动画
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        INIT_ACTIONCONTAINER_FRAME
+        [self setUpContainerFrame];
     } completion:^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
@@ -663,7 +643,7 @@ const CGFloat blurRadius = 0.7;
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
-    INIT_ACTIONCONTAINER_FRAME
+    [self setUpContainerFrame];
 }
 
 #pragma mark help methods

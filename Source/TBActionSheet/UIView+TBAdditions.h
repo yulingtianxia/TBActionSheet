@@ -7,14 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-@class TBActionSheet;
-
-@interface UIView (TBAdditions)
-
-@end
 
 @interface UIView (TBActionSheet)
-@property (nonatomic,strong,nullable) TBActionSheet *tbActionSheet;
 - (void)interruptGesture;
 @end
 
@@ -23,9 +17,15 @@
 /**
  *  加圆角
  */
-@interface UIView (RectCorner)
-- (void)setTopCornerRadius:(CGFloat) radius;
-- (void)setBottomCornerRadius:(CGFloat) radius;
-- (void)setAllCornerRadius:(CGFloat) radius;
-- (void)setNoneCorner;
+
+typedef NS_OPTIONS(NSUInteger, TBRectCorner) {
+    TBRectCornerTop = 1 << 0,
+    TBRectCornerBottom = 1 << 1,
+    TBRectCornerNone = 0,
+    TBRectCornerAll = TBRectCornerTop|TBRectCornerBottom,
+};
+
+@interface UIView (TBRectCorner)
+@property (nonatomic,assign) TBRectCorner tbRectCorner;
+- (void)setCornerRadius:(CGFloat) radius;
 @end

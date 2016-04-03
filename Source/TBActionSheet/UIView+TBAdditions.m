@@ -9,27 +9,11 @@
 #import "UIView+TBAdditions.h"
 #import <objc/runtime.h>
 
-@implementation UIView (TBAdditions)
-
-@end
-
 #pragma mark - UIView (TBActionSheet)
 
 
 
 @implementation UIView (TBActionSheet)
-
-@dynamic tbActionSheet;
-
-- (TBActionSheet *)tbActionSheet
-{
-    return objc_getAssociatedObject(self, @selector(tbActionSheet));
-}
-
-- (void)setTbActionSheet:(TBActionSheet *)tbActionSheet
-{
-    objc_setAssociatedObject(self, @selector(tbActionSheet), tbActionSheet, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
 
 - (void)interruptGesture
 {
@@ -47,7 +31,21 @@
 @end
 
 
-@implementation UIView (RectCorner)
+@implementation UIView (TBRectCorner)
+
+@dynamic tbRectCorner;
+
+- (TBRectCorner)tbRectCorner
+{
+    NSNumber *corner = objc_getAssociatedObject(self, @selector(tbRectCorner));
+    return corner.integerValue;
+}
+
+- (void)setTbRectCorner:(TBRectCorner)tbRectCorner
+{
+    objc_setAssociatedObject(self, @selector(tbRectCorner), @(tbRectCorner), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (void)setTopCornerRadius:(CGFloat) radius
 {
     if (radius < 0) {
@@ -94,6 +92,31 @@
 - (void)setNoneCorner
 {
     self.layer.mask = nil;
+}
+
+- (void)setCornerRadius:(CGFloat) radius
+{
+    switch (self.tbRectCorner) {
+        case TBRectCornerTop: {
+            [self setTopCornerRadius:radius];
+            break;
+        }
+        case TBRectCornerBottom: {
+            [self setBottomCornerRadius:radius];
+            break;
+        }
+        case TBRectCornerNone: {
+            [self setNoneCorner];
+            break;
+        }
+        case TBRectCornerAll: {
+            [self setAllCornerRadius:radius];
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 @end

@@ -8,13 +8,16 @@
 
 #import "TBActionContainer.h"
 #import "TBMacro.h"
+#import "TBActionSheet.h"
+#import "TBActionButton.h"
+#import "UIView+TBAdditions.h"
 
 @interface TBActionContainer ()
-
+@property (weak,nonatomic) TBActionSheet *actionSheet;
 @end
 @implementation TBActionContainer
 
-- (instancetype)init
+- (instancetype)initWithSheet:(TBActionSheet *)actionSheet
 {
     self = [super init];
     if (self) {
@@ -24,6 +27,11 @@
         _header.clipsToBounds = YES;
         _custom.clipsToBounds = YES;
         _footer.clipsToBounds = YES;
+        _header.userInteractionEnabled = YES;
+        _custom.userInteractionEnabled = YES;
+        _footer.userInteractionEnabled = YES;
+        _actionSheet = actionSheet;
+        self.userInteractionEnabled = YES;
         [self addSubview:_header];
         [self addSubview:_custom];
         [self addSubview:_footer];
@@ -56,25 +64,28 @@
         return NO;
     }
     if (kiOS8Later) {
-        UIView *whiteView = [[UIView alloc] initWithFrame:view.frame];
-        whiteView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
-        whiteView.layer.masksToBounds = YES;
+        UIView *colorView = [[UIView alloc] initWithFrame:view.frame];
+        colorView.backgroundColor = self.actionSheet.ambientColor;
+        colorView.layer.masksToBounds = YES;
+        colorView.tbRectCorner = view.tbRectCorner;
         
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
         blurEffectView.frame = view.frame;
         blurEffectView.layer.masksToBounds = YES;
+        blurEffectView.tbRectCorner = view.tbRectCorner;
         
         [self insertSubview:blurEffectView atIndex:0];
         
-        if ([view.layer.mask isKindOfClass:[CAShapeLayer class]]) {
-            CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-            maskLayer.frame = view.bounds;
-            maskLayer.path = ((CAShapeLayer *)view.layer.mask).path;
-            blurEffectView.layer.mask = maskLayer;
+        [blurEffectView setCornerRadius:self.actionSheet.rectCornerRadius];
+        [colorView setCornerRadius:self.actionSheet.rectCornerRadius];
+        
+        [self insertSubview:colorView atIndex:0];
+        
+        if ([view isKindOfClass:[TBActionButton class]]) {
+            TBActionButton *btn = (TBActionButton *)view;
+            btn.behindColorView = colorView;
         }
         
-        [self insertSubview:whiteView atIndex:0];
-        whiteView.layer.mask = view.layer.mask;
         return YES;
     }
     return NO;

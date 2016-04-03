@@ -10,6 +10,16 @@
 
 @implementation TBActionBackground
 
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.userInteractionEnabled = YES;
+        self.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+    }
+    return self;
+}
+
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     if ([self.superview respondsToSelector:@selector(close)]) {

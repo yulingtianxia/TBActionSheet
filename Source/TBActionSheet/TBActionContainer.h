@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class TBActionSheet;
 NS_ASSUME_NONNULL_BEGIN
 /**
  *  容器类，用于包含所有按钮，可定制 header，custom 和 footer 三个 view
@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) UIImageView *custom;
 @property (nonatomic,strong) UIImageView *footer;
 
+- (instancetype)initWithSheet:(TBActionSheet *)actionSheet;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 - (BOOL)useSystemBlurEffect;
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view;

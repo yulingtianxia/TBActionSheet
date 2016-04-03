@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ConditionerView">
             <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -53,44 +53,75 @@
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="GAF-JR-WZd">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="56" minValue="30" maxValue="80" translatesAutoresizingMaskIntoConstraints="NO" id="GAF-JR-WZd">
                     <rect key="frame" x="476" y="8" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="114" id="EXl-oF-NKF"/>
                     </constraints>
+                    <connections>
+                        <action selector="buttonHeight:" destination="iN0-l3-epB" eventType="valueChanged" id="VwH-bT-ozT"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpInside" id="IuQ-Pl-p7k"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchDragOutside" id="zGX-kp-qHb"/>
+                    </connections>
                 </slider>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="3VW-af-fOx">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.90000000000000002" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="3VW-af-fOx">
                     <rect key="frame" x="476" y="46" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="114" id="tm3-Uf-hys"/>
                     </constraints>
+                    <connections>
+                        <action selector="buttonWidth:" destination="iN0-l3-epB" eventType="valueChanged" id="giL-LP-5hp"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpInside" id="7WB-93-17q"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpOutside" id="zqa-GP-4AN"/>
+                    </connections>
                 </slider>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Frc-Bq-3RO">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="8" minValue="0.0" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="Frc-Bq-3RO">
                     <rect key="frame" x="476" y="84" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="114" id="6vr-oh-ylS"/>
                     </constraints>
+                    <connections>
+                        <action selector="offsetY:" destination="iN0-l3-epB" eventType="valueChanged" id="HzH-FQ-rWH"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpInside" id="fKy-ud-oVu"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpOutside" id="tCw-Up-YXw"/>
+                    </connections>
                 </slider>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="K8T-P8-NPv">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="0.0" maxValue="50" translatesAutoresizingMaskIntoConstraints="NO" id="K8T-P8-NPv">
                     <rect key="frame" x="476" y="200" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="114" id="xod-rl-8a6"/>
                     </constraints>
+                    <connections>
+                        <action selector="cornerRadius:" destination="iN0-l3-epB" eventType="valueChanged" id="bWb-Gp-MIg"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpInside" id="1a3-Ha-Cgk"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpOutside" id="MS2-PU-z8J"/>
+                    </connections>
                 </slider>
-                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Ohl-59-egc">
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.20000000000000001" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Ohl-59-egc">
                     <rect key="frame" x="476" y="238" width="118" height="31"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="114" id="c1L-6W-BE3"/>
                     </constraints>
+                    <connections>
+                        <action selector="animationDuration:" destination="iN0-l3-epB" eventType="valueChanged" id="kGU-aE-YIU"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpInside" id="6SY-5r-nKr"/>
+                        <action selector="touchUp:" destination="iN0-l3-epB" eventType="touchUpOutside" id="AKO-MF-4P3"/>
+                    </connections>
                 </slider>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rvJ-5w-T7h">
                     <rect key="frame" x="543" y="122" width="51" height="31"/>
+                    <connections>
+                        <action selector="backgroundTransparentEnabled:" destination="iN0-l3-epB" eventType="valueChanged" id="hKI-9O-Rl6"/>
+                    </connections>
                 </switch>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Rj-Lx-yf8">
                     <rect key="frame" x="543" y="161" width="51" height="31"/>
+                    <connections>
+                        <action selector="blurEffectEnabled:" destination="iN0-l3-epB" eventType="valueChanged" id="NbP-z8-adJ"/>
+                    </connections>
                 </switch>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="gSM-2S-Dxa" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="8" id="25b-vq-pPu"/>
                 <constraint firstItem="Frc-Bq-3RO" firstAttribute="centerY" secondItem="gSM-2S-Dxa" secondAttribute="centerY" id="4dc-iB-UQl"/>
@@ -142,6 +173,15 @@
                 <constraint firstItem="rvJ-5w-T7h" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Frc-Bq-3RO" secondAttribute="bottom" constant="8" id="yee-wx-7MF"/>
                 <constraint firstAttribute="trailing" secondItem="3VW-af-fOx" secondAttribute="trailing" constant="8" id="zeD-oh-1xB"/>
             </constraints>
+            <connections>
+                <outlet property="animationDurationSlider" destination="Ohl-59-egc" id="HT6-He-GYu"/>
+                <outlet property="buttonHeightSlider" destination="GAF-JR-WZd" id="FC0-1A-mt4"/>
+                <outlet property="buttonWidthSlider" destination="3VW-af-fOx" id="Xm6-C3-3XV"/>
+                <outlet property="enableBackgroundTransparentSwitch" destination="rvJ-5w-T7h" id="79E-T7-HbR"/>
+                <outlet property="enableBlurEffectSwitch" destination="6Rj-Lx-yf8" id="IYp-kE-D3C"/>
+                <outlet property="offsetYSlider" destination="Frc-Bq-3RO" id="ZBR-Co-mt4"/>
+                <outlet property="rectCornerRadiusSlider" destination="K8T-P8-NPv" id="YBR-2q-5ee"/>
+            </connections>
         </view>
     </objects>
 </document>

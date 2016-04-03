@@ -29,8 +29,8 @@
 {
     TBActionButton *button = [TBActionButton buttonWithType:UIButtonTypeCustom];
     button.style = style;
-    button.corner = TBActionButtonCornerNone;
     button.handler = handler;
+    button.clipsToBounds = YES;
     [button setTitle:title forState:UIControlStateNormal];
     [button setBackgroundColor:[UIColor clearColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
@@ -42,13 +42,23 @@
 
 }
 
-- (void) setHighlighted:(BOOL)highlighted {
+- (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     if (highlighted) {
-        self.backgroundColor = self.highlightedColor;
+        if (self.highlightedColor) {
+            self.backgroundColor = self.highlightedColor;
+        }
+        else {
+            self.behindColorView.alpha = 0.5;
+        }
     }
     else {
-        self.backgroundColor = self.normalColor;
+        if (self.normalColor) {
+            self.backgroundColor = self.normalColor;
+        }
+        else {
+            self.behindColorView.alpha = 1;
+        }
     }
 }
 

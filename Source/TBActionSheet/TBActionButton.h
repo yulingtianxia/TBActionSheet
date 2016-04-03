@@ -16,19 +16,13 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
     TBActionButtonStyleDestructive
 };
 
-typedef NS_OPTIONS(NSUInteger, TBActionButtonCorner) {
-    TBActionButtonCornerTop = 1 << 0,
-    TBActionButtonCornerBottom = 1 << 1,
-    TBActionButtonCornerNone = 0,
-    TBActionButtonCornerAll = TBActionButtonCornerTop|TBActionButtonCornerBottom,
-};
-
 @interface TBActionButton : UIButton
-@property (nonatomic) TBActionButtonCorner corner;
 @property (nonatomic,nullable) UIColor *normalColor;
 @property (nonatomic,nullable) UIColor *highlightedColor;
 @property (nonatomic) TBActionButtonStyle style;
 @property (nonatomic,nullable,strong,readonly) void (^handler)(TBActionButton * button);
+
+@property (weak,nonatomic) UIView *behindColorView;
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * button))handler;

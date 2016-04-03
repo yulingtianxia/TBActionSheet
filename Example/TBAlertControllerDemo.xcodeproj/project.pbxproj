@@ -11,6 +11,7 @@
 		A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858341C5DF19A00A3F750 /* TBActionContainer.m */; };
 		A46858381C5DF1F000A3F750 /* TBActionBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858371C5DF1F000A3F750 /* TBActionBackground.m */; };
 		A468583B1C5DF23600A3F750 /* TBActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A468583A1C5DF23600A3F750 /* TBActionButton.m */; };
+		A475E5AD1CB0E474005AE796 /* ConditionerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A475E5AC1CB0E474005AE796 /* ConditionerView.m */; };
 		A477F6731C721C6F00BEB145 /* TBActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6701C721C6F00BEB145 /* TBActionSheetController.m */; };
 		A477F6741C721C6F00BEB145 /* UIWindow+TBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6721C721C6F00BEB145 /* UIWindow+TBAdditions.m */; };
 		A477F6771C734CF600BEB145 /* UIView+TBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */; };
@@ -34,6 +35,8 @@
 		A46858371C5DF1F000A3F750 /* TBActionBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionBackground.m; sourceTree = "<group>"; };
 		A46858391C5DF23600A3F750 /* TBActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionButton.h; sourceTree = "<group>"; };
 		A468583A1C5DF23600A3F750 /* TBActionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionButton.m; sourceTree = "<group>"; };
+		A475E5AB1CB0E474005AE796 /* ConditionerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConditionerView.h; sourceTree = "<group>"; };
+		A475E5AC1CB0E474005AE796 /* ConditionerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConditionerView.m; sourceTree = "<group>"; };
 		A477F66F1C721C6F00BEB145 /* TBActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionSheetController.h; sourceTree = "<group>"; };
 		A477F6701C721C6F00BEB145 /* TBActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionSheetController.m; sourceTree = "<group>"; };
 		A477F6711C721C6F00BEB145 /* UIWindow+TBAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWindow+TBAdditions.h"; sourceTree = "<group>"; };
@@ -96,6 +99,8 @@
 				A4910C001C1FFD95009D25F9 /* ViewController.h */,
 				A4910C011C1FFD95009D25F9 /* ViewController.m */,
 				A45D8D151CB03BAE0004A958 /* ConditionerView.xib */,
+				A475E5AB1CB0E474005AE796 /* ConditionerView.h */,
+				A475E5AC1CB0E474005AE796 /* ConditionerView.m */,
 				A4910C031C1FFD95009D25F9 /* Main.storyboard */,
 				A4910C061C1FFD95009D25F9 /* Assets.xcassets */,
 				A4910C081C1FFD95009D25F9 /* LaunchScreen.storyboard */,
@@ -234,6 +239,7 @@
 				A477F6771C734CF600BEB145 /* UIView+TBAdditions.m in Sources */,
 				A4910C021C1FFD95009D25F9 /* ViewController.m in Sources */,
 				A4910BFF1C1FFD95009D25F9 /* AppDelegate.m in Sources */,
+				A475E5AD1CB0E474005AE796 /* ConditionerView.m in Sources */,
 				A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */,
 				A4910C1C1C1FFEC6009D25F9 /* TBActionSheet.m in Sources */,
 				A46858381C5DF1F000A3F750 /* TBActionBackground.m in Sources */,

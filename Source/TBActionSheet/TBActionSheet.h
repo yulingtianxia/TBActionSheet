@@ -112,7 +112,10 @@ NS_ASSUME_NONNULL_BEGIN
  *  重置毛玻璃效果、圆角、背景颜色等风格
  */
 - (void)setUpStyle;
-
+/**
+ *  重置容器 frame
+ */
+- (void)setUpContainerFrame;
 @end
 
 @protocol TBActionSheetDelegate <NSObject>

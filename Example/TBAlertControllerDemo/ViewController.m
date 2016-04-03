@@ -9,9 +9,11 @@
 #import "ViewController.h"
 #import "TBActionSheet.h"
 #import "TBAlertController.h"
+#import "ConditionerView.h"
 
 @interface ViewController () <TBActionSheetDelegate>
 @property (nonnull,nonatomic) NSObject *leakTest;
+@property (nonnull,nonatomic) ConditionerView *conditioner;
 @end
 
 @implementation ViewController
@@ -28,13 +30,18 @@
 }
 
 - (IBAction)clickActionSheet:(UIButton *)sender {
-    TBActionSheet *actionSheet = [[TBActionSheet alloc] init];
-    actionSheet = [[TBActionSheet alloc] initWithTitle:@"八爪鱼" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
-    actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
+    TBActionSheet *actionSheet = [[TBActionSheet alloc] initWithTitle:@"百变ActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
+    NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"ConditionerView" owner:nil options:nil];
+    self.conditioner = views[0];
+    self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 280);
+    self.conditioner.actionSheet = actionSheet;
+    actionSheet.customView = self.conditioner;
+    
     [actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,self.leakTest);
     }];
     [actionSheet showInView:self.view];
+    [self.conditioner setUpUI];
 }
 
 - (IBAction)clickControllerWithAlert:(UIButton *)sender {
