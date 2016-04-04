@@ -4,7 +4,7 @@ TBActionSheet is a custom action sheet. The default style is iOS9, you can make 
 
 **TBActionSheet supports autorotation**
 
-<video width="1080" height="1920" src="images/TBActionSheet.mov"></video>
+![](images/demo.gif)
 
 This is the iOS9 style of `TBActionSheet` running on iOS7&iPhone 4s:
 
@@ -65,9 +65,9 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
 /**
- *  actionsheet下方的 y 轴位移，向下为正，默认值为 -8
+ *  actionsheet下方的 y 轴位移，向下为正，非负值无效，默认值为 -8
  */
-@property(nonatomic) CGFloat bottomOffset UI_APPEARANCE_SELECTOR;
+@property(nonatomic) CGFloat offsetY UI_APPEARANCE_SELECTOR;
 /**
  *  标题 UILabel
  */
@@ -103,11 +103,11 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
- *  是否使用圆角矩形
+ *  矩形圆角半径
  */
-@property(nonatomic, getter=isRectCornerEnabled) NSInteger rectCornerEnabled UI_APPEARANCE_SELECTOR;
+@property(nonatomic,assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
 /**
- *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，会与其效果混合。
+ *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，在 iOS7 下会与其效果混合。
  */
 @property(nonatomic,strong) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
 /**
@@ -119,10 +119,25 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
- *  重置毛玻璃效果、圆角、背景颜色等
+ *  动画弹簧效果衰弱比例，值为 1 时无摆动，值越接近 0 摆动越大
+ */
+@property(nonatomic,assign) CGFloat animationDampingRatio UI_APPEARANCE_SELECTOR;
+/**
+ *  动画弹簧效果初速度。如果动画总距离为 200 点，想让初速度为每秒 100 点，那么将值设为 0.5
+ */
+@property(nonatomic,assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
+/**
+ *  重置布局
+ */
+- (void)setUpLayout;
+/**
+ *  重置毛玻璃效果、圆角、背景颜色等风格
  */
 - (void)setUpStyle;
-
+/**
+ *  重置容器 frame
+ */
+- (void)setUpContainerFrame;
 @end
 ```
 
