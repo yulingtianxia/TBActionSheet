@@ -30,10 +30,10 @@
 }
 
 - (IBAction)clickActionSheet:(UIButton *)sender {
-    TBActionSheet *actionSheet = [[TBActionSheet alloc] initWithTitle:@"百变ActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
+    TBActionSheet *actionSheet = [[TBActionSheet alloc] initWithTitle:@"MagicalActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
     NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"ConditionerView" owner:nil options:nil];
     self.conditioner = views[0];
-    self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 280);
+    self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 400);
     self.conditioner.actionSheet = actionSheet;
     actionSheet.customView = self.conditioner;
     

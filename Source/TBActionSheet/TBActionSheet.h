@@ -105,6 +105,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
+ *  动画弹簧效果衰弱比例，值为 1 时无摆动，值越接近 0 摆动越大
+ */
+@property(nonatomic,assign) CGFloat animationDampingRatio UI_APPEARANCE_SELECTOR;
+/**
+ *  动画弹簧效果初速度。如果动画总距离为 200 点，想让初速度为每秒 100 点，那么将值设为 0.5
+ */
+@property(nonatomic,assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
+/**
  *  重置布局
  */
 - (void)setUpLayout;

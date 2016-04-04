@@ -47,7 +47,7 @@
 - (BOOL)useSystemBlurEffect
 {
     if (kiOS8Later) {
-        self.backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
+        self.backgroundColor = self.actionSheet.ambientColor;
         self.layer.masksToBounds = YES;
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
         blurEffectView.frame = self.bounds;

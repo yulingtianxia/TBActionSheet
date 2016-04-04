@@ -53,6 +53,8 @@ const CGFloat blurRadius = 0.7;
     appearance.ambientColor = [UIColor colorWithWhite:1 alpha:0.65];
     appearance.separatorColor = [UIColor clearColor];
     appearance.animationDuration = 0.2;
+    appearance.animationDampingRatio = 1;
+    appearance.animationVelocity = 1;
 }
 
 - (instancetype)init
@@ -542,15 +544,22 @@ const CGFloat blurRadius = 0.7;
     [self setUpStyle];
     
     //弹出 ActionSheet 动画
-    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    void(^animations)(void) = ^() {
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         [self setUpContainerFrame];
-    } completion:^(BOOL finished) {
+    };
+    void(^completion)(BOOL finished) = ^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
         }
         self.visible = YES;
-    }];
+    };
+    if (kiOS7Later) {
+        [UIView animateWithDuration:self.animationDuration delay:0 usingSpringWithDamping:self.animationDampingRatio initialSpringVelocity:self.animationVelocity options:UIViewAnimationOptionCurveEaseInOut animations:animations completion:completion];
+    }
+    else {
+        [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:animations completion:completion];
+    }
 }
 
 #pragma mark handle button press

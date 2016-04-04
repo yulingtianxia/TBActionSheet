@@ -18,6 +18,9 @@
 @property (weak, nonatomic) IBOutlet UISwitch *enableBlurEffectSwitch;
 @property (weak, nonatomic) IBOutlet UISlider *rectCornerRadiusSlider;
 @property (weak, nonatomic) IBOutlet UISlider *animationDurationSlider;
+@property (weak, nonatomic) IBOutlet UISlider *animationDumpingRatioSlider;
+@property (weak, nonatomic) IBOutlet UISlider *animationVelocitySlider;
+@property (weak, nonatomic) IBOutlet UISlider *ambientColorSlider;
 @end
 
 @implementation ConditionerView
@@ -64,6 +67,21 @@
     [TBActionSheet appearance].animationDuration = sender.value;
 }
 
+- (IBAction)animationDampingRatio:(UISlider *)sender {
+    self.actionSheet.animationDampingRatio = sender.value;
+    [TBActionSheet appearance].animationDampingRatio = sender.value;
+}
+
+- (IBAction)animationVelocity:(UISlider *)sender {
+    self.actionSheet.animationVelocity = sender.value;
+    [TBActionSheet appearance].animationVelocity = sender.value;
+}
+
+- (IBAction)ambientColor:(UISlider *)sender {
+    self.actionSheet.ambientColor = [UIColor colorWithHue:sender.value saturation:sender.value brightness:1 alpha:0.5];
+    [TBActionSheet appearance].ambientColor = self.actionSheet.ambientColor;
+}
+
 - (IBAction)touchUp:(id)sender {
     [self refreshActionSheet];
 }
@@ -77,6 +95,9 @@
     self.enableBlurEffectSwitch.on = self.actionSheet.isBlurEffectEnabled;
     self.rectCornerRadiusSlider.value = self.actionSheet.rectCornerRadius;
     self.animationDurationSlider.value = self.actionSheet.animationDuration;
+    self.animationDumpingRatioSlider.value = self.actionSheet.animationDampingRatio;
+    self.animationVelocitySlider.value = self.actionSheet.animationVelocity;
+    self.ambientColorSlider.value = 0;
 }
 
 - (void)refreshActionSheet

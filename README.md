@@ -4,6 +4,8 @@ TBActionSheet is a custom action sheet. The default style is iOS9, you can make 
 
 **TBActionSheet supports autorotation**
 
+<video width="1080" height="1920" src="images/TBActionSheet.mov"></video>
+
 This is the iOS9 style of `TBActionSheet` running on iOS7&iPhone 4s:
 
 ![](images/iPhone4s.jpg)
