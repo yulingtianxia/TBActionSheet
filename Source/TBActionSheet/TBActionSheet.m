@@ -16,8 +16,6 @@
 
 const CGFloat bigFragment = 8;
 const CGFloat smallFragment = 0.5;
-
-
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
@@ -402,6 +400,7 @@ const CGFloat blurRadius = 0.7;
 {
     CGFloat containerHeight = self.actionContainer.bounds.size.height;
     UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
+    CGFloat heightLargerThanImage = containerHeight - originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
@@ -461,13 +460,25 @@ const CGFloat blurRadius = 0.7;
             [btn setCornerRadius:self.rectCornerRadius];
         }
         
+        UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
+            CGRect targetFrame;
+            if (heightLargerThanImage > 0) {
+                targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - heightLargerThanImage, sourceFrame.size.width, sourceFrame.size.height);
+            }
+            else {
+                targetFrame = sourceFrame;
+            }
+            UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:targetFrame];
+            return cuttedImage;
+        };
+        
         //设置背景风格
         if ([self hasHeader]) {
             self.actionContainer.header.tbRectCorner |= TBRectCornerTop;
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
                 if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
-                    UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.header.frame];
-                    UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
+                    
+                    UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.header.image = backgroundImage;
                 }
             }
@@ -482,8 +493,7 @@ const CGFloat blurRadius = 0.7;
             }
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
                 if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
-                    UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:self.actionContainer.custom.frame];
-                    UIImage *backgroundImage = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
+                    UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.custom.image = backgroundImage;
                 }
             }
@@ -498,7 +508,7 @@ const CGFloat blurRadius = 0.7;
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
                 if (![self.actionContainer useSystemBlurEffectUnderView:obj]) {
-                    UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:obj.frame];
+                    UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
                     UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
                     [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
@@ -699,7 +709,8 @@ const CGFloat blurRadius = 0.7;
     
     UIGraphicsBeginImageContext(view.bounds.size);
     if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
-        if (view.frame.size.width >= 1 && view.frame.size.height >= 1 ) { // resolve iOS7 size crash
+        const CGFloat crashMagicNumber = 0.3;// size 小于0.3 在 iOS7 上会导致 crash
+        if (view.frame.size.width >= crashMagicNumber && view.frame.size.height >= crashMagicNumber ) { // resolve iOS7 size crash
             [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
         }
     }

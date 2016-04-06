@@ -2,7 +2,9 @@
 
 TBActionSheet is a custom action sheet. The default style is iOS9, you can make your own style.  
 
-**TBActionSheet supports autorotation**
+**TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
+
+Here is a gif showing TBActionSheet's powerful individuation:
 
 ![](images/demo.gif)
 
@@ -18,11 +20,27 @@ This repo also include `TBAlertController`, which unifies `UIAlertController`, `
 
 BTW, TBActionSheet also suppots BLOCK now!
 
-##CocoaPods
+##Installation
+###CocoaPods
 
 Please search TBActionSheet
 
+###Manual
+
+Just drag the "Source" document folder into your project.
+
 ##Usage
+
+###TLDR
+
+To let TBActionSheet looks like WeChat style, you can set these properties of `TBActionShet` or it's `UIAppearance` like this :
+```
+sheetWidth = MIN(kScreenWidth, kScreenHeight);
+backgroundTransparentEnabled = NO;
+rectCornerRadius = 0;
+``` 
+
+### More than what you want
 
 The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me. 
 
