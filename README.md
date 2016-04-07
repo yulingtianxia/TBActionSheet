@@ -1,5 +1,10 @@
 # TBActionSheet
 
+[![CI Status](http://img.shields.io/travis/yulingtianxia/TBActionSheet.svg?style=flat)](https://travis-ci.org/yulingtianxia/TBActionSheet)
+[![Version](https://img.shields.io/cocoapods/v/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
+[![License](https://img.shields.io/cocoapods/l/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
+[![Platform](https://img.shields.io/cocoapods/p/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
+
 TBActionSheet is a custom action sheet. The default style is iOS9, you can make your own style.  
 
 **TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
@@ -16,14 +21,19 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 ![](images/iPhone6p.jpg)
 
-This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
+~~This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.~~
 
 BTW, TBActionSheet also suppots BLOCK now!
 
 ##Installation
 ###CocoaPods
 
-Please search TBActionSheet
+TBActionSheet is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod "TBActionSheet"
+```
 
 ###Manual
 
@@ -159,8 +169,12 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 @end
 ```
 
-There is also an example project for `TBActionSheet` and `TBAlertController`.
+There is also an example project for `TBActionSheet`.
+
+## Author
+
+yulingtianxia, yulingtianxia@gmail.com
 
 ## License
 
-The MIT License.
+TBActionSheet is available under the MIT license. See the LICENSE file for more info.
