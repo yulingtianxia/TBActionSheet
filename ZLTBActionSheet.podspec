@@ -10,7 +10,6 @@ s.homepage     = "https://github.com/zhoulincome/TBActionSheet"
 
 s.license = { :type => 'MIT', :file => 'LICENSE' }
 s.author       = { "YangXiaoyu" => "yulingtianxia@gmail.com" }
-s.social_media_url = 'https://twitter.com/yulingtianxia'
 s.source       = { :git => "https://github.com/zhoulincome/TBActionSheet.git", :tag => s.version.to_s }
 
 s.platform     = :ios, '6.0'
