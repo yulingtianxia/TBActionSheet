@@ -607,6 +607,10 @@ const CGFloat blurRadius = 0.7;
             sender.handler(weakSender);
         }
         
+        if (self.userClickIndex) {
+            self.userClickIndex(index);
+        }
+        
         if ([self.delegate respondsToSelector:@selector(actionSheet:didDismissWithButtonIndex:)]) {
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
         }

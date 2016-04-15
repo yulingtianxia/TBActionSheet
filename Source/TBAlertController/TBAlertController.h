@@ -34,6 +34,8 @@ typedef NS_ENUM(NSInteger, TBAlertControllerStyle) {
 @interface TBAlertController : UIViewController
 
 
+@property (nonatomic,nullable,copy,readonly) void (^userClickIndex)(NSInteger indexTag);
+
 
 @property (nonatomic,strong,readonly) id adaptiveAlert;
 @property (nullable,nonatomic,weak) UIViewController *ownerController;
