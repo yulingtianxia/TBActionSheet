@@ -2,9 +2,10 @@
 
 [![CI Status](http://img.shields.io/travis/yulingtianxia/TBActionSheet.svg?style=flat)](https://travis-ci.org/yulingtianxia/TBActionSheet)
 [![Version](https://img.shields.io/cocoapods/v/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
 [![Platform](https://img.shields.io/cocoapods/p/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 
 TBActionSheet is a small library that allows you to substitute Apple's uncustomizable `UIActionSheet`, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9, you can make your own style. Enjoy!  
 
