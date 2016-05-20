@@ -36,7 +36,7 @@ BTW, TBActionSheet also suppots BLOCK now!
 - [x] Similar implementation to UIActionSheet
 - [x] Blur Effect under iOS7
 - [x] Cocoapods
-- [ ] Carthage
+- [x] Carthage
 
 ## Requirements
 
@@ -66,11 +66,11 @@ To let TBActionSheet looks like WeChat style, you can set these properties of `T
 sheetWidth = MIN(kScreenWidth, kScreenHeight);
 backgroundTransparentEnabled = NO;
 rectCornerRadius = 0;
-```
+``` 
 
 ### More than what you want
 
-The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me.
+The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me. 
 
 ```
 @interface TBActionSheet : UIView
