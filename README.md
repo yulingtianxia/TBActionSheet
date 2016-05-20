@@ -4,10 +4,9 @@
 [![Version](https://img.shields.io/cocoapods/v/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
 [![License](https://img.shields.io/cocoapods/l/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
 [![Platform](https://img.shields.io/cocoapods/p/TBActionSheet.svg?style=flat)](http://cocoapods.org/pods/TBActionSheet)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
-TBActionSheet is a custom action sheet. The default style is iOS9, you can make your own style.  
-
-**TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
+TBActionSheet is a small library that allows you to substitute Apple's uncustomizable `UIActionSheet`, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9, you can make your own style. Enjoy!  
 
 Here is a gif showing TBActionSheet's powerful individuation:
 
@@ -21,12 +20,31 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 ![](images/iPhone6p.jpg)
 
+**TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
+
 This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
 
 BTW, TBActionSheet also suppots BLOCK now!
 
-##Installation
-###CocoaPods
+## Features
+
+- [x] Title
+- [x] Description message
+- [x] Custom Header View (Optional)
+- [x] Customizations: fonts, colors, dimensions, corners & more
+- [x] Closure when a button is pressed
+- [x] Similar implementation to UIActionSheet
+- [x] Blur Effect under iOS7
+- [x] Cocoapods
+- [ ] Carthage
+
+## Requirements
+
+- iOS 6.0+ (iOS 8.0+ full features supported)
+- Xcode 7.3+
+
+## Installation
+### CocoaPods
 
 TBActionSheet is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
@@ -35,24 +53,24 @@ it, simply add the following line to your Podfile:
 pod "TBActionSheet"
 ```
 
-###Manual
+### Manual
 
 Just drag the "Source" document folder into your project.
 
-##Usage
+## Usage
 
-###TLDR
+### TLDR
 
 To let TBActionSheet looks like WeChat style, you can set these properties of `TBActionShet` or it's `UIAppearance` like this :
 ```
 sheetWidth = MIN(kScreenWidth, kScreenHeight);
 backgroundTransparentEnabled = NO;
 rectCornerRadius = 0;
-``` 
+```
 
 ### More than what you want
 
-The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me. 
+The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` with `TBActionSheet`. If you want to customize your action sheet, just configure some properties. I believe the header file can tell you much more than me.
 
 ```
 @interface TBActionSheet : UIView
@@ -170,6 +188,13 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 ```
 
 There is also an example project for `TBActionSheet`.
+
+## Contributing
+
+- If you **need help** or you'd like to **ask a general question**, open an issue.
+- If you **found a bug**, open an issue.
+- If you **have a feature request**, open an issue.
+- If you **want to contribute**, submit a pull request.
 
 ## Author
 

@@ -1,3 +1,27 @@
 osx_image: xcode7.3
 language: objective-c
-script: xctool -project Example/TBAlertControllerDemo.xcodeproj -scheme TBAlertControllerDemo -configuration Release -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+xcode_project: TBAlertControllerDemo
+xcode_scheme: TBActionSheetKit
+xcode_sdk: iphonesimulator9.3
+env:
+  global:
+  - FRAMEWORK_NAME=TBActionSheetKit
+before_install:
+- brew update
+- brew outdated carthage || brew upgrade carthage
+before_script:
+- carthage bootstrap
+before_deploy:
+- carthage build --no-skip-current
+- carthage archive $FRAMEWORK_NAME
+script: xctool -project Example/TBAlertControllerDemo.xcodeproj -scheme TBAlertControllerDemo
+  -configuration Release -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+deploy:
+  provider: releases
+  api_key:
+    secure: S8vW03RVhPHqs/nXaH0JJm36q2qcS0HnJVZdSSc3a8VkDovLdpTbH7OeNYT+/V+keekhnamrfI9KwEOKqEr34kP24BAv4d6Ej5mIqZ7Y+13IIU6BLaPV9WjBmJKl9af8zPMM6AwtgrWm3pnMp8IW3J+0Uz1N6UKe06P+Kuqljc0IzaOGShnEBcIQMu+XZEQXaAe+HOti/+Wzu9eta+HZgNS6Ne8YxFdjPXR1Vyempd3+hDW3BltprS3yrut30Q94XgGanTHQ4m3xX36SyupGl88790mxr9SNAHORlJIJOla/Dda1LNA6+f2GFSQuBoSXe5uAPOZOoqIyDSoda192gESM048TeIc6GbooofnSbGB4Jmk+lqBrYpHkJwoY7uxFcBK1h1IaHld6YQy9mVvtLBrjm8jIq0yamc+PD5wu4DWOhc68RPq4JjNTTM7AWkhGARodlKFa/9uow3qds3KSmsWkEFWuhP1VzyxDsu3iSwchWbP7UiVcpfnlEHIReeiQVsu7H0t1dR2ql7dz2pu7UqEgVpXIPbCAMs1XOe1uwA+inaZmrPhql0m0ARkhKTe6qm/WdbDmHT0g2rNZX8n4Aj471GoJc92Qrr5eflRidbUjauTtjCK2b9RVKRlSsWPLHrVQz5IimejQBRe9CmIbOyCxbDwEYskiVbbMi4YJ26w=
+  file: TBActionSheetKit.framework.zip
+  skip_cleanup: true
+  on:
+    repo: yulingtianxia/TBActionSheet
+    tags: true
