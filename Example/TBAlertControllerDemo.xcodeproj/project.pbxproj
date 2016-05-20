@@ -25,7 +25,6 @@
 		A4910C1C1C1FFEC6009D25F9 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
 		A4910C201C2001BC009D25F9 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
 		A4B7D5DB1CEF14A80046E5D3 /* TBActionSheetKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B7D5DA1CEF14A80046E5D3 /* TBActionSheetKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4B7D5DF1CEF14A80046E5D3 /* TBActionSheetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B7D5D81CEF14A80046E5D3 /* TBActionSheetKit.framework */; };
 		A4B7D5E11CEF14A80046E5D3 /* TBActionSheetKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4B7D5D81CEF14A80046E5D3 /* TBActionSheetKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A4B7D5E51CEF14DC0046E5D3 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
 		A4B7D5E61CEF14DC0046E5D3 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
@@ -105,7 +104,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4B7D5DF1CEF14A80046E5D3 /* TBActionSheetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
