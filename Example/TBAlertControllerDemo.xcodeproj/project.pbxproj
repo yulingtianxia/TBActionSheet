@@ -24,6 +24,8 @@
 		A4910C181C1FFEB4009D25F9 /* TBAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C171C1FFEB4009D25F9 /* TBAlertController.m */; };
 		A4910C1C1C1FFEC6009D25F9 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
 		A4910C201C2001BC009D25F9 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
+		A4A9DEAA1CEF6CC500514D9D /* TBAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = A4910C161C1FFEB4009D25F9 /* TBAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A4A9DEAB1CEF6CCA00514D9D /* TBActionSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = A4910C1A1C1FFEC6009D25F9 /* TBActionSheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4B7D5DB1CEF14A80046E5D3 /* TBActionSheetKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B7D5DA1CEF14A80046E5D3 /* TBActionSheetKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4B7D5E51CEF14DC0046E5D3 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
 		A4B7D5E61CEF14DC0046E5D3 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
@@ -35,16 +37,6 @@
 		A4B7D5EC1CEF14DC0046E5D3 /* UIView+TBAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A477F6761C734CF600BEB145 /* UIView+TBAdditions.m */; };
 		A4B7D5ED1CEF14DC0046E5D3 /* TBAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C171C1FFEB4009D25F9 /* TBAlertController.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		A4B7D5DD1CEF14A80046E5D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A4910BEF1C1FFD95009D25F9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A4B7D5D71CEF14A80046E5D3;
-			remoteInfo = TBActionSheetKit;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2D34A2421C26214F00F0C801 /* TBMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBMacro.h; sourceTree = "<group>"; };
@@ -210,6 +202,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4B7D5DB1CEF14A80046E5D3 /* TBActionSheetKit.h in Headers */,
+				A4A9DEAA1CEF6CC500514D9D /* TBAlertController.h in Headers */,
+				A4A9DEAB1CEF6CCA00514D9D /* TBActionSheet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,7 +221,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A4B7D5DE1CEF14A80046E5D3 /* PBXTargetDependency */,
 			);
 			name = TBAlertControllerDemo;
 			productName = TBAlertControllerDemo;
@@ -347,14 +340,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		A4B7D5DE1CEF14A80046E5D3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A4B7D5D71CEF14A80046E5D3 /* TBActionSheetKit */;
-			targetProxy = A4B7D5DD1CEF14A80046E5D3 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		A4910C031C1FFD95009D25F9 /* Main.storyboard */ = {
@@ -554,6 +539,7 @@
 				A4B7D5E31CEF14A80046E5D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
