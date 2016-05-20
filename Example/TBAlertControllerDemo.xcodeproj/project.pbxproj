@@ -27,7 +27,6 @@
 		A4910C1C1C1FFEC6009D25F9 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
 		A4910C201C2001BC009D25F9 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
 		A4B7D5DB1CEF14A80046E5D3 /* TBActionSheetKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A4B7D5DA1CEF14A80046E5D3 /* TBActionSheetKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4B7D5E11CEF14A80046E5D3 /* TBActionSheetKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A4B7D5D81CEF14A80046E5D3 /* TBActionSheetKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A4B7D5E51CEF14DC0046E5D3 /* UIImage+BoxBlur.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1F1C2001BC009D25F9 /* UIImage+BoxBlur.m */; };
 		A4B7D5E61CEF14DC0046E5D3 /* TBActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A4910C1B1C1FFEC6009D25F9 /* TBActionSheet.m */; };
 		A4B7D5E71CEF14DC0046E5D3 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858341C5DF19A00A3F750 /* TBActionContainer.m */; };
@@ -48,20 +47,6 @@
 			remoteInfo = TBActionSheetKit;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A4B7D5E01CEF14A80046E5D3 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A4B7D5E11CEF14A80046E5D3 /* TBActionSheetKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2D34A2421C26214F00F0C801 /* TBMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TBMacro.h; sourceTree = "<group>"; };
@@ -242,7 +227,6 @@
 				A4910BF31C1FFD95009D25F9 /* Sources */,
 				A4910BF41C1FFD95009D25F9 /* Frameworks */,
 				A4910BF51C1FFD95009D25F9 /* Resources */,
-				A4B7D5E01CEF14A80046E5D3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
