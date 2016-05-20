@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A43E7DCA1CEF65CA00E8F6EF /* TBActionSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = A4910C1A1C1FFEC6009D25F9 /* TBActionSheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A43E7DCB1CEF65CA00E8F6EF /* TBAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = A4910C161C1FFEB4009D25F9 /* TBAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A45D8D161CB03BAE0004A958 /* ConditionerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A45D8D151CB03BAE0004A958 /* ConditionerView.xib */; };
 		A46858351C5DF19A00A3F750 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858341C5DF19A00A3F750 /* TBActionContainer.m */; };
 		A46858381C5DF1F000A3F750 /* TBActionBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = A46858371C5DF1F000A3F750 /* TBActionBackground.m */; };
@@ -225,6 +227,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4B7D5DB1CEF14A80046E5D3 /* TBActionSheetKit.h in Headers */,
+				A43E7DCA1CEF65CA00E8F6EF /* TBActionSheet.h in Headers */,
+				A43E7DCB1CEF65CA00E8F6EF /* TBAlertController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -570,6 +574,7 @@
 				A4B7D5E31CEF14A80046E5D3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
