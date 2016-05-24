@@ -33,8 +33,9 @@ BTW, TBActionSheet also suppots BLOCK now!
 - [x] Description message
 - [x] Custom Header View (Optional)
 - [x] Customizations: fonts, colors, dimensions, corners & more
-- [x] Closure when a button is pressed
+- [x] Closure when a button or background is pressed
 - [x] Similar implementation to UIActionSheet
+- [x] Add button using block syntax
 - [x] Blur Effect under iOS7
 - [x] Cocoapods
 - [x] Carthage
@@ -47,12 +48,50 @@ BTW, TBActionSheet also suppots BLOCK now!
 ## Installation
 ### CocoaPods
 
-TBActionSheet is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+[CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
 
-```ruby
-pod "TBActionSheet"
+```bash
+$ gem install cocoapods
 ```
+
+To integrate TBActionSheet into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+
+```
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+use_frameworks!
+target 'MyApp' do
+	pod 'TBActionSheet'
+end
+```
+
+You need replace "MyApp" with your project's name.
+
+Then, run the following command:
+
+```bash
+$ pod install
+```
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+
+You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
+
+```bash
+$ brew update
+$ brew install carthage
+```
+
+To integrate TBActionSheet into your Xcode project using Carthage, specify it in your `Cartfile`:
+
+```ogdl
+github "yulingtianxia/TBActionSheet"
+```
+
+Run `carthage update` to build the framework and drag the built `TBActionSheetKit.framework` into your Xcode project.
 
 ### Manual
 
@@ -61,6 +100,8 @@ Just drag the "Source" document folder into your project.
 ## Usage
 
 ### TLDR
+
+You can refer to 'ViewController.m' in the TBAlertControllerDemo project.The base usage is same as 'UIActionSheet'.
 
 To let TBActionSheet looks like WeChat style, you can set these properties of `TBActionShet` or it's `UIAppearance` like this :
 ```
