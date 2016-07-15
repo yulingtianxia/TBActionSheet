@@ -37,6 +37,7 @@ BTW, TBActionSheet also suppots BLOCK now!
 - [x] Similar implementation to UIActionSheet
 - [x] Add button using block syntax
 - [x] Blur Effect under iOS7
+- [x] Autorotation under iOS8
 - [x] Cocoapods
 - [x] Carthage
 
@@ -145,7 +146,12 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  *  显示 ActionSheet
  */
 - (void)show;
-- (void)showInView:(nullable UIView *)view;
+/**
+ *  显示 ActionSheet，已废弃
+ *
+ *  @param view 此参数直接传 nil
+ */
+- (void)showInView:(nullable UIView *)view __deprecated;
 
 //custom UI
 /**
@@ -215,17 +221,21 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic,assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
 /**
- *  重置布局
+ *  支持的朝向
  */
-- (void)setUpLayout;
+@property(nonatomic,assign) UIInterfaceOrientationMask supportedInterfaceOrientations UI_APPEARANCE_SELECTOR;
 /**
- *  重置毛玻璃效果、圆角、背景颜色等风格
+ *  设置布局
  */
-- (void)setUpStyle;
+- (void)setupLayout;
 /**
- *  重置容器 frame
+ *  设置毛玻璃效果、圆角、背景颜色等风格
  */
-- (void)setUpContainerFrame;
+- (void)setupStyle;
+/**
+ *  设置容器 frame
+ */
+- (void)setupContainerFrame;
 @end
 ```
 

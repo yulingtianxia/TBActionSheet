@@ -53,6 +53,7 @@ const CGFloat blurRadius = 0.7;
     appearance.animationDuration = 0.2;
     appearance.animationDampingRatio = 1;
     appearance.animationVelocity = 1;
+    appearance.supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
 }
 
 - (instancetype)init
@@ -77,34 +78,25 @@ const CGFloat blurRadius = 0.7;
 
 - (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
 {
-    self = [self init];
-    if (self) {
-        _title = title;
-        _delegate = delegate;
-        
-        if (destructiveButtonTitle) {
-            _destructiveButtonIndex = [self addButtonWithTitle:destructiveButtonTitle style:TBActionButtonStyleDestructive];
-        }
-        
-        NSString* eachArg;
-        va_list argList;
-        if (otherButtonTitles) { // 第一个参数 otherButtonTitles 是不属于参数列表的,
-            [self addButtonWithTitle:otherButtonTitles style:TBActionButtonStyleDefault];
-            va_start(argList, otherButtonTitles);          // 从 otherButtonTitles 开始遍历参数，不包括 format 本身.
-            while ((eachArg = va_arg(argList, NSString*))) {// 从 args 中遍历出参数，NSString* 指明类型
-                [self addButtonWithTitle:eachArg style:TBActionButtonStyleDefault];
-            }
-            va_end(argList);
-        }
-        
-        if (cancelButtonTitle) {
-            _cancelButtonIndex = [self addButtonWithTitle:cancelButtonTitle style:TBActionButtonStyleCancel];
-        }
-    }
+    va_list argList;
+    // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
+    va_start(argList, otherButtonTitles);
+    self = [self initWithTitle:title message:nil delegate:delegate cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:destructiveButtonTitle firstOtherButtonTitle:otherButtonTitles titleList:argList];
+    va_end(argList);
     return self;
 }
 
 - (instancetype)initWithTitle:(NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+{
+    va_list argList;
+    // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
+    va_start(argList, otherButtonTitles);
+    self = [self initWithTitle:title message:message delegate:delegate cancelButtonTitle:cancelButtonTitle destructiveButtonTitle:destructiveButtonTitle firstOtherButtonTitle:otherButtonTitles titleList:argList];
+    va_end(argList);
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
 {
     self = [self init];
     if (self) {
@@ -116,15 +108,12 @@ const CGFloat blurRadius = 0.7;
             _destructiveButtonIndex = [self addButtonWithTitle:destructiveButtonTitle style:TBActionButtonStyleDestructive];
         }
         
-        NSString* eachArg;
-        va_list argList;
-        if (otherButtonTitles) { // 第一个参数 otherButtonTitles 是不属于参数列表的,
-            [self addButtonWithTitle:otherButtonTitles style:TBActionButtonStyleDefault];
-            va_start(argList, otherButtonTitles);          // 从 otherButtonTitles 开始遍历参数，不包括 format 本身.
+        if (firstOtherButtonTitle) {// 第一个参数 firstOtherButtonTitle 是不属于参数列表的,
+            [self addButtonWithTitle:firstOtherButtonTitle style:TBActionButtonStyleDefault];
+            NSString* eachArg;
             while ((eachArg = va_arg(argList, NSString*))) {// 从 args 中遍历出参数，NSString* 指明类型
                 [self addButtonWithTitle:eachArg style:TBActionButtonStyleDefault];
             }
-            va_end(argList);
         }
         
         if (cancelButtonTitle) {
@@ -152,7 +141,7 @@ const CGFloat blurRadius = 0.7;
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
 {
     TBActionButton *button = [TBActionButton buttonWithTitle:title style:style handler:handler];
-    [button addTarget:self action:@selector(checkButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [button addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.buttons addObject:button];
     NSInteger index = self.buttons.count - 1;
     switch (style) {
@@ -234,7 +223,7 @@ const CGFloat blurRadius = 0.7;
 /**
  *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
  */
-- (void)setUpNewWindow
+- (void)setupNewWindow
 {
     if ([self isVisible]) {
         return;
@@ -255,7 +244,7 @@ const CGFloat blurRadius = 0.7;
 /**
  *  设定所有内容的布局
  */
-- (void)setUpLayout
+- (void)setupLayout
 {
     //将视图从上到下排列，计算当前排列的纵坐标
     __block CGFloat lastY = 0;
@@ -396,7 +385,7 @@ const CGFloat blurRadius = 0.7;
 /**
  *  设置毛玻璃效果、圆角、背景颜色等
  */
-- (void)setUpStyle
+- (void)setupStyle
 {
     CGFloat containerHeight = self.actionContainer.bounds.size.height;
     UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
@@ -524,7 +513,7 @@ const CGFloat blurRadius = 0.7;
     });
 }
 
-- (void)setUpContainerFrame
+- (void)setupContainerFrame
 {
     self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
 }
@@ -533,30 +522,20 @@ const CGFloat blurRadius = 0.7;
  */
 - (void)show
 {
-    [self showInView:nil];
-}
-
-/**
- *  从一个 UIView 显示 ActionSheet
- *
- *  @param view ActionSheet 的父 View
- */
-- (void)showInView:(UIView *)view
-{
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
     
-    [self setUpNewWindow];
+    [self setupNewWindow];
     
-    [self setUpLayout];
+    [self setupLayout];
     
-    [self setUpStyle];
+    [self setupStyle];
     
     //弹出 ActionSheet 动画
     void(^animations)(void) = ^() {
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        [self setUpContainerFrame];
+        [self setupContainerFrame];
     };
     void(^completion)(BOOL finished) = ^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
@@ -572,13 +551,23 @@ const CGFloat blurRadius = 0.7;
     }
 }
 
+/**
+ *  显示 ActionSheet
+ *
+ *  @param view 没有用到
+ */
+- (void)showInView:(UIView *)view
+{
+    [self show];
+}
+
 #pragma mark handle button press
 /**
  *  按钮点击事件，不要直接调用
  *
  *  @param sender 点击的按钮对象
  */
-- (void)checkButtonTapped:(TBActionButton *)sender
+- (void)buttonTapped:(TBActionButton *)sender
 {
     if (![self isVisible]) {
         return;
@@ -662,7 +651,7 @@ const CGFloat blurRadius = 0.7;
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
-    [self setUpContainerFrame];
+    [self setupContainerFrame];
 }
 
 #pragma mark help methods

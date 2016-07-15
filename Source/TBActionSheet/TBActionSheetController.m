@@ -35,7 +35,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskAll;
+    return self.actionSheet.supportedInterfaceOrientations;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
@@ -59,7 +59,7 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if (self.actionSheet.blurEffectEnabled && !kiOS8Later) {
-        [self.actionSheet setUpStyle];
+        [self.actionSheet setupStyle];
     }
 }
 @end

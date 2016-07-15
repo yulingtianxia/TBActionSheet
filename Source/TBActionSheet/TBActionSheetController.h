@@ -11,5 +11,5 @@
 @class TBActionSheet;
 
 @interface TBActionSheetController : UIViewController
-@property (strong, nonatomic) TBActionSheet *actionSheet;
+@property (weak, nonatomic) TBActionSheet *actionSheet;
 @end

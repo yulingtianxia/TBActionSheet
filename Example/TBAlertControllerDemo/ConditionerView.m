@@ -107,8 +107,8 @@
     TBActionContainer *container = [[TBActionContainer alloc] initWithSheet:self.actionSheet];
     [self.actionSheet setValue:container forKeyPath:@"actionContainer"];
     [self.actionSheet addSubview:container];
-    [self.actionSheet setUpLayout];
-    [self.actionSheet setUpContainerFrame];
-    [self.actionSheet setUpStyle];
+    [self.actionSheet setupLayout];
+    [self.actionSheet setupContainerFrame];
+    [self.actionSheet setupStyle];
 }
 @end

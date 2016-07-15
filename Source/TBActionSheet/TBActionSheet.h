@@ -43,7 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
  *  显示 ActionSheet
  */
 - (void)show;
-- (void)showInView:(nullable UIView *)view;
+/**
+ *  显示 ActionSheet，已废弃
+ *
+ *  @param view 此参数直接传 nil
+ */
+- (void)showInView:(nullable UIView *)view __deprecated;
 
 //custom UI
 /**
@@ -113,17 +118,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic,assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
 /**
- *  重置布局
+ *  支持的朝向
  */
-- (void)setUpLayout;
+@property(nonatomic,assign) UIInterfaceOrientationMask supportedInterfaceOrientations UI_APPEARANCE_SELECTOR;
 /**
- *  重置毛玻璃效果、圆角、背景颜色等风格
+ *  设置布局
  */
-- (void)setUpStyle;
+- (void)setupLayout;
 /**
- *  重置容器 frame
+ *  设置毛玻璃效果、圆角、背景颜色等风格
  */
-- (void)setUpContainerFrame;
+- (void)setupStyle;
+/**
+ *  设置容器 frame
+ */
+- (void)setupContainerFrame;
 @end
 
 @protocol TBActionSheetDelegate <NSObject>

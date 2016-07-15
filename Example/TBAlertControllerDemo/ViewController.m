@@ -36,11 +36,12 @@
     self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 400);
     self.conditioner.actionSheet = actionSheet;
     actionSheet.customView = self.conditioner;
+//    action.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
     
     [actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,self.leakTest);
     }];
-    [actionSheet showInView:self.view];
+    [actionSheet show];
     [self.conditioner setUpUI];
 }
 
