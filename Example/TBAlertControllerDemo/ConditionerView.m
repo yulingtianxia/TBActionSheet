@@ -102,13 +102,9 @@
 
 - (void)refreshActionSheet
 {
-    self.bounds = CGRectMake(0, 0, self.actionSheet.sheetWidth, self.bounds.size.height);
-    [[self.actionSheet valueForKeyPath:@"actionContainer"] removeFromSuperview];
-    TBActionContainer *container = [[TBActionContainer alloc] initWithSheet:self.actionSheet];
-    [self.actionSheet setValue:container forKeyPath:@"actionContainer"];
-    [self.actionSheet addSubview:container];
     [self.actionSheet setupLayout];
-    [self.actionSheet setupContainerFrame];
     [self.actionSheet setupStyle];
+    [self.actionSheet setupContainerFrame];
+    self.frame = CGRectMake(0, 0, self.actionSheet.sheetWidth, self.bounds.size.height);
 }
 @end

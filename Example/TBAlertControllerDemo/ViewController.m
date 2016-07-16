@@ -14,6 +14,7 @@
 @interface ViewController () <TBActionSheetDelegate>
 @property (nonnull,nonatomic) NSObject *leakTest;
 @property (nonnull,nonatomic) ConditionerView *conditioner;
+@property (nonatomic) TBActionSheet *actionSheet;
 @end
 
 @implementation ViewController
@@ -30,19 +31,42 @@
 }
 
 - (IBAction)clickActionSheet:(UIButton *)sender {
-    TBActionSheet *actionSheet = [[TBActionSheet alloc] initWithTitle:@"MagicalActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
+    self.actionSheet = [[TBActionSheet alloc] initWithTitle:@"MagicalActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
     NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"ConditionerView" owner:nil options:nil];
     self.conditioner = views[0];
     self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 400);
-    self.conditioner.actionSheet = actionSheet;
-    actionSheet.customView = self.conditioner;
-//    action.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
+    self.conditioner.actionSheet = self.actionSheet;
+//    UI Conditioner Demo
+    self.actionSheet.customView = self.conditioner;
+
+//    Github Logo Demo
+//    self.actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
     
-    [actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
-        NSLog(@"%@ %@",button.currentTitle,self.leakTest);
+//    //    Add Buttons Dynamically Demo
+//    UIButton *addBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [addBtn setTitle:@"Add Button" forState:UIControlStateNormal];
+//    [addBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//    [addBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+//    addBtn.frame = (CGRect){0,0,200,50};
+//    [addBtn addTarget:self action:@selector(addButton:) forControlEvents:UIControlEventTouchUpInside];
+//    self.actionSheet.customView = addBtn;
+    
+    __weak __typeof(ViewController *) weakSelf = self;
+    [self.actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
+        NSLog(@"%@ %@",button.currentTitle,weakSelf.leakTest);
     }];
-    [actionSheet show];
+    
+    [self.actionSheet show];
     [self.conditioner setUpUI];
+}
+
+- (void)addButton:(UIButton *)sender{
+    static int hint = 1;
+    [self.actionSheet addButtonWithTitle:[NSString stringWithFormat:@"%d",hint]];
+    [self.actionSheet setupLayout];
+    [self.actionSheet setupContainerFrame];
+    [self.actionSheet setupStyle];
+    hint++;
 }
 
 - (IBAction)clickControllerWithAlert:(UIButton *)sender {

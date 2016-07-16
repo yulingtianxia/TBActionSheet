@@ -46,6 +46,7 @@ const CGFloat blurRadius = 0.7;
     appearance.cancelButtonColor = [UIColor blackColor];
     appearance.sheetWidth = MIN(kScreenWidth, kScreenHeight) - 20;
     appearance.backgroundTransparentEnabled = YES;
+    appearance.backgroundTouchClosureEnabled = YES;
     appearance.blurEffectEnabled = YES;
     appearance.rectCornerRadius = 10;
     appearance.ambientColor = [UIColor colorWithWhite:1 alpha:0.65];
@@ -76,7 +77,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(nullable NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -86,7 +87,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -96,7 +97,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
+- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
 {
     self = [self init];
     if (self) {
@@ -216,7 +217,7 @@ const CGFloat blurRadius = 0.7;
 - (BOOL)isVisible
 {
     // action sheet is visible iff it's associated with a window
-    return !!self.window;
+    return !!self.window && self.window.rootViewController;
 }
 
 #pragma mark show action
@@ -254,17 +255,33 @@ const CGFloat blurRadius = 0.7;
         CGSize size =CGSizeMake(self.sheetWidth,1000);
         //获取当前文本的属性
         NSDictionary * tdic = @{NSFontAttributeName:label.font};
-        //ios7方法，获取文本需要的size，限制宽度
-        CGSize actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
+        CGSize actualsize;
+        if (kiOS7Later) {
+            //iOS7方法，获取文本需要的size，限制宽度
+            actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
+        }
+        else {
+            actualsize = [content sizeWithFont:label.font];
+        }
         label.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
         lastY = CGRectGetMaxY(label.frame);
     };
+    
+    // 设定是否触碰背景关闭 ActionSheet
+    self.background.userInteractionEnabled = self.isBackgroundTouchClosureEnabled;
+    
+    //移除所有 Separator
+    for (UIView *separator in self.separators) {
+        [separator removeFromSuperview];
+    }
+    [self.separators removeAllObjects];
     
     //处理标题
     if ([self hasTitle]) {
         lastY += headerVerticalSpace;
         if (!self.titleLabel) {
             self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+            [self.actionContainer.header addSubview:self.titleLabel];
         }
         self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
         if ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.2) {
@@ -277,8 +294,7 @@ const CGFloat blurRadius = 0.7;
         self.titleLabel.numberOfLines = 0;
         self.titleLabel.backgroundColor = [UIColor clearColor];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
-
-        [self.actionContainer.header addSubview:self.titleLabel];
+        
         handleLabelFrameBlock(self.titleLabel, self.title);
     }
     //处理 message
@@ -288,6 +304,7 @@ const CGFloat blurRadius = 0.7;
         }
         if (!self.messageLabel) {
             self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
+            [self.actionContainer.header addSubview:self.messageLabel];
         }
         self.messageLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
         self.messageLabel.font = [UIFont systemFontOfSize:13];
@@ -296,7 +313,6 @@ const CGFloat blurRadius = 0.7;
         self.messageLabel.backgroundColor = [UIColor clearColor];
         self.messageLabel.textAlignment = NSTextAlignmentCenter;
 
-        [self.actionContainer.header addSubview:self.messageLabel];
         handleLabelFrameBlock(self.messageLabel, self.message);
     }
     //处理title与自定义视图间的分割线
@@ -391,6 +407,9 @@ const CGFloat blurRadius = 0.7;
     UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
     CGFloat heightLargerThanImage = containerHeight - originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
     
+    // 清理容器内用于毛玻璃效果的视图
+    [self.actionContainer cleanTempViews];
+    
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
             if (![self.actionContainer useSystemBlurEffect]) {
@@ -401,6 +420,16 @@ const CGFloat blurRadius = 0.7;
         else {
             self.actionContainer.backgroundColor = [self.ambientColor colorWithAlphaComponent:0.5];
         }
+    }
+    else {
+        self.actionContainer.backgroundColor = nil;
+    }
+    
+    //清理容器内的圆角
+    self.actionContainer.header.tbRectCorner = TBRectCornerNone;
+    self.actionContainer.custom.tbRectCorner = TBRectCornerNone;
+    for (TBActionButton *button in self.buttons) {
+        button.tbRectCorner = TBRectCornerNone;
     }
     
     TBWeakSelf(self);
@@ -465,6 +494,7 @@ const CGFloat blurRadius = 0.7;
         if ([self hasHeader]) {
             self.actionContainer.header.tbRectCorner |= TBRectCornerTop;
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+                self.actionContainer.header.backgroundColor = nil;
                 if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
                     
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
@@ -481,6 +511,7 @@ const CGFloat blurRadius = 0.7;
                 self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
             }
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+                self.actionContainer.custom.backgroundColor = nil;
                 if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.custom.image = backgroundImage;
@@ -496,6 +527,8 @@ const CGFloat blurRadius = 0.7;
         
         [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+                obj.normalColor = nil;
+                obj.highlightedColor = nil;
                 if (![self.actionContainer useSystemBlurEffectUnderView:obj]) {
                     UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
                     UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
@@ -648,6 +681,8 @@ const CGFloat blurRadius = 0.7;
     }];
 }
 
+#pragma mark handle Notification
+
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
@@ -680,7 +715,7 @@ const CGFloat blurRadius = 0.7;
 }
 
 /**
- *  从UIView 的一定区域截屏
+ *  从区域截屏
  *
  *  @param aRect 区域
  *  @param view  截取的 view
@@ -690,10 +725,7 @@ const CGFloat blurRadius = 0.7;
 - (UIImage *)screenShotRect:(CGRect)aRect
 {
     // 获取最上层的 UIViewController
-    UIViewController *topController = self.previousKeyWindow.rootViewController;
-    while (topController.presentedViewController) {
-        topController = topController.presentedViewController;
-    }
+    UIViewController *topController = [self.previousKeyWindow currentViewController];
     UIView *view = topController.view;
     
     UIGraphicsBeginImageContext(view.bounds.size);

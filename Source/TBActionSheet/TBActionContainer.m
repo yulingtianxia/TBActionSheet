@@ -14,6 +14,7 @@
 
 @interface TBActionContainer ()
 @property (weak,nonatomic) TBActionSheet *actionSheet;
+@property (nonatomic) NSMutableArray<UIView *> *tempViews;
 @end
 @implementation TBActionContainer
 
@@ -35,6 +36,7 @@
         [self addSubview:_header];
         [self addSubview:_custom];
         [self addSubview:_footer];
+        _tempViews = [NSMutableArray array];
     }
     return self;
 }
@@ -53,6 +55,7 @@
         blurEffectView.frame = self.bounds;
         blurEffectView.layer.masksToBounds = YES;
         [self insertSubview:blurEffectView atIndex:0];
+        [self.tempViews addObject:blurEffectView];
         return YES;
     }
     return NO;
@@ -75,11 +78,13 @@
         blurEffectView.tbRectCorner = view.tbRectCorner;
         
         [self insertSubview:blurEffectView atIndex:0];
+        [self.tempViews addObject:blurEffectView];
         
         [blurEffectView setCornerRadius:self.actionSheet.rectCornerRadius];
         [colorView setCornerRadius:self.actionSheet.rectCornerRadius];
         
         [self insertSubview:colorView atIndex:0];
+        [self.tempViews addObject:colorView];
         
         if ([view isKindOfClass:[TBActionButton class]]) {
             TBActionButton *btn = (TBActionButton *)view;
@@ -89,6 +94,14 @@
         return YES;
     }
     return NO;
+}
+
+- (void)cleanTempViews
+{
+    for (UIView *view in self.tempViews) {
+        [view removeFromSuperview];
+    }
+    [self.tempViews removeAllObjects];
 }
 
 @end

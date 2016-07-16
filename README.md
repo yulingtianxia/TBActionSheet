@@ -13,6 +13,10 @@ Here is a gif showing TBActionSheet's powerful individuation:
 
 ![](images/demo.gif)
 
+You can add buttons on it dynamically:
+
+![](images/addButton.gif)
+
 This is the iOS9 style of `TBActionSheet` running on iOS7&iPhone 4s:
 
 ![](images/iPhone4s.jpg)
@@ -140,6 +144,9 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 @property(nonatomic) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
 
 @property(nonatomic,readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
+/**
+ *  是否可见
+ */
 @property(nonatomic,readonly,getter=isVisible) BOOL visible;
 
 /**
@@ -174,7 +181,13 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  *  文字颜色
  */
 @property(nonatomic,strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
+/**
+ *  Destructive 按钮文字颜色
+ */
 @property(nonatomic,strong) UIColor *destructiveButtonColor UI_APPEARANCE_SELECTOR;
+/**
+ *  Cancel 按钮文字颜色
+ */
 @property(nonatomic,strong) UIColor *cancelButtonColor UI_APPEARANCE_SELECTOR;
 /**
  *  分割线颜色
@@ -189,9 +202,13 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic) CGFloat sheetWidth UI_APPEARANCE_SELECTOR;
 /**
- *  是否让背景透明
+ *  是否让 ActionSheet 背景透明
  */
 @property(nonatomic, getter=isBackgroundTransparentEnabled) NSInteger backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
+/**
+ *  是否点击背景后关闭 ActionSheet
+ */
+@property(nonatomic, getter=isBackgroundTouchClosureEnabled) NSInteger backgroundTouchClosureEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否启用毛玻璃效果
  */
@@ -201,7 +218,7 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
  */
 @property(nonatomic,assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
 /**
- *  ActionSheet 的环境色，如果 useBlurEffect 为 YES，在 iOS7 下会与其效果混合。
+ *  ActionSheet 的环境色
  */
 @property(nonatomic,strong) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
 /**

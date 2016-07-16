@@ -85,8 +85,6 @@
     return image;
 }
 
-#pragma mark - Private
-
 - (UIViewController *)currentViewController
 {
     UIViewController *viewController = self.rootViewController;
