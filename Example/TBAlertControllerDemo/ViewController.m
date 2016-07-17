@@ -36,6 +36,7 @@
     self.conditioner = views[0];
     self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 400);
     self.conditioner.actionSheet = self.actionSheet;
+    
 //    UI Conditioner Demo
     self.actionSheet.customView = self.conditioner;
 

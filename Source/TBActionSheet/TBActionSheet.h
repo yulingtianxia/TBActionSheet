@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TBActionSheet : UIView
 @property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
-@property(nonatomic,copy)  NSString * _Nullable  title;
-@property(nonatomic,copy)  NSString * _Nullable  message;
+@property(nullable,nonatomic,copy)  NSString *title;
+@property(nullable,nonatomic,copy)  NSString *message;
 /**
  *   标记藏于 ActionSheet 下面的 UIWindow
  */
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 // destructive and cancel button which will be positioned based on HI requirements. buttons cannot be customized.
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title;
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style;    // returns index of button. 0 based.
-- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * button))handler;
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
 @property(nonatomic,readonly) NSInteger numberOfButtons;
 @property(nonatomic) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Message UILabel
  */
-@property (nonatomic,strong,nullable,readonly) UILabel *messageLabel;
+@property(nonatomic,strong,nullable,readonly) UILabel *messageLabel;
 /**
  *  文字颜色
  */

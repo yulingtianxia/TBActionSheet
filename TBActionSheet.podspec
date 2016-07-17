@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name         = "TBActionSheet"
-s.version      = "1.4.2"
+s.version      = "1.4.3"
 s.summary      = "A Custom&Magical ActionSheet."
 s.description  = <<-DESC
 TBActionSheet is a small library that allows you to substitute Apple's uncustomizable UIActionSheet, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9, you can make your own style. Enjoy!

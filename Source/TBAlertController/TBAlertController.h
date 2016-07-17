@@ -25,9 +25,9 @@ typedef NS_ENUM(NSInteger, TBAlertControllerStyle) {
 @property (nullable, nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) TBAlertActionStyle style;
 @property (nonatomic, getter=isEnabled) BOOL enabled;
-@property (nullable,nonatomic,strong,readonly) void (^handler)(TBAlertAction * _Nonnull);
+@property (nullable,nonatomic,strong,readonly) void (^handler)(TBAlertAction *);
 
-+ (id)actionWithTitle:(nullable NSString *)title style:(TBAlertActionStyle)style handler:(void (^ __nullable)( TBAlertAction *action))handler;
++ (id)actionWithTitle:(nullable NSString *)title style:(TBAlertActionStyle)style handler:(nullable void (^)(TBAlertAction *action))handler;
 
 @end
 
@@ -44,11 +44,11 @@ typedef NS_ENUM(NSInteger, TBAlertControllerStyle) {
 - (void)addAction:(TBAlertAction *)action;
 
 @property (nonatomic, readonly) NSArray<TBAlertAction *> *actions;
-@property (nullable, nonatomic, copy, readonly) NSArray< void (^)(UITextField *_Nonnull textField)> *textFieldHandlers;
+@property (nullable, nonatomic, copy, readonly) NSArray< void (^)(UITextField *textField)> *textFieldHandlers;
 
 @property (nonatomic, strong, nullable) TBAlertAction *preferredAction NS_AVAILABLE_IOS(9_0);
 
-- (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField * _Nonnull textField))configurationHandler;
+- (void)addTextFieldWithConfigurationHandler:(nullable void (^)(UITextField *textField))configurationHandler;
 
 @property (nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
 

@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) UIImageView *footer;
 
 - (instancetype)initWithSheet:(TBActionSheet *)actionSheet;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame __attribute__((unavailable("initWithFrame: not available, please use initWithSheet:")));
+- (instancetype)init __attribute__((unavailable("init not available, please use initWithSheet:")));
 
 - (BOOL)useSystemBlurEffect;
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view;

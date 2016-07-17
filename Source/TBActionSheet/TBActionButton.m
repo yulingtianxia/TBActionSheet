@@ -25,7 +25,7 @@
     return [TBActionButton buttonWithTitle:title style:style handler:nil];
 }
 
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler
 {
     TBActionButton *button = [TBActionButton buttonWithType:UIButtonTypeCustom];
     button.style = style;

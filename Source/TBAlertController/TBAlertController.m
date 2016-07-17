@@ -103,7 +103,7 @@
 {
     if (kiOS8Later) {
         UIAlertActionStyle actionStyle = (NSInteger)style;
-        return [UIAlertAction actionWithTitle:title style:actionStyle handler:(void (^ __nullable)(UIAlertAction *))handler];
+        return [UIAlertAction actionWithTitle:title style:actionStyle handler:(void (^)(UIAlertAction *))handler];
     }
     else {
         TBAlertAction *action = [[TBAlertAction alloc] init];

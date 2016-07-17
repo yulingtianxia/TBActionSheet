@@ -139,7 +139,7 @@ const CGFloat blurRadius = 0.7;
     return [self addButtonWithTitle:title style:style handler:nil];
 }
 
-- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * _Nonnull button))handler
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)( TBActionButton * button))handler
 {
     TBActionButton *button = [TBActionButton buttonWithTitle:title style:style handler:handler];
     [button addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];

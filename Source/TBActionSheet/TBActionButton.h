@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 @property (weak,nonatomic) UIView *behindColorView;
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(void (^ __nullable)( TBActionButton * button))handler;
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
 @end
 
 NS_ASSUME_NONNULL_END
