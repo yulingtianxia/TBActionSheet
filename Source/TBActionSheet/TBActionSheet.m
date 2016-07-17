@@ -220,6 +220,12 @@ const CGFloat blurRadius = 0.7;
     return !!self.window && self.window.rootViewController;
 }
 
+- (void)setBackgroundTouchClosureEnabled:(NSInteger)backgroundTouchClosureEnabled
+{
+    _backgroundTouchClosureEnabled = backgroundTouchClosureEnabled;
+    self.background.userInteractionEnabled = backgroundTouchClosureEnabled;
+}
+
 #pragma mark show action
 /**
  *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
