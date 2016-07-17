@@ -47,7 +47,7 @@ BTW, TBActionSheet also suppots BLOCK now!
 
 ## Articles
 
-![自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2016/07/18/TBActionSheet/)
+[自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2016/07/18/TBActionSheet/)
 
 ## Requirements
 
