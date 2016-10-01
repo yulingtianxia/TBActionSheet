@@ -1,9 +1,9 @@
 Pod::Spec.new do |s|
 s.name         = "TBActionSheet"
-s.version      = "1.4.3"
+s.version      = "1.4.4"
 s.summary      = "A Custom&Magical ActionSheet."
 s.description  = <<-DESC
-TBActionSheet is a small library that allows you to substitute Apple's uncustomizable UIActionSheet, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9, you can make your own style. Enjoy!
+TBActionSheet is a small library that allows you to substitute Apple's uncustomizable UIActionSheet, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9/10, you can make your own style. Enjoy!
 If you want your UIAlertController to be compatible with iOS7(even lower), you can just replace your UIAlertController with TBAlertController
 DESC
 s.homepage     = "https://github.com/yulingtianxia/TBActionSheet"
