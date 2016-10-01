@@ -267,7 +267,10 @@ const CGFloat blurRadius = 0.7;
             actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
         }
         else {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
             actualsize = [content sizeWithFont:label.font];
+#pragma GCC diagnostic pop
         }
         label.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
         lastY = CGRectGetMaxY(label.frame);
