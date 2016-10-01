@@ -48,6 +48,9 @@
 
 - (BOOL)useSystemBlurEffect
 {
+    if (kiOS10Later) {
+        return NO;
+    }
     if (kiOS8Later) {
         self.backgroundColor = self.actionSheet.ambientColor;
         self.layer.masksToBounds = YES;
@@ -63,7 +66,7 @@
 
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view
 {
-    if (!view) {
+    if (!view || kiOS10Later) {
         return NO;
     }
     if (kiOS8Later) {

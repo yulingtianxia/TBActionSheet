@@ -424,10 +424,12 @@ const CGFloat blurRadius = 0.7;
             }
         }
         else {
+            self.actionContainer.image = nil;
             self.actionContainer.backgroundColor = [self.ambientColor colorWithAlphaComponent:0.5];
         }
     }
     else {
+        self.actionContainer.image = nil;
         self.actionContainer.backgroundColor = nil;
     }
     
@@ -508,6 +510,7 @@ const CGFloat blurRadius = 0.7;
                 }
             }
             else {
+                self.actionContainer.header.image = nil;
                 self.actionContainer.header.backgroundColor = self.ambientColor;
             }
         }
@@ -524,6 +527,7 @@ const CGFloat blurRadius = 0.7;
                 }
             }
             else {
+                self.actionContainer.custom.image = nil;
                 self.actionContainer.custom.backgroundColor = self.ambientColor;
             }
         }
@@ -545,6 +549,8 @@ const CGFloat blurRadius = 0.7;
                 }
             }
             else {
+                [obj setBackgroundImage:nil forState:UIControlStateNormal];
+                [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
                 obj.normalColor = self.ambientColor;
                 obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
