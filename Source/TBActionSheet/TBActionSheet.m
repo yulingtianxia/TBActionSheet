@@ -178,7 +178,7 @@ const CGFloat blurRadius = 0.7;
     return self.buttons.count;
 }
 
-#pragma mark getter&setter
+#pragma mark - getter&setter
 
 - (void)setButtonFont:(UIFont *)buttonFont
 {
@@ -226,7 +226,7 @@ const CGFloat blurRadius = 0.7;
     self.background.userInteractionEnabled = backgroundTouchClosureEnabled;
 }
 
-#pragma mark show action
+#pragma mark - show action
 /**
  *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
  */
@@ -609,7 +609,7 @@ const CGFloat blurRadius = 0.7;
     [self show];
 }
 
-#pragma mark handle button press
+#pragma mark - handle button press
 /**
  *  按钮点击事件，不要直接调用
  *
@@ -652,7 +652,7 @@ const CGFloat blurRadius = 0.7;
     
 }
 
-#pragma mark handle close
+#pragma mark - handle close
 /**
  *  取消 ActionSheet 的方法
  */
@@ -696,7 +696,7 @@ const CGFloat blurRadius = 0.7;
     }];
 }
 
-#pragma mark handle Notification
+#pragma mark - handle Notification
 
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
@@ -704,7 +704,7 @@ const CGFloat blurRadius = 0.7;
     [self setupContainerFrame];
 }
 
-#pragma mark help methods
+#pragma mark - help methods
 
 - (BOOL)hasTitle
 {
