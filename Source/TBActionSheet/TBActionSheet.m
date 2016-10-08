@@ -77,7 +77,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -87,7 +87,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -97,7 +97,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
 {
     self = [self init];
     if (self) {
