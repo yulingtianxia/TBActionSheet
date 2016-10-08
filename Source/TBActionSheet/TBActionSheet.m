@@ -77,7 +77,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(NSString *)title delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -87,7 +87,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle otherButtonTitles:(nullable NSString *)otherButtonTitles, ... NS_REQUIRES_NIL_TERMINATION
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle otherButtonTitles:(NSString *)otherButtonTitles, ...
 {
     va_list argList;
     // 从 otherButtonTitles 开始遍历参数，不包括 otherButtonTitles 本身.
@@ -97,7 +97,7 @@ const CGFloat blurRadius = 0.7;
     return self;
 }
 
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(nullable NSString *)cancelButtonTitle destructiveButtonTitle:(nullable NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message delegate:(id<TBActionSheetDelegate>)delegate cancelButtonTitle:(NSString *)cancelButtonTitle destructiveButtonTitle:(NSString *)destructiveButtonTitle firstOtherButtonTitle:(NSString *)firstOtherButtonTitle titleList:(va_list)argList
 {
     self = [self init];
     if (self) {
@@ -178,7 +178,7 @@ const CGFloat blurRadius = 0.7;
     return self.buttons.count;
 }
 
-#pragma mark getter&setter
+#pragma mark - getter&setter
 
 - (void)setButtonFont:(UIFont *)buttonFont
 {
@@ -226,7 +226,7 @@ const CGFloat blurRadius = 0.7;
     self.background.userInteractionEnabled = backgroundTouchClosureEnabled;
 }
 
-#pragma mark show action
+#pragma mark - show action
 /**
  *  设定新的 UIWindow，并将 TBActionSheet 附加在上面
  */
@@ -609,7 +609,7 @@ const CGFloat blurRadius = 0.7;
     [self show];
 }
 
-#pragma mark handle button press
+#pragma mark - handle button press
 /**
  *  按钮点击事件，不要直接调用
  *
@@ -652,7 +652,7 @@ const CGFloat blurRadius = 0.7;
     
 }
 
-#pragma mark handle close
+#pragma mark - handle close
 /**
  *  取消 ActionSheet 的方法
  */
@@ -696,7 +696,7 @@ const CGFloat blurRadius = 0.7;
     }];
 }
 
-#pragma mark handle Notification
+#pragma mark - handle Notification
 
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
@@ -704,7 +704,7 @@ const CGFloat blurRadius = 0.7;
     [self setupContainerFrame];
 }
 
-#pragma mark help methods
+#pragma mark - help methods
 
 - (BOOL)hasTitle
 {
