@@ -30,9 +30,9 @@ _Pragma("clang diagnostic pop")
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define kContainerLeft ((kScreenWidth - self.sheetWidth)/2)
 
-#define kiOS7Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=7.0)
-#define kiOS8Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0)
-#define kiOS9Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=9.0)
-#define kiOS10Later ([[[UIDevice currentDevice] systemVersion] floatValue]>=10.0)
+#define kiOS7Later SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")
+#define kiOS8Later SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")
+#define kiOS9Later SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")
+#define kiOS10Later SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
