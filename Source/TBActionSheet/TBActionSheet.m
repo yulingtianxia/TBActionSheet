@@ -511,6 +511,9 @@ const CGFloat blurRadius = 0.7;
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.header.image = backgroundImage;
                 }
+                else {
+                    self.actionContainer.header.image = nil;
+                }
             }
             else {
                 self.actionContainer.header.image = nil;
@@ -527,6 +530,9 @@ const CGFloat blurRadius = 0.7;
                 if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.custom.image = backgroundImage;
+                }
+                else {
+                    self.actionContainer.custom.image = nil;
                 }
             }
             else {
@@ -549,6 +555,10 @@ const CGFloat blurRadius = 0.7;
                     [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                     [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
                     obj.backgroundColor = [UIColor clearColor];
+                }
+                else {
+                    [obj setBackgroundImage:nil forState:UIControlStateNormal];
+                    [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
                 }
             }
             else {

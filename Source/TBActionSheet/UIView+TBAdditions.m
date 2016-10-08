@@ -93,6 +93,10 @@
 
 - (void)setCornerRadius:(CGFloat) radius
 {
+    if (radius == 0) {
+        [self setNoneCorner];
+        return;
+    }
     switch (self.tbRectCorner) {
         case TBRectCornerTop: {
             [self setTopCornerRadius:radius];

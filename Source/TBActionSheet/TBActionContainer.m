@@ -48,7 +48,7 @@
 
 - (BOOL)useSystemBlurEffect
 {
-    if (kiOS10Later) {
+    if (kiOS10Later && self.actionSheet.rectCornerRadius > 0) {
         return NO;
     }
     if (kiOS8Later) {
@@ -66,7 +66,7 @@
 
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view
 {
-    if (!view || kiOS10Later) {
+    if (!view || (kiOS10Later && self.actionSheet.rectCornerRadius > 0)) {
         return NO;
     }
     if (kiOS8Later) {
