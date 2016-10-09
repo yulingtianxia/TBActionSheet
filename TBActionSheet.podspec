@@ -17,6 +17,7 @@ s.platform     = :ios, '6.0'
 s.requires_arc = true
 
 s.source_files = "Source/**/*.{h,m}"
+s.public_header_files = "Source/TBActionSheet/TBActionButton.h", "Source/TBActionSheet/TBActionSheet.h", "Source/TBAlertController/TBAlertController.h"
 s.frameworks = 'Foundation', 'UIKit'
 
 end
