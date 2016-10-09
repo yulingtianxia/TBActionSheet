@@ -19,6 +19,8 @@ const CGFloat smallFragment = 0.5;
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
+typedef void (^TBBlurEffectBlock)(void);
+
 @interface TBActionSheet ()
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
@@ -29,6 +31,8 @@ const CGFloat blurRadius = 0.7;
 @property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) CADisplayLink *displayLink;
+@property (strong, nonatomic) NSMutableArray<TBBlurEffectBlock> *blurBlocks;
 @end
 
 @implementation TBActionSheet
@@ -68,10 +72,11 @@ const CGFloat blurRadius = 0.7;
         [self addSubview:_actionContainer];
         _buttons = [NSMutableArray array];
         _separators = [NSMutableArray array];
+        _blurBlocks = [NSMutableArray array];
         //set default values
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
-        
+        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(refreshBlurEffect)];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
@@ -126,6 +131,7 @@ const CGFloat blurRadius = 0.7;
 
 - (void)dealloc
 {
+    [self.displayLink invalidate];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -412,18 +418,38 @@ const CGFloat blurRadius = 0.7;
  */
 - (void)setupStyle
 {
-    CGFloat containerHeight = self.actionContainer.bounds.size.height;
-    UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
-    CGFloat heightLargerThanImage = containerHeight - originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
-    
     // 清理容器内用于毛玻璃效果的视图
     [self.actionContainer cleanTempViews];
+    [self.blurBlocks removeAllObjects];
+    
+    CGFloat containerHeight = self.actionContainer.bounds.size.height;
+    
+    __block UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
+    TBBlurEffectBlock blurBlock = ^void() {
+        originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
+    };
+    [self.blurBlocks addObject:blurBlock];
+    
+    CGFloat heightLargerThanImage = containerHeight - originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
+    
+    __block BOOL useBoxBlurEffect = NO;
+    self.displayLink.paused = YES;
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
             if (![self.actionContainer useSystemBlurEffect]) {
-                UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.ambientColor colorWithAlphaComponent:0.5]];
-                self.actionContainer.image = backgroundImage;
+                TBWeakSelf(self);
+                TBBlurEffectBlock blurBlock = ^void() {
+                    TBStrongSelf(self);
+                    UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.ambientColor colorWithAlphaComponent:0.5]];
+                    self.actionContainer.image = backgroundImage;
+                };
+                [self.blurBlocks addObject:blurBlock];
+                useBoxBlurEffect = YES;
+                blurBlock();
+            }
+            else {
+                self.actionContainer.image = nil;
             }
         }
         else {
@@ -443,132 +469,159 @@ const CGFloat blurRadius = 0.7;
         button.tbRectCorner = TBRectCornerNone;
     }
     
-    TBWeakSelf(self);
-    dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        TBStrongSelf(self);
-        //设置圆角
-        [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (self.buttons.count == 1) {
-                obj.tbRectCorner |= TBRectCornerTop|TBRectCornerBottom;
-                if ([self hasHeader]) {
-                    self.actionContainer.header.tbRectCorner |= self.customView ? TBRectCornerTop : TBRectCornerAll;
-                }
-                if (self.customView) {
-                    self.actionContainer.custom.tbRectCorner |= [self hasHeader] ? TBRectCornerBottom : TBRectCornerAll;
-                }
+    //设置圆角
+    [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (self.buttons.count == 1) {
+            obj.tbRectCorner |= TBRectCornerTop|TBRectCornerBottom;
+            if ([self hasHeader]) {
+                self.actionContainer.header.tbRectCorner |= self.customView ? TBRectCornerTop : TBRectCornerAll;
             }
-            else if (obj.style == TBActionButtonStyleCancel) {
-                obj.tbRectCorner = TBRectCornerTop|TBRectCornerBottom;
-                if (idx >= 1) {
-                    self.buttons[idx - 1].tbRectCorner |= TBRectCornerBottom;
-                }
-                else {
-                    if (self.customView) {
-                        self.actionContainer.custom.tbRectCorner |= TBRectCornerBottom;
-                    }
-                    else if ([self hasHeader]) {
-                        self.actionContainer.header.tbRectCorner |= TBRectCornerBottom;
-                    }
-                }
-                if (idx + 1 <= self.buttons.count - 1) {
-                    self.buttons[idx + 1].tbRectCorner |= TBRectCornerTop;
-                }
+            if (self.customView) {
+                self.actionContainer.custom.tbRectCorner |= [self hasHeader] ? TBRectCornerBottom : TBRectCornerAll;
             }
-            else if (idx == 0) {
-                if (![self hasHeader] && !self.customView) {
-                    obj.tbRectCorner |= TBRectCornerTop;
-                }
-            }
-            else if (idx == self.buttons.count - 1) {
-                obj.tbRectCorner |= TBRectCornerBottom;
-            }
-        }];
-        
-        
-        for (TBActionButton *btn in self.buttons) {
-            [btn setCornerRadius:self.rectCornerRadius];
         }
-        
-        UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
-            CGRect targetFrame;
-            if (heightLargerThanImage > 0) {
-                targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - heightLargerThanImage, sourceFrame.size.width, sourceFrame.size.height);
+        else if (obj.style == TBActionButtonStyleCancel) {
+            obj.tbRectCorner = TBRectCornerTop|TBRectCornerBottom;
+            if (idx >= 1) {
+                self.buttons[idx - 1].tbRectCorner |= TBRectCornerBottom;
             }
             else {
-                targetFrame = sourceFrame;
+                if (self.customView) {
+                    self.actionContainer.custom.tbRectCorner |= TBRectCornerBottom;
+                }
+                else if ([self hasHeader]) {
+                    self.actionContainer.header.tbRectCorner |= TBRectCornerBottom;
+                }
             }
-            UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:targetFrame];
-            return cuttedImage;
-        };
-        
-        //设置背景风格
-        if ([self hasHeader]) {
-            self.actionContainer.header.tbRectCorner |= TBRectCornerTop;
-            if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
-                self.actionContainer.header.backgroundColor = nil;
-                if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
-                    
+            if (idx + 1 <= self.buttons.count - 1) {
+                self.buttons[idx + 1].tbRectCorner |= TBRectCornerTop;
+            }
+        }
+        else if (idx == 0) {
+            if (![self hasHeader] && !self.customView) {
+                obj.tbRectCorner |= TBRectCornerTop;
+            }
+        }
+        else if (idx == self.buttons.count - 1) {
+            obj.tbRectCorner |= TBRectCornerBottom;
+        }
+    }];
+    
+    for (TBActionButton *btn in self.buttons) {
+        [btn setCornerRadius:self.rectCornerRadius];
+    }
+    
+    UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
+        CGRect targetFrame;
+        if (heightLargerThanImage > 0) {
+            targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - heightLargerThanImage, sourceFrame.size.width, sourceFrame.size.height);
+        }
+        else {
+            targetFrame = sourceFrame;
+        }
+        UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:targetFrame];
+        return cuttedImage;
+    };
+    
+    //设置背景风格
+    if ([self hasHeader]) {
+        self.actionContainer.header.tbRectCorner |= TBRectCornerTop;
+        if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+            self.actionContainer.header.backgroundColor = nil;
+            if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
+                TBWeakSelf(self);
+                TBBlurEffectBlock blurBlock = ^void() {
+                    TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.header.image = backgroundImage;
-                }
-                else {
-                    self.actionContainer.header.image = nil;
-                }
+                };
+                [self.blurBlocks addObject:blurBlock];
+                useBoxBlurEffect = YES;
+                blurBlock();
             }
             else {
                 self.actionContainer.header.image = nil;
-                self.actionContainer.header.backgroundColor = self.ambientColor;
             }
         }
-        
-        if (self.customView) {
-            if (![self hasHeader]) {
-                self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
-            }
-            if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
-                self.actionContainer.custom.backgroundColor = nil;
-                if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
+        else {
+            self.actionContainer.header.image = nil;
+            self.actionContainer.header.backgroundColor = self.ambientColor;
+        }
+    }
+    
+    if (self.customView) {
+        if (![self hasHeader]) {
+            self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
+        }
+        if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+            self.actionContainer.custom.backgroundColor = nil;
+            if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
+                TBWeakSelf(self);
+                TBBlurEffectBlock blurBlock = ^void() {
+                    TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     self.actionContainer.custom.image = backgroundImage;
-                }
-                else {
-                    self.actionContainer.custom.image = nil;
-                }
+                };
+                [self.blurBlocks addObject:blurBlock];
+                useBoxBlurEffect = YES;
+                blurBlock();
             }
             else {
                 self.actionContainer.custom.image = nil;
-                self.actionContainer.custom.backgroundColor = self.ambientColor;
             }
         }
-        
-        [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
-        [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
-        
-        [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
-                obj.normalColor = nil;
-                obj.highlightedColor = nil;
-                if (![self.actionContainer useSystemBlurEffectUnderView:obj]) {
+        else {
+            self.actionContainer.custom.image = nil;
+            self.actionContainer.custom.backgroundColor = self.ambientColor;
+        }
+    }
+    
+    [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
+    [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
+    
+    [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
+            obj.normalColor = nil;
+            obj.highlightedColor = nil;
+            if (![self.actionContainer useSystemBlurEffectUnderView:obj]) {
+                TBWeakSelf(self);
+                TBBlurEffectBlock blurBlock = ^void() {
+                    TBStrongSelf(self);
                     UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
                     UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
                     [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                     [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
                     obj.backgroundColor = [UIColor clearColor];
-                }
-                else {
-                    [obj setBackgroundImage:nil forState:UIControlStateNormal];
-                    [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
-                }
+                };
+                [self.blurBlocks addObject:blurBlock];
+                useBoxBlurEffect = YES;
+                blurBlock();
             }
             else {
                 [obj setBackgroundImage:nil forState:UIControlStateNormal];
                 [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
-                obj.normalColor = self.ambientColor;
-                obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
-        }];
-    });
+        }
+        else {
+            [obj setBackgroundImage:nil forState:UIControlStateNormal];
+            [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
+            obj.normalColor = self.ambientColor;
+            obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+        }
+    }];
+    
+    if (useBoxBlurEffect) {
+//        性能问题，暂时关闭
+//        self.displayLink.paused = NO;
+    }
+}
+
+- (void)refreshBlurEffect
+{
+    for (void (^blurBlock)() in self.blurBlocks) {
+        blurBlock();
+    }
 }
 
 - (void)setupContainerFrame
@@ -583,6 +636,9 @@ const CGFloat blurRadius = 0.7;
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
+    
+    self.displayLink.paused = YES;
+    [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
     
     [self setupNewWindow];
     
@@ -671,6 +727,8 @@ const CGFloat blurRadius = 0.7;
     if (![self isVisible]) {
         return;
     }
+    
+    [self.displayLink invalidate];
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];

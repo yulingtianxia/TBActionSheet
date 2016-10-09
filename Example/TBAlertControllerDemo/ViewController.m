@@ -15,6 +15,7 @@
 @property (nonnull,nonatomic) NSObject *leakTest;
 @property (nonnull,nonatomic) ConditionerView *conditioner;
 @property (nonatomic) TBActionSheet *actionSheet;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @end
 
 @implementation ViewController
@@ -23,6 +24,19 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     _leakTest = [NSObject new];
+    [self runSpinAnimationOnView:self.imageView duration:1 rotations:1 repeat:HUGE_VALF];
+}
+
+- (void) runSpinAnimationOnView:(UIView*)view duration:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat;
+{
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* full rotation*/ * rotations * duration ];
+    rotationAnimation.duration = duration;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = repeat;
+    
+    [view.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
 }
 
 - (void)didReceiveMemoryWarning {
