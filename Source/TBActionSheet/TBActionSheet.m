@@ -31,7 +31,8 @@ typedef void (^TBBlurEffectBlock)(void);
 @property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) CADisplayLink *displayLink;
+//@property (weak, nonatomic) NSTimer *timer;
+@property (strong, nonatomic, nullable) UIImage *originalBackgroundImage;
 @property (strong, nonatomic) NSMutableArray<TBBlurEffectBlock> *blurBlocks;
 @end
 
@@ -76,7 +77,9 @@ typedef void (^TBBlurEffectBlock)(void);
         //set default values
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
-        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(refreshBlurEffect)];
+//        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(refreshBlurEffect)];
+//        self.displayLink.frameInterval = 2;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
@@ -131,7 +134,7 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)dealloc
 {
-    [self.displayLink invalidate];
+//    [self.displayLink invalidate];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -424,16 +427,12 @@ typedef void (^TBBlurEffectBlock)(void);
     
     CGFloat containerHeight = self.actionContainer.bounds.size.height;
     
-    __block UIImage *originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
-    TBBlurEffectBlock blurBlock = ^void() {
-        originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
-    };
-    [self.blurBlocks addObject:blurBlock];
+    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
     
-    CGFloat heightLargerThanImage = containerHeight - originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
+    CGFloat heightLargerThanImage = containerHeight - self.originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
     
     __block BOOL useBoxBlurEffect = NO;
-    self.displayLink.paused = YES;
+//    self.displayLink.paused = YES;
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
@@ -441,8 +440,10 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBWeakSelf(self);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
-                    UIImage *backgroundImage = [originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.ambientColor colorWithAlphaComponent:0.5]];
-                    self.actionContainer.image = backgroundImage;
+                    UIImage *backgroundImage = [self.originalBackgroundImage drn_boxblurImageWithBlur:blurRadius withTintColor:[self.ambientColor colorWithAlphaComponent:0.5]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.actionContainer.image = backgroundImage;
+                    });
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -519,7 +520,7 @@ typedef void (^TBBlurEffectBlock)(void);
         else {
             targetFrame = sourceFrame;
         }
-        UIImage *cuttedImage = [self cutFromImage:originalBackgroundImage inRect:targetFrame];
+        UIImage *cuttedImage = [self cutFromImage:self.originalBackgroundImage inRect:targetFrame];
         return cuttedImage;
     };
     
@@ -533,7 +534,9 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
-                    self.actionContainer.header.image = backgroundImage;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.actionContainer.header.image = backgroundImage;
+                    });
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -560,7 +563,9 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
-                    self.actionContainer.custom.image = backgroundImage;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.actionContainer.custom.image = backgroundImage;
+                    });
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -590,9 +595,11 @@ typedef void (^TBBlurEffectBlock)(void);
                     UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
                     UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
                     UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
-                    [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
-                    [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
-                    obj.backgroundColor = [UIColor clearColor];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
+                        [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
+                        obj.backgroundColor = [UIColor clearColor];
+                    });
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -613,15 +620,20 @@ typedef void (^TBBlurEffectBlock)(void);
     
     if (useBoxBlurEffect) {
 //        性能问题，暂时关闭
-//        self.displayLink.paused = NO;
+//        [self.timer fire];
     }
 }
 
 - (void)refreshBlurEffect
 {
-    for (void (^blurBlock)() in self.blurBlocks) {
-        blurBlock();
-    }
+    CGFloat containerHeight = self.actionContainer.bounds.size.height;
+    
+    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        for (void (^blurBlock)() in self.blurBlocks) {
+            blurBlock();
+        }
+    });
 }
 
 - (void)setupContainerFrame
@@ -633,12 +645,13 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)show
 {
+//    [self.timer invalidate];
+//    self.timer = nil;
+//    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshBlurEffect) userInfo:nil repeats:YES];
+    
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
-    
-    self.displayLink.paused = YES;
-    [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
     
     [self setupNewWindow];
     
@@ -683,6 +696,9 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)buttonTapped:(TBActionButton *)sender
 {
+//    [self.timer invalidate];
+//    self.timer = nil;
+    
     if (![self isVisible]) {
         return;
     }
@@ -724,11 +740,12 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)close
 {
+//    [self.timer invalidate];
+//    self.timer = nil;
+    
     if (![self isVisible]) {
         return;
     }
-    
-    [self.displayLink invalidate];
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];

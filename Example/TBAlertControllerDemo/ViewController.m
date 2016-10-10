@@ -24,7 +24,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     _leakTest = [NSObject new];
-    [self runSpinAnimationOnView:self.imageView duration:1 rotations:1 repeat:HUGE_VALF];
+//    [self runSpinAnimationOnView:self.imageView duration:1 rotations:1 repeat:HUGE_VALF];
 }
 
 - (void) runSpinAnimationOnView:(UIView*)view duration:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat;
