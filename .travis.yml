@@ -8,6 +8,7 @@ env:
   - FRAMEWORK_NAME=TBActionSheetKit
 before_install:
 - brew update
+- brew upgrade xctool
 - brew outdated carthage || brew upgrade carthage
 before_script:
 #- carthage bootstrap
