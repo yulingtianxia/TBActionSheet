@@ -8,14 +8,13 @@ env:
   - FRAMEWORK_NAME=TBActionSheetKit
 before_install:
 - brew update
-- brew outdated xctool || brew upgrade xctool
 - brew outdated carthage || brew upgrade carthage
 before_script:
 #- carthage bootstrap
 before_deploy:
 - carthage build --no-skip-current
 - carthage archive $FRAMEWORK_NAME
-script: xctool -project Example/TBAlertControllerDemo.xcodeproj -scheme TBAlertControllerDemo
+script: xcodebuild -project Example/TBAlertControllerDemo.xcodeproj -scheme TBAlertControllerDemo
   -configuration Release -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
 deploy:
   provider: releases
