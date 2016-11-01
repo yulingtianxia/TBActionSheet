@@ -27,9 +27,7 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 **TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
 
-This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
-
-BTW, TBActionSheet also suppots BLOCK now!
+BTW, `TBActionSheet` also suppots BLOCK now!
 
 ## Features
 
@@ -261,6 +259,31 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 ```
 
 There is also an example project for `TBActionSheet`.
+
+## TBAlertController
+
+This repo also include `TBAlertController`, which unifies `UIAlertController`, `UIAlertView`, and `UIActionSheet`. `TBAlertController` will use `UIAlertController` on iOS 8.2 and later. On the contrary, it will use `UIAlertView` or `UIActionSheet`.
+
+The API Usage of `TBAlertController` is similar to `UIAlertController`. I also provide `TBAlertAction` instead of `UIAlertAction`.
+
+There is an example:
+
+```
+TBAlertController *controller = [TBAlertController alertControllerWithTitle:@"TBAlertController" message:@"AlertStyle" preferredStyle:TBAlertControllerStyleAlert];
+TBAlertAction *clickme = [TBAlertAction actionWithTitle:@"点我" style: TBAlertActionStyleDefault handler:^(TBAlertAction * _Nonnull action) {
+    NSLog(@"%@",action.title);
+}];
+TBAlertAction *cancel = [TBAlertAction actionWithTitle:@"取消" style: TBAlertActionStyleCancel handler:^(TBAlertAction * _Nonnull action) {
+    NSLog(@"%@",action.title);
+}];
+[controller addAction:clickme];
+[controller addAction:cancel];
+[self presentViewController:controller animated:YES completion:nil];
+```
+
+
+
+For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
 
 ## Contributing
 
