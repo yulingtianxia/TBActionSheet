@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style;    // returns index of button. 0 based.
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
-- (TBActionButton *)buttonAtIndex:(NSInteger)buttonIndex;
+- (nullable TBActionButton *)buttonAtIndex:(NSInteger)buttonIndex;
 @property(nonatomic,readonly) NSInteger numberOfButtons;
 @property(nonatomic) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
 @property(nonatomic) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
