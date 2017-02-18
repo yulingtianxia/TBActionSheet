@@ -97,7 +97,9 @@
     self.animationDurationSlider.value = self.actionSheet.animationDuration;
     self.animationDumpingRatioSlider.value = self.actionSheet.animationDampingRatio;
     self.animationVelocitySlider.value = self.actionSheet.animationVelocity;
-    self.ambientColorSlider.value = 0;
+    CGFloat hue;
+    [self.actionSheet.ambientColor getHue:&hue saturation:nil brightness:nil alpha:nil];
+    self.ambientColorSlider.value = hue;
 }
 
 - (void)refreshActionSheet

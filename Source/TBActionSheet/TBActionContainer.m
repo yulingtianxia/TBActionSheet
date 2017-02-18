@@ -66,12 +66,17 @@
 
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view
 {
+    return [self useSystemBlurEffectUnderView:view withColor:nil];
+}
+
+- (BOOL)useSystemBlurEffectUnderView:(UIView *)view withColor:(UIColor *)color
+{
     if (!view || (kiOS10Later && self.actionSheet.rectCornerRadius > 0)) {
         return NO;
     }
     if (kiOS8Later) {
         UIView *colorView = [[UIView alloc] initWithFrame:view.frame];
-        colorView.backgroundColor = self.actionSheet.ambientColor;
+        colorView.backgroundColor = color ? color : self.actionSheet.ambientColor;
         colorView.layer.masksToBounds = YES;
         colorView.tbRectCorner = view.tbRectCorner;
         

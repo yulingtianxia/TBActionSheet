@@ -176,8 +176,13 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex
 {
+    return [self buttonAtIndex:buttonIndex].currentTitle;
+}
+
+- (TBActionButton *)buttonAtIndex:(NSInteger)buttonIndex
+{
     if ([self isIndexValid:buttonIndex]) {
-        return self.buttons[buttonIndex].currentTitle;
+        return self.buttons[buttonIndex];
     }
     return nil;
 }
@@ -586,15 +591,13 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
-            obj.normalColor = nil;
-            obj.highlightedColor = nil;
-            if (![self.actionContainer useSystemBlurEffectUnderView:obj]) {
+            if (![self.actionContainer useSystemBlurEffectUnderView:obj withColor:obj.normalColor]) {
                 TBWeakSelf(self);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
-                    UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
-                    UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:[UIColor colorWithWhite:0.5 alpha:0.5]];
+                    UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor: (obj.normalColor ? obj.normalColor : self.ambientColor)];
+                    UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:(obj.highlightedColor ? obj.highlightedColor : [UIColor colorWithWhite:0.5 alpha:0.5])];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
                         [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
@@ -609,12 +612,18 @@ typedef void (^TBBlurEffectBlock)(void);
                 [obj setBackgroundImage:nil forState:UIControlStateNormal];
                 [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
             }
+            obj.normalColor = nil;
+            obj.highlightedColor = nil;
         }
         else {
             [obj setBackgroundImage:nil forState:UIControlStateNormal];
             [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
-            obj.normalColor = self.ambientColor;
-            obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+            if (!obj.normalColor) {
+                obj.normalColor = self.ambientColor;
+            }
+            if (!obj.highlightedColor) {
+                obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
+            }
         }
     }];
     

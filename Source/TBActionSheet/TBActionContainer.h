@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)useSystemBlurEffect;
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view;
+- (BOOL)useSystemBlurEffectUnderView:(UIView *)view withColor:(nullable UIColor *)color;
 
 - (void)cleanTempViews;
 

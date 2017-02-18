@@ -66,9 +66,6 @@
 {
     _normalColor = normalColor;
     self.backgroundColor = normalColor;
-    if (normalColor && !self.highlightedColor) {
-        self.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
-    }
 }
 
 @end

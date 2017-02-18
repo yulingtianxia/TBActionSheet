@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
     TBActionButtonStyleDefault = 0,
     TBActionButtonStyleCancel,
-    TBActionButtonStyleDestructive
+    TBActionButtonStyleDestructive,
 };
 
 @interface TBActionButton : UIButton
