@@ -54,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)showInView:(nullable UIView *)view __deprecated;
 
+/**
+ *  取消 ActionSheet 的方法
+ */
+- (void)close;
+
 //custom UI
 /**
  *  按钮高度

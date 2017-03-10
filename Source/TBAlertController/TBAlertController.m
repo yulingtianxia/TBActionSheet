@@ -34,29 +34,31 @@
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        Class aClass = [self class];
-        
-        SEL originalSelector = @selector(presentViewController:animated:completion:);
-        SEL swizzledSelector = @selector(tb_presentViewController:animated:completion:);
-        
-        Method originalMethod = class_getInstanceMethod(aClass, originalSelector);
-        Method swizzledMethod = class_getInstanceMethod(aClass, swizzledSelector);
-        
-        BOOL didAddMethod =
-        class_addMethod(aClass,
-                        originalSelector,
-                        method_getImplementation(swizzledMethod),
-                        method_getTypeEncoding(swizzledMethod));
-        
-        if (didAddMethod) {
-            class_replaceMethod(aClass,
-                                swizzledSelector,
-                                method_getImplementation(originalMethod),
-                                method_getTypeEncoding(originalMethod));
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod);
-        }
+        [self swizzleSelector:@selector(presentViewController:animated:completion:) withAnotherSelector:@selector(tb_presentViewController:animated:completion:)];
     });
+}
+
++ (void)swizzleSelector:(SEL)originalSelector withAnotherSelector:(SEL)swizzledSelector
+{
+    Class aClass = [self class];
+    
+    Method originalMethod = class_getInstanceMethod(aClass, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(aClass, swizzledSelector);
+    
+    BOOL didAddMethod =
+    class_addMethod(aClass,
+                    originalSelector,
+                    method_getImplementation(swizzledMethod),
+                    method_getTypeEncoding(swizzledMethod));
+    
+    if (didAddMethod) {
+        class_replaceMethod(aClass,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
 }
 
 #pragma mark - Method Swizzling
@@ -126,6 +128,8 @@
 @property (nullable, nonatomic, copy, readwrite) NSArray< void (^)(UITextField *textField)> *textFieldHandlers;
 
 @property (nonatomic, readwrite) TBAlertControllerStyle preferredStyle;
+@property (nonatomic, copy, nullable) void (^completion)() ;
+
 @end
 
 @implementation TBAlertController
@@ -177,6 +181,18 @@
         }
     }
     return controller;
+}
+
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
+{
+    [super dismissViewControllerAnimated:flag completion:completion];
+    if ([self.adaptiveAlert isKindOfClass:[UIAlertView class]] || [self.adaptiveAlert isKindOfClass:[UIActionSheet class]]) {
+        self.completion = completion;
+        [self.adaptiveAlert dismissWithClickedButtonIndex:-1 animated:flag];
+    }
+    else if ([self.adaptiveAlert isKindOfClass:[UIAlertController class]]) {
+        [self.adaptiveAlert dismissViewControllerAnimated:flag completion:completion];
+    }
 }
 
 #pragma mark - getter&setter
@@ -331,6 +347,7 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+    self.completion();
     self.ownerController.tbAlertController = nil;
 }
 
@@ -351,6 +368,7 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+    self.completion();
     self.ownerController.tbAlertController = nil;
 }
 

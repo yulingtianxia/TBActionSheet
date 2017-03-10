@@ -73,6 +73,7 @@
     TBActionButton *btn = [self.actionSheet buttonAtIndex:self.actionSheet.numberOfButtons-1];
     btn.normalColor = [UIColor yellowColor];
     btn.highlightedColor = [UIColor greenColor];
+    
     [self.actionSheet show];
     [self.conditioner setUpUI];
 }
