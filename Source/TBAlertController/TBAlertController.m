@@ -85,6 +85,7 @@
                 controller.ownerController = self;
                 [controller.adaptiveAlert showInView:self.view];
             }
+            controller.completion = completion;
         }
     }
     else {
@@ -128,7 +129,6 @@
 @property (nullable, nonatomic, copy, readwrite) NSArray< void (^)(UITextField *textField)> *textFieldHandlers;
 
 @property (nonatomic, readwrite) TBAlertControllerStyle preferredStyle;
-@property (nonatomic, copy, nullable) void (^completion)() ;
 
 @end
 
@@ -337,6 +337,13 @@
 
 #pragma mark - TBActionSheetDelegate
 
+- (void)didPresentActionSheet:(UIActionSheet *)actionSheet
+{
+    if (self.completion) {
+        self.completion();
+    }
+}
+
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     __weak __typeof(TBAlertAction *)weakAction = self.mutableActions[buttonIndex];
@@ -347,7 +354,9 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    self.completion();
+    if (self.completion) {
+        self.completion();
+    }
     self.ownerController.tbAlertController = nil;
 }
 
@@ -357,6 +366,13 @@
 }
 
 #pragma mark - UIAlertViewDelegate
+
+- (void)didPresentAlertView:(UIAlertView *)alertView
+{
+    if (self.completion) {
+        self.completion();
+    }
+}
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
@@ -368,7 +384,9 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    self.completion();
+    if (self.completion) {
+        self.completion();
+    }
     self.ownerController.tbAlertController = nil;
 }
 
