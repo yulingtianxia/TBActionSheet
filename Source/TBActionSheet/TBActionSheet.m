@@ -517,7 +517,9 @@ typedef void (^TBBlurEffectBlock)(void);
         [btn setCornerRadius:self.rectCornerRadius];
     }
     
+    TBWeakSelf(self);
     UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
+        TBStrongSelf(self);
         CGRect targetFrame;
         if (heightLargerThanImage > 0) {
             targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - heightLargerThanImage, sourceFrame.size.width, sourceFrame.size.height);
