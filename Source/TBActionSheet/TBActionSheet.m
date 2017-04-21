@@ -726,8 +726,7 @@ typedef void (^TBBlurEffectBlock)(void);
             [self.delegate actionSheet:self willDismissWithButtonIndex:index];
         }
         
-        self.window.rootViewController = nil;
-        [self.previousKeyWindow makeKeyAndVisible];
+        [self cleanWindow];
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:clickedButtonAtIndex:)]) {
             [self.delegate actionSheet:self clickedButtonAtIndex:index];
@@ -762,8 +761,7 @@ typedef void (^TBBlurEffectBlock)(void);
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
     } completion:^(BOOL finished) {
-        self.window.rootViewController = nil;
-        [self.previousKeyWindow makeKeyAndVisible];
+        [self cleanWindow];
         
         if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
             [self.delegate actionSheetCancel:self];
@@ -790,6 +788,13 @@ typedef void (^TBBlurEffectBlock)(void);
 
         self.visible = NO;
     }];
+}
+
+- (void)cleanWindow
+{
+    self.window.rootViewController = nil;
+    self.window = nil;
+    [self.previousKeyWindow makeKeyAndVisible];
 }
 
 #pragma mark - handle Notification
