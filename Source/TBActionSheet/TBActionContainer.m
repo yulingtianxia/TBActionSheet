@@ -13,9 +13,12 @@
 #import "UIView+TBAdditions.h"
 
 @interface TBActionContainer ()
+
 @property (weak,nonatomic) TBActionSheet *actionSheet;
 @property (nonatomic) NSMutableArray<UIView *> *tempViews;
+
 @end
+
 @implementation TBActionContainer
 
 - (instancetype)initWithSheet:(TBActionSheet *)actionSheet

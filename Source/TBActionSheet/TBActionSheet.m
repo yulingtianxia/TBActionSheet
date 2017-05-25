@@ -24,6 +24,7 @@ typedef void (^TBBlurEffectBlock)(void);
 @interface TBActionSheet ()
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
+@property (nonatomic,nonnull,strong) UIScrollView *scrollView;
 @property (nonatomic,nonnull,strong) TBActionBackground * background;
 @property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
 @property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
@@ -69,8 +70,10 @@ typedef void (^TBBlurEffectBlock)(void);
         self.backgroundColor = [UIColor clearColor];
         _background = [[TBActionBackground alloc] initWithFrame:self.bounds];
         [self addSubview:_background];
+        _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        [self addSubview:_scrollView];
         _actionContainer = [[TBActionContainer alloc] initWithSheet:self];
-        [self addSubview:_actionContainer];
+        [_scrollView addSubview:_actionContainer];
         _buttons = [NSMutableArray array];
         _separators = [NSMutableArray array];
         _blurBlocks = [NSMutableArray array];
@@ -419,7 +422,9 @@ typedef void (^TBBlurEffectBlock)(void);
         lastY -= self.offsetY;
     }
     
-    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, lastY);
+    self.actionContainer.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
+    self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, MIN(lastY, kScreenHeight));
+    self.scrollView.contentSize = CGSizeMake(self.sheetWidth, lastY);
 }
 
 /**
@@ -650,7 +655,8 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)setupContainerFrame
 {
-    self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0), self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+    self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0)), self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
+    self.scrollView.contentOffset = CGPointMake(0, MAX(0, self.actionContainer.frame.size.height + (!kiOS7Later? 20: 0) - kScreenHeight));
 }
 /**
  *  显示 ActionSheet
@@ -719,7 +725,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
     } completion:^(BOOL finished) {
         //这里之所以把各种 delegate 调用都放在动画完成后是有原因的：为了支持在回调方法中 show 另一个 actionsheet，系统的 UIActionSheet 的调用时机也是如此。
         
@@ -760,7 +766,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.actionContainer.frame = CGRectMake(kContainerLeft, kScreenHeight, self.actionContainer.frame.size.width, self.actionContainer.frame.size.height);
+        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
     } completion:^(BOOL finished) {
         [self cleanWindow];
         
