@@ -256,10 +256,11 @@ typedef void (^TBBlurEffectBlock)(void);
     actionSheetVC.actionSheet = self;
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.windowLevel = UIWindowLevelStatusBar + 100;
     self.window.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.window.opaque = NO;
-    self.window.rootViewController = actionSheetVC;
     [self.window makeKeyAndVisible];
+    self.window.rootViewController = actionSheetVC;
 }
 
 /**
