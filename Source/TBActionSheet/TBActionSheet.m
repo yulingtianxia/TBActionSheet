@@ -21,7 +21,8 @@ const CGFloat blurRadius = 0.7;
 
 typedef void (^TBBlurEffectBlock)(void);
 
-@interface TBActionSheet ()
+@interface TBActionSheet () <UIScrollViewDelegate>
+
 @property (nonatomic,readwrite,getter=isVisible) BOOL visible;
 @property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
 @property (nonatomic,nonnull,strong) UIScrollView *scrollView;
@@ -35,6 +36,7 @@ typedef void (^TBBlurEffectBlock)(void);
 //@property (weak, nonatomic) NSTimer *timer;
 @property (strong, nonatomic, nullable) UIImage *originalBackgroundImage;
 @property (strong, nonatomic) NSMutableArray<TBBlurEffectBlock> *blurBlocks;
+
 @end
 
 @implementation TBActionSheet
@@ -71,6 +73,7 @@ typedef void (^TBBlurEffectBlock)(void);
         _background = [[TBActionBackground alloc] initWithFrame:self.bounds];
         [self addSubview:_background];
         _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        _scrollView.delegate = self;
         [self addSubview:_scrollView];
         _actionContainer = [[TBActionContainer alloc] initWithSheet:self];
         [_scrollView addSubview:_actionContainer];
@@ -423,7 +426,7 @@ typedef void (^TBBlurEffectBlock)(void);
     }
     
     self.actionContainer.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
-    self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, MIN(lastY, kScreenHeight));
+    self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.sheetWidth, MIN(self.actionContainer.frame.size.height, kScreenHeight));
     self.scrollView.contentSize = CGSizeMake(self.sheetWidth, lastY);
 }
 
@@ -527,12 +530,7 @@ typedef void (^TBBlurEffectBlock)(void);
     UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
         TBStrongSelf(self);
         CGRect targetFrame;
-        if (heightLargerThanImage > 0) {
-            targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - heightLargerThanImage, sourceFrame.size.width, sourceFrame.size.height);
-        }
-        else {
-            targetFrame = sourceFrame;
-        }
+        targetFrame = CGRectMake(sourceFrame.origin.x, sourceFrame.origin.y - MAX(0, self.scrollView.contentOffset.y), sourceFrame.size.width, sourceFrame.size.height);
         UIImage *cuttedImage = [self cutFromImage:self.originalBackgroundImage inRect:targetFrame];
         return cuttedImage;
     };
@@ -547,9 +545,11 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.header.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        self.actionContainer.header.image = backgroundImage;
-                    });
+                    if (backgroundImage) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.actionContainer.header.image = backgroundImage;
+                        });
+                    }
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -576,9 +576,11 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *backgroundImage = [cutOriginalBackgroundImageInRect(self.actionContainer.custom.frame) drn_boxblurImageWithBlur:blurRadius withTintColor:self.ambientColor];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        self.actionContainer.custom.image = backgroundImage;
-                    });
+                    if (backgroundImage) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.actionContainer.custom.image = backgroundImage;
+                        });
+                    }
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -604,13 +606,15 @@ typedef void (^TBBlurEffectBlock)(void);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
                     UIImage *cuttedImage = cutOriginalBackgroundImageInRect(obj.frame);
-                    UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor: (obj.normalColor ? obj.normalColor : self.ambientColor)];
-                    UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:(obj.highlightedColor ? obj.highlightedColor : [UIColor colorWithWhite:0.5 alpha:0.5])];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
-                        [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
-                        obj.backgroundColor = [UIColor clearColor];
-                    });
+                    if (cuttedImage) {
+                        UIImage *backgroundImageNormal = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor: (obj.normalColor ? obj.normalColor : self.ambientColor)];
+                        UIImage *backgroundImageHighlighted = [cuttedImage drn_boxblurImageWithBlur:blurRadius withTintColor:(obj.highlightedColor ? obj.highlightedColor : [UIColor colorWithWhite:0.5 alpha:0.5])];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [obj setBackgroundImage:backgroundImageNormal forState:UIControlStateNormal];
+                            [obj setBackgroundImage:backgroundImageHighlighted forState:UIControlStateHighlighted];
+                            obj.backgroundColor = [UIColor clearColor];
+                        });
+                    }
                 };
                 [self.blurBlocks addObject:blurBlock];
                 useBoxBlurEffect = YES;
@@ -655,7 +659,7 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)setupContainerFrame
 {
-    self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0)), self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
+    self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0)), self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
     self.scrollView.contentOffset = CGPointMake(0, MAX(0, self.actionContainer.frame.size.height + (!kiOS7Later? 20: 0) - kScreenHeight));
 }
 /**
@@ -725,7 +729,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
+        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
     } completion:^(BOOL finished) {
         //这里之所以把各种 delegate 调用都放在动画完成后是有原因的：为了支持在回调方法中 show 另一个 actionsheet，系统的 UIActionSheet 的调用时机也是如此。
         
@@ -766,7 +770,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.scrollView.frame.size.height, kScreenHeight));
+        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
     } completion:^(BOOL finished) {
         [self cleanWindow];
         
@@ -810,6 +814,15 @@ typedef void (^TBBlurEffectBlock)(void);
     self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
     [self setupContainerFrame];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    for (void (^blurBlock)() in self.blurBlocks) {
+        blurBlock();
+    }
 }
 
 #pragma mark - help methods

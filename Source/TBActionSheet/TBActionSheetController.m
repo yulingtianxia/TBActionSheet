@@ -58,7 +58,7 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (self.actionSheet.blurEffectEnabled && !kiOS8Later) {
+    if (self.actionSheet.blurEffectEnabled && ((kiOS10Later && self.actionSheet.rectCornerRadius > 0) || !kiOS8Later)) {
         [self.actionSheet setupStyle];
     }
 }
