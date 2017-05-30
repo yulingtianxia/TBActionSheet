@@ -38,6 +38,7 @@ BTW, `TBActionSheet` also suppots BLOCK now!
 - [x] Closure when a button or background is pressed
 - [x] Similar implementation to UIActionSheet
 - [x] Add button using block syntax
+- [x] Scroll the whole action sheet.
 - [x] Blur Effect under iOS7
 - [x] Autorotation under iOS8
 - [x] Cocoapods
@@ -300,3 +301,4 @@ yulingtianxia, yulingtianxia@gmail.com
 ## License
 
 TBActionSheet is available under the MIT license. See the LICENSE file for more info.
+

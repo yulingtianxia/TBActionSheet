@@ -109,11 +109,6 @@
         NSLog(@"%@ %@",action.title,self.leakTest);
     }];
     [controller addAction:clickme];
-    [controller addAction:clickme];
-    [controller addAction:clickme];
-    [controller addAction:clickme];
-    [controller addAction:clickme];[controller addAction:clickme];
-    [controller addAction:clickme];
     [controller addAction:cancel];
     [self presentViewController:controller animated:YES completion:nil];
 }
