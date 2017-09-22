@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, TBAlertControllerStyle) {
 @property (nullable,nonatomic,weak) UIViewController *ownerController;
 @property (nullable,nonatomic,strong) UIColor *tintColor;
 @property(nonatomic,assign) UIAlertViewStyle alertViewStyle;
-@property (nonatomic, copy, nullable) void (^completion)();// Don't use this.
+@property (nonatomic, copy, nullable) void (^completion)(void);// Don't use this.
 
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(TBAlertControllerStyle)preferredStyle;
 - (void)addAction:(TBAlertAction *)action;

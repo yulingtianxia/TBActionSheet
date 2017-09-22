@@ -44,17 +44,22 @@
     return self;
 }
 
-- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+- (BOOL)isSupportSystemBlurEffect
 {
-    
+    // iOS 10 圆角毛玻璃有 bug，使用 box blur 方案
+    if (kiOS10Later && !kiOS11Later && self.actionSheet.rectCornerRadius > 0) {
+        return NO;
+    }
+    // iOS 8 之后才支持
+    if (!kiOS8Later) {
+        return NO;
+    }
+    return YES;
 }
 
 - (BOOL)useSystemBlurEffect
 {
-    if (kiOS10Later && self.actionSheet.rectCornerRadius > 0) {
-        return NO;
-    }
-    if (kiOS8Later) {
+    if ([self isSupportSystemBlurEffect]) {
         self.backgroundColor = self.actionSheet.ambientColor;
         self.layer.masksToBounds = YES;
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleLight]];
@@ -74,10 +79,10 @@
 
 - (BOOL)useSystemBlurEffectUnderView:(UIView *)view withColor:(UIColor *)color
 {
-    if (!view || (kiOS10Later && self.actionSheet.rectCornerRadius > 0)) {
+    if (!view) {
         return NO;
     }
-    if (kiOS8Later) {
+    if ([self isSupportSystemBlurEffect]) {
         UIView *colorView = [[UIView alloc] initWithFrame:view.frame];
         colorView.backgroundColor = color ? color : self.actionSheet.ambientColor;
         colorView.layer.masksToBounds = YES;
@@ -101,7 +106,6 @@
             TBActionButton *btn = (TBActionButton *)view;
             btn.behindColorView = colorView;
         }
-        
         return YES;
     }
     return NO;

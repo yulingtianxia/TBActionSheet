@@ -74,6 +74,7 @@ typedef void (^TBBlurEffectBlock)(void);
         [self addSubview:_background];
         _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
         _scrollView.delegate = self;
+        _scrollView.showsVerticalScrollIndicator = NO;
         [self addSubview:_scrollView];
         _actionContainer = [[TBActionContainer alloc] initWithSheet:self];
         [_scrollView addSubview:_actionContainer];
@@ -443,8 +444,6 @@ typedef void (^TBBlurEffectBlock)(void);
     
     self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
     
-    CGFloat heightLargerThanImage = containerHeight - self.originalBackgroundImage.size.height;// 计算 container 的高度超出截图的数值
-    
     __block BOOL useBoxBlurEffect = NO;
 //    self.displayLink.paused = YES;
     
@@ -651,7 +650,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        for (void (^blurBlock)() in self.blurBlocks) {
+        for (void (^blurBlock)(void) in self.blurBlocks) {
             blurBlock();
         }
     });
@@ -820,7 +819,7 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    for (void (^blurBlock)() in self.blurBlocks) {
+    for (void (^blurBlock)(void) in self.blurBlocks) {
         blurBlock();
     }
 }
