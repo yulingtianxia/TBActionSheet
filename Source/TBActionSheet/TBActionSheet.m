@@ -853,9 +853,8 @@ typedef void (^TBBlurEffectBlock)(void);
  *  从区域截屏
  *
  *  @param aRect 区域
- *  @param view  截取的 view
  *
- *  @return  截取的图片
+ *  @return 截取的图片
  */
 - (UIImage *)screenShotRect:(CGRect)aRect
 {
@@ -880,6 +879,7 @@ typedef void (^TBBlurEffectBlock)(void);
     return [self cutFromImage:screenshotimage inRect:aRect];
 //    return [self cutFromImage:[self.previousKeyWindow tb_snapshot] inRect:aRect];
 }
+
 /**
  *  从图片中切图
  *
