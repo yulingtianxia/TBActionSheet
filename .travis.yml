@@ -1,8 +1,8 @@
-osx_image: xcode9
+osx_image: xcode9.1
 language: objective-c
 xcode_project: TBAlertControllerDemo
 xcode_scheme: TBActionSheetKit
-xcode_sdk: iphoneos11.0
+xcode_sdk: iphoneos11.1
 env:
   global:
   - FRAMEWORK_NAME=TBActionSheetKit
