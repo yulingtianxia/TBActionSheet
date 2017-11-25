@@ -46,10 +46,6 @@
 
 - (BOOL)isSupportSystemBlurEffect
 {
-    // iOS 10 圆角毛玻璃有 bug，使用 box blur 方案
-    if (kiOS10Later && !kiOS11Later && self.actionSheet.rectCornerRadius > 0) {
-        return NO;
-    }
     // iOS 8 之后才支持
     if (!kiOS8Later) {
         return NO;

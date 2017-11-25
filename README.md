@@ -34,7 +34,7 @@ You can also add your custom `UIView` under the title of `TBActionSheet`:
 
 BTW, `TBActionSheet` also suppots BLOCK now!
 
-## Features
+## 🌟 Feature
 
 - [x] Title
 - [x] Description message
@@ -49,16 +49,22 @@ BTW, `TBActionSheet` also suppots BLOCK now!
 - [x] Cocoapods
 - [x] Carthage
 
-## Articles
+## 📚 Article
 
-[自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2016/07/18/TBActionSheet/)
+- [自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2 016/07/18/TBActionSheet/)
+- [腾讯实习第一个月工作总结](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/)
 
-## Requirements
+## 🔮 Example
+
+To run the example project, clone the repo and run MTDemo target.
+
+## 💰 Requirement
 
 - iOS 6.0+ (iOS 8.0+ full features supported)
-- Xcode 7.3+
+- Xcode 9.1+
 
-## Installation
+## 📲 Installation
+
 ### CocoaPods
 
 [CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
@@ -110,7 +116,7 @@ Run `carthage update` to build the framework and drag the built `TBActionSheetKi
 
 Just drag the "Source" document folder into your project.
 
-## Usage
+## 🐒 Usage
 
 ### TLDR
 
@@ -292,18 +298,18 @@ TBAlertAction *cancel = [TBAlertAction actionWithTitle:@"取消" style: TBAlertA
 
 For more infomation about `TBAlertController`, please visit [this post](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/) of my blog.
 
-## Contributing
+## ❤️ Contributed
 
 - If you **need help** or you'd like to **ask a general question**, open an issue.
 - If you **found a bug**, open an issue.
 - If you **have a feature request**, open an issue.
 - If you **want to contribute**, submit a pull request.
 
-## Author
+## 👨🏻‍💻 Author
 
 yulingtianxia, yulingtianxia@gmail.com
 
-## License
+## 👮🏻 License
 
 TBActionSheet is available under the MIT license. See the LICENSE file for more info.
 

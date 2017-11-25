@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@interface TBMaskView: UIView
+
+@property (nonatomic) UIBezierPath *maskPath;
+
+@end
+
 @interface UIView (TBActionSheet)
 - (void)interruptGesture;
 @end

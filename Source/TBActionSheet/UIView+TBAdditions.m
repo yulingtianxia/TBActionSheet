@@ -8,10 +8,24 @@
 
 #import "UIView+TBAdditions.h"
 #import <objc/runtime.h>
+#import "TBMacro.h"
+
+@implementation TBMaskView
+
++ (Class)layerClass
+{
+    return CAShapeLayer.class;
+}
+
+- (void)setMaskPath:(UIBezierPath *)maskPath
+{
+    _maskPath = maskPath;
+    ((CAShapeLayer *)self.layer).path = maskPath.CGPath;
+}
+
+@end
 
 #pragma mark - UIView (TBActionSheet)
-
-
 
 @implementation UIView (TBActionSheet)
 
@@ -46,6 +60,22 @@
     objc_setAssociatedObject(self, @selector(tbRectCorner), @(tbRectCorner), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (void)applyMaskPath:(UIBezierPath *)maskPath
+{
+    TBMaskView *maskView = nil;
+    if (maskPath) {
+        maskView = [[TBMaskView alloc] initWithFrame:self.bounds];
+        maskView.maskPath = maskPath;
+    }
+    // iOS 10 圆角毛玻璃有 bug
+    if ([self isKindOfClass:UIVisualEffectView.class] && kiOS10Later && !kiOS11Later && self.tbRectCorner > 0) {
+        self.maskView = maskView;
+    }
+    else {
+        self.layer.mask = maskView.layer;
+    }
+}
+
 - (void)setTopCornerRadius:(CGFloat) radius
 {
     if (radius < 0) {
@@ -54,10 +84,7 @@
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                      byRoundingCorners:(UIRectCornerTopLeft | UIRectCornerTopRight)
                                            cornerRadii:CGSizeMake(radius, radius)];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
+    [self applyMaskPath:maskPath];
 }
 
 - (void)setBottomCornerRadius:(CGFloat) radius
@@ -68,10 +95,7 @@
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
                                      byRoundingCorners:(UIRectCornerBottomLeft | UIRectCornerBottomRight)
                                            cornerRadii:CGSizeMake(radius, radius)];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
+    [self applyMaskPath:maskPath];
 }
 
 - (void)setAllCornerRadius:(CGFloat) radius
@@ -80,15 +104,12 @@
         return;
     }
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:radius];
-    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
-    maskLayer.frame = self.bounds;
-    maskLayer.path = maskPath.CGPath;
-    self.layer.mask = maskLayer;
+    [self applyMaskPath:maskPath];
 }
 
 - (void)setNoneCorner
 {
-    self.layer.mask = nil;
+    [self applyMaskPath:nil];
 }
 
 - (void)setCornerRadius:(CGFloat) radius
