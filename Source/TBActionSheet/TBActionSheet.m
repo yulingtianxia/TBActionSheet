@@ -33,7 +33,6 @@ typedef void (^TBBlurEffectBlock)(void);
 @property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
-//@property (weak, nonatomic) NSTimer *timer;
 @property (strong, nonatomic, nullable) UIImage *originalBackgroundImage;
 @property (strong, nonatomic) NSMutableArray<TBBlurEffectBlock> *blurBlocks;
 
@@ -623,25 +622,17 @@ typedef void (^TBBlurEffectBlock)(void);
                 [obj setBackgroundImage:nil forState:UIControlStateNormal];
                 [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
             }
-            obj.normalColor = nil;
-            obj.highlightedColor = nil;
+            obj.backgroundColor = [UIColor clearColor];
         }
         else {
             [obj setBackgroundImage:nil forState:UIControlStateNormal];
             [obj setBackgroundImage:nil forState:UIControlStateHighlighted];
-            if (!obj.normalColor) {
-                obj.normalColor = self.ambientColor;
-            }
+            obj.backgroundColor = obj.normalColor ?: self.ambientColor;
             if (!obj.highlightedColor) {
                 obj.highlightedColor = [UIColor colorWithWhite:0.5 alpha:0.5];
             }
         }
     }];
-    
-    if (useBoxBlurEffect) {
-//        性能问题，暂时关闭
-//        [self.timer fire];
-    }
 }
 
 - (void)refreshBlurEffect
@@ -666,10 +657,6 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)show
 {
-//    [self.timer invalidate];
-//    self.timer = nil;
-//    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(refreshBlurEffect) userInfo:nil repeats:YES];
-    
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
     }
@@ -717,9 +704,6 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)buttonTapped:(TBActionButton *)sender
 {
-//    [self.timer invalidate];
-//    self.timer = nil;
-    
     if (![self isVisible]) {
         return;
     }
@@ -760,9 +744,6 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)close
 {
-//    [self.timer invalidate];
-//    self.timer = nil;
-    
     if (![self isVisible]) {
         return;
     }

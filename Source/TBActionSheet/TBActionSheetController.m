@@ -56,10 +56,15 @@
     return [[window tb_viewControllerForStatusBarHidden] prefersStatusBarHidden];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (self.actionSheet.blurEffectEnabled && ((kiOS10Later && self.actionSheet.rectCornerRadius > 0) || !kiOS8Later)) {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    if (self.actionSheet.blurEffectEnabled && !kiOS8Later) {
         [self.actionSheet setupStyle];
     }
 }
+#pragma clang diagnostic pop
+
 @end

@@ -45,7 +45,7 @@
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
     if (highlighted) {
-        if (self.highlightedColor) {
+        if (self.highlightedColor && !self.currentBackgroundImage) {
             self.backgroundColor = self.highlightedColor;
         }
         else {
@@ -60,12 +60,6 @@
             self.behindColorView.alpha = 1;
         }
     }
-}
-
-- (void)setNormalColor:(UIColor *)normalColor
-{
-    _normalColor = normalColor;
-    self.backgroundColor = normalColor;
 }
 
 @end
