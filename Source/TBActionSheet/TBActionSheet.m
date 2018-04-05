@@ -314,7 +314,7 @@ typedef void (^TBBlurEffectBlock)(void);
             [self.actionContainer.header addSubview:self.titleLabel];
         }
         self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
-        if ([[[UIDevice currentDevice] systemVersion] floatValue]>=8.2) {
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.2) {
             self.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
         }
         else {
