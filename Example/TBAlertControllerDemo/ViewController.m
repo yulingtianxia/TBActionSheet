@@ -53,6 +53,7 @@
     
 //    UI Conditioner Demo
     self.actionSheet.customView = self.conditioner;
+    self.actionSheet.customViewIndex = 3;
 
 //    Github Logo Demo
 //    self.actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];
@@ -67,10 +68,10 @@
 //    self.actionSheet.customView = addBtn;
     
     __weak __typeof(ViewController *) weakSelf = self;
-    [self.actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleDefault handler:^(TBActionButton * _Nonnull button) {
+    [self.actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleCancel handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,weakSelf.leakTest);
     }];
-    TBActionButton *btn = [self.actionSheet buttonAtIndex:self.actionSheet.numberOfButtons-1];
+    TBActionButton *btn = [self.actionSheet buttonAtIndex:self.actionSheet.numberOfButtons - 1];
     btn.normalColor = [UIColor yellowColor];
     btn.highlightedColor = [UIColor greenColor];
     

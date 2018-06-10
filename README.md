@@ -41,7 +41,7 @@ BTW, `TBActionSheet` also suppots BLOCK now!
 
 - [x] Title
 - [x] Description message
-- [x] Custom Header View (Optional)
+- [x] Insert a custom view at anywhere
 - [x] Customizations: fonts, colors, dimensions, corners & more
 - [x] Closure when a button or background is pressed
 - [x] Similar implementation to UIActionSheet
@@ -126,6 +126,7 @@ Just drag the "Source" document folder into your project.
 You can refer to 'ViewController.m' in the TBAlertControllerDemo project.The base usage is same as 'UIActionSheet'.
 
 To let TBActionSheet looks like WeChat style, you can set these properties of `TBActionShet` or it's `UIAppearance` like this :
+
 ```
 sheetWidth = MIN(kScreenWidth, kScreenHeight);
 backgroundTransparentEnabled = NO;
@@ -162,6 +163,10 @@ The base usage is same to `UIActionSheet`. You can just replace `UIActionSheet` 
 @property(nonatomic) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
 
 @property(nonatomic,readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
+/**
+ 自定义视图在按钮中插入的 Index，值在 [0...numberOfButtons] 之间。如果 customView 为 nil，则 customViewIndex 值为 -1
+ */
+@property(nonatomic) NSInteger customViewIndex;
 /**
  *  是否可见
  */

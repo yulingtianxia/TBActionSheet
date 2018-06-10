@@ -224,6 +224,14 @@ typedef void (^TBBlurEffectBlock)(void);
     return -1;
 }
 
+- (NSInteger)customViewIndex
+{
+    if (!self.customView) {
+        return -1;
+    }
+    return MIN(MAX(_customViewIndex, 0), self.numberOfButtons);
+}
+
 - (void)setSeparatorColor:(UIColor *)separatorColor
 {
     if (separatorColor && separatorColor != _separatorColor) {
@@ -345,81 +353,68 @@ typedef void (^TBBlurEffectBlock)(void);
 
         handleLabelFrameBlock(self.messageLabel, self.message);
     }
-    //处理title与自定义视图间的分割线
+    
+    //处理title
     if ([self hasHeader]) {
         lastY += headerVerticalSpace;
         self.actionContainer.header.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
-        if (self.buttons.firstObject.style == TBActionButtonStyleCancel && !self.customView) {
-            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-            lastY = CGRectGetMaxY(self.actionContainer.header.frame) + bigFragment;
-        }
-        else {
-            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-            lastY = CGRectGetMaxY(self.actionContainer.header.frame) + smallFragment;
-        }
-    }
-    //处理自定义视图
-    if (self.customView) {
-        self.actionContainer.custom.frame = CGRectMake(0, lastY, self.sheetWidth, self.customView.frame.size.height);
-        self.customView.center = CGPointMake(self.sheetWidth / 2, self.customView.frame.size.height/2);
-        [self.actionContainer.custom addSubview:self.customView];
-        if (self.buttons.firstObject.style == TBActionButtonStyleCancel) {
-            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-            lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + bigFragment;
-        }
-        else {
-            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-            lastY = CGRectGetMaxY(self.actionContainer.custom.frame) + smallFragment;
-        }
     }
     
-    //计算按钮坐标并添加样式
-    [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        //inline block, 减少代码冗余
-        void(^addDefaultSeparatorBlock)(void) = ^() {
-            //上一个 button 如果是 cancel
-            if (idx>0&&self.buttons[idx-1].style == TBActionButtonStyleCancel) {
+    //插入自定义视图
+    void(^insertCustomViewAtIndex)(NSUInteger) = ^(NSUInteger idx) {
+        if (self.customViewIndex == idx) {
+            if (idx > 0 && idx <= self.numberOfButtons && self.buttons[idx - 1].style == TBActionButtonStyleCancel) {
                 [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
                 lastY += bigFragment;
             }
-            else {
+            else if (!(idx == 0 && ![self hasHeader])) {
                 [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
                 lastY += smallFragment;
             }
-        };
+            self.actionContainer.custom.frame = CGRectMake(0, lastY, self.sheetWidth, self.customView.frame.size.height);
+            self.customView.center = CGPointMake(self.sheetWidth / 2, self.customView.frame.size.height / 2);
+            [self.actionContainer.custom addSubview:self.customView];
+            lastY = CGRectGetMaxY(self.actionContainer.custom.frame);
+        }
+    };
+    
+    //计算按钮坐标并添加样式
+    [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        insertCustomViewAtIndex(idx);
         
         switch (obj.style) {
             case TBActionButtonStyleDefault: {
                 [obj setTitleColor:self.tintColor forState:UIControlStateNormal];
-                if (idx != 0) {
-                    addDefaultSeparatorBlock();
-                }
                 break;
             }
             case TBActionButtonStyleCancel: {
                 [obj setTitleColor:self.cancelButtonColor forState:UIControlStateNormal];
-                if (idx != 0) {
-                    [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-                    lastY += bigFragment;
-                }
                 break;
             }
             case TBActionButtonStyleDestructive: {
                 [obj setTitleColor:self.destructiveButtonColor forState:UIControlStateNormal];
-                if (idx != 0) {
-                    addDefaultSeparatorBlock();
-                }
                 break;
             }
-            default: {
-                break;
-            }
+        }
+        
+        //当前 button 如果是 cancel，或者上一个 button 是 cancel 且当前 button 没有插入 customView，就采用大间隙。
+        if (obj.style == TBActionButtonStyleCancel || (idx > 0
+                                                       && self.buttons[idx - 1].style == TBActionButtonStyleCancel && self.customViewIndex != idx)) {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
+            lastY += bigFragment;
+        }
+        else {
+            [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
+            lastY += smallFragment;
         }
         
         obj.frame = CGRectMake(0, lastY, self.sheetWidth, self.buttonHeight);
         lastY = CGRectGetMaxY(obj.frame);
         [self.actionContainer addSubview:obj];
     }];
+    
+    insertCustomViewAtIndex(self.numberOfButtons);
     
     if (self.offsetY < 0) {
         lastY -= self.offsetY;
@@ -441,7 +436,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     CGFloat containerHeight = self.actionContainer.bounds.size.height;
     
-    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
+    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight - containerHeight, self.sheetWidth, containerHeight)];
     
     __block BOOL useBoxBlurEffect = NO;
 //    self.displayLink.paused = YES;
@@ -475,54 +470,60 @@ typedef void (^TBBlurEffectBlock)(void);
         self.actionContainer.backgroundColor = nil;
     }
     
-    //清理容器内的圆角
-    self.actionContainer.header.tbRectCorner = TBRectCornerNone;
+    // 初始化容器内的圆角
+    self.actionContainer.header.tbRectCorner = TBRectCornerTop;
     self.actionContainer.custom.tbRectCorner = TBRectCornerNone;
+    // 所有 Cancel 按钮圆角
     for (TBActionButton *button in self.buttons) {
-        button.tbRectCorner = TBRectCornerNone;
+        button.tbRectCorner = button.style == TBActionButtonStyleCancel ? TBRectCornerAll : TBRectCornerNone;
+    }
+    // 最顶部圆角
+    if (![self hasHeader]) {
+        if (self.customViewIndex == 0) {
+            self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
+        }
+        else {
+            self.buttons.firstObject.tbRectCorner |= TBRectCornerTop;
+        }
+    }
+    // 最底部圆角
+    if (self.customViewIndex == self.numberOfButtons) {
+        self.actionContainer.custom.tbRectCorner |= TBRectCornerBottom;
+    }
+    else {
+        self.buttons.lastObject.tbRectCorner |= TBRectCornerBottom;
     }
     
-    //设置圆角
+    // 遍历设置圆角
     [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (self.buttons.count == 1) {
-            obj.tbRectCorner |= TBRectCornerTop|TBRectCornerBottom;
-            if ([self hasHeader]) {
-                self.actionContainer.header.tbRectCorner |= self.customView ? TBRectCornerTop : TBRectCornerAll;
+
+        if (obj.style == TBActionButtonStyleCancel) {
+            // 处理上面
+            if (self.customViewIndex == idx) {
+                self.actionContainer.custom.tbRectCorner |= TBRectCornerBottom;
             }
-            if (self.customView) {
-                self.actionContainer.custom.tbRectCorner |= [self hasHeader] ? TBRectCornerBottom : TBRectCornerAll;
-            }
-        }
-        else if (obj.style == TBActionButtonStyleCancel) {
-            obj.tbRectCorner = TBRectCornerTop|TBRectCornerBottom;
-            if (idx >= 1) {
+            else if (idx > 0) {
                 self.buttons[idx - 1].tbRectCorner |= TBRectCornerBottom;
             }
-            else {
-                if (self.customView) {
-                    self.actionContainer.custom.tbRectCorner |= TBRectCornerBottom;
-                }
-                else if ([self hasHeader]) {
-                    self.actionContainer.header.tbRectCorner |= TBRectCornerBottom;
-                }
+            else if ([self hasHeader]) {
+                self.actionContainer.header.tbRectCorner |= TBRectCornerBottom;
             }
-            if (idx + 1 <= self.buttons.count - 1) {
+            // 处理下面
+            if (self.customViewIndex == idx + 1) {
+                self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
+            }
+            else if (idx + 1 < self.buttons.count) {
                 self.buttons[idx + 1].tbRectCorner |= TBRectCornerTop;
             }
-        }
-        else if (idx == 0) {
-            if (![self hasHeader] && !self.customView) {
-                obj.tbRectCorner |= TBRectCornerTop;
-            }
-        }
-        else if (idx == self.buttons.count - 1) {
-            obj.tbRectCorner |= TBRectCornerBottom;
         }
     }];
     
     for (TBActionButton *btn in self.buttons) {
         [btn setCornerRadius:self.rectCornerRadius];
     }
+    
+    [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
+    [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
     
     TBWeakSelf(self);
     UIImage *(^cutOriginalBackgroundImageInRect)(CGRect frame) = ^UIImage *(CGRect sourceFrame) {
@@ -535,7 +536,6 @@ typedef void (^TBBlurEffectBlock)(void);
     
     //设置背景风格
     if ([self hasHeader]) {
-        self.actionContainer.header.tbRectCorner |= TBRectCornerTop;
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             self.actionContainer.header.backgroundColor = nil;
             if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.header]) {
@@ -564,9 +564,6 @@ typedef void (^TBBlurEffectBlock)(void);
     }
     
     if (self.customView) {
-        if (![self hasHeader]) {
-            self.actionContainer.custom.tbRectCorner |= TBRectCornerTop;
-        }
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {
             self.actionContainer.custom.backgroundColor = nil;
             if (![self.actionContainer useSystemBlurEffectUnderView:self.actionContainer.custom]) {
@@ -593,9 +590,6 @@ typedef void (^TBBlurEffectBlock)(void);
             self.actionContainer.custom.backgroundColor = self.ambientColor;
         }
     }
-    
-    [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
-    [self.actionContainer.custom setCornerRadius:self.rectCornerRadius];
     
     [self.buttons enumerateObjectsUsingBlock:^(TBActionButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (self.isBlurEffectEnabled && self.isBackgroundTransparentEnabled) {

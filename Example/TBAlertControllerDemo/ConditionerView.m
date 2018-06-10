@@ -90,7 +90,7 @@
 {
     self.buttonHeightSlider.value = self.actionSheet.buttonHeight;
     self.buttonWidthSlider.value = self.actionSheet.sheetWidth / [UIScreen mainScreen].bounds.size.width;
-    self.offsetYSlider.value = self.actionSheet.offsetY;
+    self.offsetYSlider.value = -self.actionSheet.offsetY;
     self.enableBackgroundTransparentSwitch.on = self.actionSheet.isBackgroundTransparentEnabled;
     self.enableBlurEffectSwitch.on = self.actionSheet.isBlurEffectEnabled;
     self.rectCornerRadiusSlider.value = self.actionSheet.rectCornerRadius;

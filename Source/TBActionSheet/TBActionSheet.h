@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
 
 @property(nonatomic,readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
+
+/**
+ 自定义视图在按钮中插入的 Index，值在 [0...numberOfButtons] 之间。如果 customView 为 nil，则 customViewIndex 值为 -1
+ */
+@property(nonatomic) NSInteger customViewIndex;
 /**
  *  是否可见
  */
