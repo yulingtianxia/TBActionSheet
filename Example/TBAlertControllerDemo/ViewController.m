@@ -48,12 +48,11 @@
     self.actionSheet = [[TBActionSheet alloc] initWithTitle:@"MagicalActionSheet" message:@"巴拉巴拉小魔仙，变！" delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"销毁" otherButtonTitles:nil];
     NSArray *views = [[NSBundle mainBundle] loadNibNamed:@"ConditionerView" owner:nil options:nil];
     self.conditioner = views[0];
-    self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 400);
+    self.conditioner.frame = CGRectMake(0, 0, [TBActionSheet appearance].sheetWidth, 425);
     self.conditioner.actionSheet = self.actionSheet;
     
 //    UI Conditioner Demo
     self.actionSheet.customView = self.conditioner;
-    self.actionSheet.customViewIndex = 3;
 
 //    Github Logo Demo
 //    self.actionSheet.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"github"]];

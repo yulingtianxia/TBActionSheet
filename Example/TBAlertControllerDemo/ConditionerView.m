@@ -21,6 +21,9 @@
 @property (weak, nonatomic) IBOutlet UISlider *animationDumpingRatioSlider;
 @property (weak, nonatomic) IBOutlet UISlider *animationVelocitySlider;
 @property (weak, nonatomic) IBOutlet UISlider *ambientColorSlider;
+@property (weak, nonatomic) IBOutlet UISlider *customViewIndexSlider;
+@property (weak, nonatomic) IBOutlet UILabel *customViewIndexLabel;
+
 @end
 
 @implementation ConditionerView
@@ -80,6 +83,11 @@
 - (IBAction)ambientColor:(UISlider *)sender {
     self.actionSheet.ambientColor = [UIColor colorWithHue:sender.value saturation:sender.value brightness:1 alpha:0.5];
     [TBActionSheet appearance].ambientColor = self.actionSheet.ambientColor;
+}
+
+- (IBAction)customViewIndex:(UISlider *)sender {
+    self.actionSheet.customViewIndex = roundf(sender.value);
+    self.customViewIndexLabel.text = [NSString stringWithFormat:@"%ld", (long)self.actionSheet.customViewIndex];
 }
 
 - (IBAction)touchUp:(id)sender {

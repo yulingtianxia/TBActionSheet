@@ -146,6 +146,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic,assign) UIInterfaceOrientationMask supportedInterfaceOrientations UI_APPEARANCE_SELECTOR;
 /**
+ default = UIWindowLevelStatusBar + 100
+ */
+@property(nonatomic) UIWindowLevel windowLevel;
+/**
  *  设置布局
  */
 - (void)setupLayout;

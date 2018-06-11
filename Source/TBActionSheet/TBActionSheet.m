@@ -83,9 +83,7 @@ typedef void (^TBBlurEffectBlock)(void);
         //set default values
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
-//        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(refreshBlurEffect)];
-//        self.displayLink.frameInterval = 2;
-        
+        _windowLevel = UIWindowLevelStatusBar + 100;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
@@ -140,7 +138,6 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)dealloc
 {
-//    [self.displayLink invalidate];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -270,7 +267,7 @@ typedef void (^TBBlurEffectBlock)(void);
     actionSheetVC.actionSheet = self;
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.windowLevel = UIWindowLevelStatusBar + 100;
+    self.window.windowLevel = self.windowLevel;
     self.window.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.window.opaque = NO;
     [self.window makeKeyAndVisible];
@@ -439,7 +436,6 @@ typedef void (^TBBlurEffectBlock)(void);
     self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight - containerHeight, self.sheetWidth, containerHeight)];
     
     __block BOOL useBoxBlurEffect = NO;
-//    self.displayLink.paused = YES;
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
@@ -852,7 +848,6 @@ typedef void (^TBBlurEffectBlock)(void);
     UIGraphicsEndImageContext();
     
     return [self cutFromImage:screenshotimage inRect:aRect];
-//    return [self cutFromImage:[self.previousKeyWindow tb_snapshot] inRect:aRect];
 }
 
 /**
@@ -872,7 +867,6 @@ typedef void (^TBBlurEffectBlock)(void);
     NSData *imageViewData = UIImagePNGRepresentation(sendImage);
     CGImageRelease(imageRefRect);
     return [UIImage imageWithData:imageViewData];
-//    return sendImage;
 }
 
 - (BOOL)isIndexValid:(NSInteger) index
