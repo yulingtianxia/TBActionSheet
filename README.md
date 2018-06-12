@@ -17,21 +17,10 @@
 
 TBActionSheet is a small library that allows you to substitute Apple's uncustomizable `UIActionSheet`, with a beautiful and totally customizable actionsheet that you can use in your iOS app. The default style is iOS9/10, you can make your own style. Enjoy!  
 
-Here is a gif showing TBActionSheet's powerful individuation:
+Here are some pictures showing TBActionSheet's powerful individuation. You can change UI dynamically:
 
 ![](images/demo.gif)
-
-You can add buttons on it dynamically:
-
 ![](images/addButton.gif)
-
-This is the iOS9/10 style of `TBActionSheet` running on iOS7&iPhone 4s:
-
-![](images/iPhone4s.jpg)
-
-You can also add your custom `UIView` under the title of `TBActionSheet`:
-
-![](images/iPhone6p.jpg)
 
 **TBActionSheet supports autorotation**, but there is some bugs on iOS7 :(
 
