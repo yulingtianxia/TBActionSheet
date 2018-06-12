@@ -43,7 +43,7 @@ BTW, `TBActionSheet` also suppots BLOCK now!
 
 ## 📚 Article
 
-- [自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2 016/07/18/TBActionSheet/)
+- [自制一款强大的 ActionSheet](http://yulingtianxia.com/blog/2016/07/18/TBActionSheet/)
 - [腾讯实习第一个月工作总结](http://yulingtianxia.com/blog/2015/11/13/Summary-of-the-first-month-in-the-internship-of-Tencent/)
 
 ## 🔮 Example
