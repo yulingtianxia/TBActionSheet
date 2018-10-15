@@ -14,7 +14,7 @@
 
 @interface TBActionContainer ()
 
-@property (weak,nonatomic) TBActionSheet *actionSheet;
+@property (weak, nonatomic) TBActionSheet *actionSheet;
 @property (nonatomic) NSMutableArray<UIView *> *tempViews;
 
 @end

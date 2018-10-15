@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface TBActionContainer : UIImageView
 
-@property (nonatomic,strong) UIImageView *header;
-@property (nonatomic,strong) UIImageView *custom;
-@property (nonatomic,strong) UIImageView *footer;
+@property (nonatomic, strong) UIImageView *header;
+@property (nonatomic, strong) UIImageView *custom;
+@property (nonatomic, strong) UIImageView *footer;
 
 - (instancetype)initWithSheet:(TBActionSheet *)actionSheet;
 - (instancetype)initWithFrame:(CGRect)frame __attribute__((unavailable("initWithFrame: not available, please use initWithSheet:")));

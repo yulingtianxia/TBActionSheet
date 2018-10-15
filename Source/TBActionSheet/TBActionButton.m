@@ -14,7 +14,7 @@
  */
 @interface TBActionButton()
 
-@property (nonatomic,nullable,strong,readwrite) void (^handler)(TBActionButton * _Nonnull button);
+@property (nonatomic, nullable, strong, readwrite) void (^handler)(TBActionButton * _Nonnull button);
 
 @end
 
@@ -35,11 +35,6 @@
     [button setBackgroundColor:[UIColor clearColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
     return button;
-}
-
-- (void)dealloc
-{
-
 }
 
 - (void)setHighlighted:(BOOL)highlighted {

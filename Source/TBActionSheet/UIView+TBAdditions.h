@@ -32,6 +32,6 @@ typedef NS_OPTIONS(NSUInteger, TBRectCorner) {
 };
 
 @interface UIView (TBRectCorner)
-@property (nonatomic,assign) TBRectCorner tbRectCorner;
+@property (nonatomic, assign) TBRectCorner tbRectCorner;
 - (void)setCornerRadius:(CGFloat) radius;
 @end

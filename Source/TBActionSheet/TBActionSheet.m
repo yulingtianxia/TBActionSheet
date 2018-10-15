@@ -23,14 +23,16 @@ typedef void (^TBBlurEffectBlock)(void);
 
 @interface TBActionSheet () <UIScrollViewDelegate>
 
-@property (nonatomic,readwrite,getter=isVisible) BOOL visible;
-@property (nonatomic,nonnull,strong) TBActionContainer * actionContainer;
-@property (nonatomic,nonnull,strong) UIScrollView *scrollView;
-@property (nonatomic,nonnull,strong) TBActionBackground * background;
-@property (nonatomic,nonnull,strong) NSMutableArray<TBActionButton *> *buttons;
-@property (nonatomic,nonnull,strong) NSMutableArray<UIView *> *separators;
-@property (nonatomic,strong,nullable,readwrite) UILabel *titleLabel;
-@property (nonatomic,strong,nullable,readwrite) UILabel *messageLabel;
+@property (nonatomic, readwrite, getter=isVisible) BOOL visible;
+@property (nonatomic, nonnull, strong) TBActionContainer * actionContainer;
+@property (nonatomic, nonnull, strong) UIScrollView *scrollView;
+@property (nonatomic, nonnull, strong) TBActionBackground * background;
+@property (nonatomic, nonnull, strong) NSMutableArray<TBActionButton *> *buttons;
+@property (nonatomic, nonnull, strong) NSMutableArray<UIView *> *separators;
+@property (nonatomic, strong, nullable, readwrite) UILabel *titleLabel;
+@property (nonatomic, strong, nullable, readwrite) UILabel *messageLabel;
+@property (nonatomic, readwrite) NSInteger cancelButtonIndex;
+@property (nonatomic, readwrite) NSInteger destructiveButtonIndex;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic, nullable) UIImage *originalBackgroundImage;
@@ -836,7 +838,8 @@ typedef void (^TBBlurEffectBlock)(void);
     UIGraphicsBeginImageContext(view.bounds.size);
     if ([view respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
         const CGFloat crashMagicNumber = 0.3;// size 小于0.3 在 iOS7 上会导致 crash
-        if (view.frame.size.width >= crashMagicNumber && view.frame.size.height >= crashMagicNumber ) { // resolve iOS7 size crash
+        if (view.frame.size.width >= crashMagicNumber &&
+            view.frame.size.height >= crashMagicNumber ) { // resolve iOS7 size crash
             [view drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
         }
     }

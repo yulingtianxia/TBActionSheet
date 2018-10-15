@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol TBActionSheetDelegate;
 
 @interface TBActionSheet : UIView
-@property(nullable,nonatomic,weak) id<TBActionSheetDelegate> delegate;
-@property(nullable,nonatomic,copy)  NSString *title;
-@property(nullable,nonatomic,copy)  NSString *message;
+@property (nullable, nonatomic, weak) id<TBActionSheetDelegate> delegate;
+@property (nullable, nonatomic, copy) NSString *title;
+@property (nullable, nonatomic, copy) NSString *message;
 /**
  *   标记藏于 ActionSheet 下面的 UIWindow
  */
@@ -33,20 +33,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
 - (nullable TBActionButton *)buttonAtIndex:(NSInteger)buttonIndex;
-@property(nonatomic,readonly) NSInteger numberOfButtons;
-@property(nonatomic) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
-@property(nonatomic) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
+@property (nonatomic, readonly) NSInteger numberOfButtons;
+@property (nonatomic, readonly) NSInteger cancelButtonIndex;      // if the delegate does not implement -actionSheetCancel:, we pretend this button was clicked on. default is -1
+@property (nonatomic, readonly) NSInteger destructiveButtonIndex; // sets destructive (red) button. -1 means none set. default is -1. ignored if only one button
 
-@property(nonatomic,readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
+@property (nonatomic, readonly) NSInteger firstOtherButtonIndex;	// -1 if no otherButtonTitles or initWithTitle:... not used
 
 /**
  自定义视图在按钮中插入的 Index，值在 [0...numberOfButtons] 之间。如果 customView 为 nil，则 customViewIndex 值为 -1
  */
-@property(nonatomic) NSInteger customViewIndex;
+@property (nonatomic) NSInteger customViewIndex;
 /**
  *  是否可见
  */
-@property(nonatomic,readonly,getter=isVisible) BOOL visible;
+@property (nonatomic, readonly, getter=isVisible) BOOL visible;
 
 /**
  *  显示 ActionSheet
@@ -68,87 +68,87 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  按钮高度
  */
-@property(nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
 /**
  *  actionsheet下方的 y 轴位移，向下为正，非负值无效，默认值为 -8
  */
-@property(nonatomic) CGFloat offsetY UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat offsetY UI_APPEARANCE_SELECTOR;
 /**
  *  标题 UILabel
  */
-@property(nonatomic,strong,nullable,readonly) UILabel *titleLabel;
+@property (nonatomic, strong, nullable, readonly) UILabel *titleLabel;
 /**
  *  Message UILabel
  */
-@property(nonatomic,strong,nullable,readonly) UILabel *messageLabel;
+@property (nonatomic, strong, nullable, readonly) UILabel *messageLabel;
 /**
  *  文字颜色
  */
-@property(nonatomic,strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *tintColor UI_APPEARANCE_SELECTOR;
 /**
  *  Destructive 按钮文字颜色
  */
-@property(nonatomic,strong) UIColor *destructiveButtonColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *destructiveButtonColor UI_APPEARANCE_SELECTOR;
 /**
  *  Cancel 按钮文字颜色
  */
-@property(nonatomic,strong) UIColor *cancelButtonColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *cancelButtonColor UI_APPEARANCE_SELECTOR;
 /**
  *  分割线颜色
  */
-@property(nonatomic,strong) UIColor *separatorColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *separatorColor UI_APPEARANCE_SELECTOR;
 /**
  *  按钮字体
  */
-@property(nonatomic,strong) UIFont *buttonFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIFont *buttonFont UI_APPEARANCE_SELECTOR;
 /**
  *  sheet 的宽度，也就是按钮宽度
  */
-@property(nonatomic) CGFloat sheetWidth UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat sheetWidth UI_APPEARANCE_SELECTOR;
 /**
  *  是否让 ActionSheet 背景透明
  */
-@property(nonatomic, getter=isBackgroundTransparentEnabled) NSInteger backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBackgroundTransparentEnabled) NSInteger backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否点击背景后关闭 ActionSheet
  */
-@property(nonatomic, getter=isBackgroundTouchClosureEnabled) NSInteger backgroundTouchClosureEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBackgroundTouchClosureEnabled) NSInteger backgroundTouchClosureEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否启用毛玻璃效果
  */
-@property(nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  矩形圆角半径
  */
-@property(nonatomic,assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) CGFloat rectCornerRadius UI_APPEARANCE_SELECTOR;
 /**
  *  ActionSheet 的环境色
  */
-@property(nonatomic,strong) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, strong) UIColor *ambientColor UI_APPEARANCE_SELECTOR;
 /**
  *  自定义视图
  */
-@property(nonatomic,strong,nullable) UIView *customView;
+@property (nonatomic, strong, nullable) UIView *customView;
 /**
  *  动画持续时长
  */
-@property(nonatomic,assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
  *  动画弹簧效果衰弱比例，值为 1 时无摆动，值越接近 0 摆动越大
  */
-@property(nonatomic,assign) CGFloat animationDampingRatio UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) CGFloat animationDampingRatio UI_APPEARANCE_SELECTOR;
 /**
  *  动画弹簧效果初速度。如果动画总距离为 200 点，想让初速度为每秒 100 点，那么将值设为 0.5
  */
-@property(nonatomic,assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
 /**
  *  支持的朝向
  */
-@property(nonatomic,assign) UIInterfaceOrientationMask supportedInterfaceOrientations UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations UI_APPEARANCE_SELECTOR;
 /**
  default = UIWindowLevelStatusBar + 100
  */
-@property(nonatomic) UIWindowLevel windowLevel;
+@property (nonatomic) UIWindowLevel windowLevel;
 /**
  *  设置布局
  */
