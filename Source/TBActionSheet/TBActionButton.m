@@ -34,6 +34,8 @@
     [button setTitle:title forState:UIControlStateNormal];
     [button setBackgroundColor:[UIColor clearColor]];
     [button.titleLabel setFont:[UIFont systemFontOfSize:20]];
+    button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
     return button;
 }
 
@@ -55,6 +57,16 @@
             self.behindColorView.alpha = 1;
         }
     }
+}
+
+- (void)setHeight:(CGFloat)height
+{
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, height);
+}
+
+- (CGFloat)height
+{
+    return self.frame.size.height;
 }
 
 @end

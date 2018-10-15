@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
 };
 
 @interface TBActionButton : UIButton
+
 @property (nonatomic, nullable) UIColor *normalColor;
 @property (nonatomic, nullable) UIColor *highlightedColor;
 @property (nonatomic) TBActionButtonStyle style;
@@ -25,9 +26,11 @@ typedef NS_ENUM(NSInteger, TBActionButtonStyle) {
  *  位于按钮后面的调节颜色的图层，在没有 `normalColor` 或 `highlightedColor` 时使用 ambientColor 替代
  */
 @property (weak,nonatomic) UIView *behindColorView;
+@property (nonatomic) CGFloat height;
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style;
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
+
 @end
 
 NS_ASSUME_NONNULL_END

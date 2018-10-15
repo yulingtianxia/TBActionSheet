@@ -74,6 +74,17 @@
     btn.normalColor = [UIColor yellowColor];
     btn.highlightedColor = [UIColor greenColor];
     
+    //创建NSMutableAttributedString
+    NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:@"支持 block\n限时推广"];
+    
+    //设置字体和设置字体的范围
+    [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15.0f] range:NSMakeRange(9, 4)];
+    //添加文字颜色
+    [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, 9)];
+    [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor grayColor] range:NSMakeRange(9, 4)];
+
+    [btn setAttributedTitle:attrStr forState:UIControlStateNormal];
+    btn.height = 70;
     [self.actionSheet show];
     [self.conditioner setUpUI];
 }

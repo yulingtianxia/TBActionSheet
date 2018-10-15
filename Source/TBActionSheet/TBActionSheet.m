@@ -408,7 +408,7 @@ typedef void (^TBBlurEffectBlock)(void);
             lastY += smallFragment;
         }
         
-        obj.frame = CGRectMake(0, lastY, self.sheetWidth, self.buttonHeight);
+        obj.frame = CGRectMake(0, lastY, self.sheetWidth, obj.height ?: self.buttonHeight);
         lastY = CGRectGetMaxY(obj.frame);
         [self.actionContainer addSubview:obj];
     }];
