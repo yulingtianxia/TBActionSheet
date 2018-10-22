@@ -14,8 +14,6 @@
 #import "UIWindow+TBAdditions.h"
 #import "UIView+TBAdditions.h"
 
-const CGFloat bigFragment = 8;
-const CGFloat smallFragment = 0.5;
 const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
@@ -49,7 +47,9 @@ typedef void (^TBBlurEffectBlock)(void);
     }
     TBActionSheet *appearance = [self appearance];
     appearance.buttonHeight = 56;
-    appearance.offsetY = - bigFragment;
+    appearance.bigFragment = 8;
+    appearance.smallFragment = 0.5;
+    appearance.offsetY = - appearance.bigFragment;
     appearance.tintColor = [UIColor blackColor];
     appearance.destructiveButtonColor = [UIColor redColor];
     appearance.cancelButtonColor = [UIColor blackColor];
@@ -364,11 +364,11 @@ typedef void (^TBBlurEffectBlock)(void);
         if (self.customViewIndex == idx) {
             if (idx > 0 && idx <= self.numberOfButtons && self.buttons[idx - 1].style == TBActionButtonStyleCancel) {
                 [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-                lastY += bigFragment;
+                lastY += self.bigFragment;
             }
             else if (!(idx == 0 && ![self hasHeader])) {
                 [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-                lastY += smallFragment;
+                lastY += self.smallFragment;
             }
             self.actionContainer.custom.frame = CGRectMake(0, lastY, self.sheetWidth, self.customView.frame.size.height);
             self.customView.center = CGPointMake(self.sheetWidth / 2, self.customView.frame.size.height / 2);
@@ -401,11 +401,11 @@ typedef void (^TBBlurEffectBlock)(void);
         if (obj.style == TBActionButtonStyleCancel || (idx > 0
                                                        && self.buttons[idx - 1].style == TBActionButtonStyleCancel && self.customViewIndex != idx)) {
             [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
-            lastY += bigFragment;
+            lastY += self.bigFragment;
         }
         else {
             [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:NO];
-            lastY += smallFragment;
+            lastY += self.smallFragment;
         }
         
         obj.frame = CGRectMake(0, lastY, self.sheetWidth, obj.height ?: self.buttonHeight);
@@ -816,7 +816,7 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)addSeparatorLineAt:(CGPoint) point isBigFragment:(BOOL) isBigFragment
 {
-    UIView *separatorLine = [[UIView alloc] initWithFrame:CGRectMake(point.x, point.y, self.sheetWidth, isBigFragment?bigFragment:smallFragment)];
+    UIView *separatorLine = [[UIView alloc] initWithFrame:CGRectMake(point.x, point.y, self.sheetWidth, isBigFragment ? self.bigFragment : self.smallFragment)];
     separatorLine.backgroundColor = self.separatorColor;
     [self.actionContainer addSubview:separatorLine];
     [self.separators addObject:separatorLine];

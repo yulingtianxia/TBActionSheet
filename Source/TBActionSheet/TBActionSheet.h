@@ -150,6 +150,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) UIWindowLevel windowLevel;
 /**
+ 按钮之间的大间隙，default = 8。
+ */
+@property (nonatomic) CGFloat bigFragment UI_APPEARANCE_SELECTOR;
+/**
+ 按钮之间的小间隙，default = 0.5
+ */
+@property (nonatomic) CGFloat smallFragment UI_APPEARANCE_SELECTOR;
+/**
+ header 文字的纵向留白
+ */
+@property (nonatomic) CGFloat headerVerticalSpace UI_APPEARANCE_SELECTOR;
+/**
  *  设置布局
  */
 - (void)setupLayout;
