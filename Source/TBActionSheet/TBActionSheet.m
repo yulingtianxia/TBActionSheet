@@ -49,7 +49,13 @@ typedef void (^TBBlurEffectBlock)(void);
     appearance.buttonHeight = 56;
     appearance.bigFragment = 8;
     appearance.smallFragment = 0.5;
-    appearance.offsetY = - appearance.bigFragment;
+    appearance.offsetY = -appearance.bigFragment;
+    if (@available(iOS 11.0, *)) {
+        CGFloat bottom = UIApplication.sharedApplication.keyWindow.safeAreaInsets.bottom;
+        if (bottom > 0) {
+            appearance.offsetY = -bottom;
+        }
+    }
     appearance.tintColor = [UIColor blackColor];
     appearance.destructiveButtonColor = [UIColor redColor];
     appearance.cancelButtonColor = [UIColor blackColor];
@@ -64,6 +70,7 @@ typedef void (^TBBlurEffectBlock)(void);
     appearance.animationDampingRatio = 1;
     appearance.animationVelocity = 1;
     appearance.supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
+    appearance.scrollEnabled = YES;
 }
 
 - (instancetype)init
@@ -192,12 +199,12 @@ typedef void (^TBBlurEffectBlock)(void);
     return nil;
 }
 
+#pragma mark - getter&setter
+
 - (NSInteger)numberOfButtons
 {
     return self.buttons.count;
 }
-
-#pragma mark - getter&setter
 
 - (void)setButtonFont:(UIFont *)buttonFont
 {
@@ -251,6 +258,12 @@ typedef void (^TBBlurEffectBlock)(void);
 {
     _backgroundTouchClosureEnabled = backgroundTouchClosureEnabled;
     self.background.userInteractionEnabled = backgroundTouchClosureEnabled;
+}
+
+- (void)setScrollEnabled:(BOOL)scrollEnabled
+{
+    _scrollEnabled = scrollEnabled;
+    self.scrollView.scrollEnabled = scrollEnabled;
 }
 
 #pragma mark - show action
@@ -643,10 +656,11 @@ typedef void (^TBBlurEffectBlock)(void);
     });
 }
 
-- (void)setupContainerFrame
+- (void)updateContainerFrame
 {
-    self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0)), self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
-    self.scrollView.contentOffset = CGPointMake(0, MAX(0, self.actionContainer.frame.size.height + (!kiOS7Later? 20: 0) - kScreenHeight));
+    CGFloat y = kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0);
+    self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, y), self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
+    self.scrollView.contentOffset = CGPointMake(0, MAX(0, -y));
 }
 /**
  *  显示 ActionSheet
@@ -666,7 +680,7 @@ typedef void (^TBBlurEffectBlock)(void);
     //弹出 ActionSheet 动画
     void(^animations)(void) = ^() {
         self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        [self setupContainerFrame];
+        [self updateContainerFrame];
     };
     void(^completion)(BOOL finished) = ^(BOOL finished) {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
@@ -789,7 +803,7 @@ typedef void (^TBBlurEffectBlock)(void);
 - (void)statusBarDidChangeOrientation:(NSNotification *)notification {
     self.bounds = [UIScreen mainScreen].bounds;
     self.background.frame = self.bounds;
-    [self setupContainerFrame];
+    [self updateContainerFrame];
 }
 
 #pragma mark - UIScrollViewDelegate

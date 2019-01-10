@@ -93,7 +93,7 @@
     static int hint = 1;
     [self.actionSheet addButtonWithTitle:[NSString stringWithFormat:@"%d",hint]];
     [self.actionSheet setupLayout];
-    [self.actionSheet setupContainerFrame];
+    [self.actionSheet updateContainerFrame];
     [self.actionSheet setupStyle];
     hint++;
 }

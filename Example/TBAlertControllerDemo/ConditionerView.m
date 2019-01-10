@@ -114,7 +114,7 @@
 {
     [self.actionSheet setupLayout];
     [self.actionSheet setupStyle];
-    [self.actionSheet setupContainerFrame];
+    [self.actionSheet updateContainerFrame];
     self.frame = CGRectMake(0, 0, self.actionSheet.sheetWidth, self.bounds.size.height);
 }
 @end

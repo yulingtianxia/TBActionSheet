@@ -162,6 +162,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic) CGFloat headerVerticalSpace UI_APPEARANCE_SELECTOR;
 /**
+ ActionSheet 内容超出屏幕后是否开启滚动，默认为 YES
+ */
+@property (nonatomic, assign, getter=isScrollEnabled) BOOL scrollEnabled UI_APPEARANCE_SELECTOR;
+/**
  *  设置布局
  */
 - (void)setupLayout;
@@ -172,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  设置容器 frame
  */
-- (void)setupContainerFrame;
+- (void)updateContainerFrame;
 @end
 
 @protocol TBActionSheetDelegate <NSObject>
