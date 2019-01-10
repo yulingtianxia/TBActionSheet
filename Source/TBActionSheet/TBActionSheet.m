@@ -397,9 +397,13 @@ typedef void (^TBBlurEffectBlock)(void);
             }
         }
         
-        //当前 button 如果是 cancel，或者上一个 button 是 cancel 且当前 button 没有插入 customView，就采用大间隙。
-        if (obj.style == TBActionButtonStyleCancel || (idx > 0
-                                                       && self.buttons[idx - 1].style == TBActionButtonStyleCancel && self.customViewIndex != idx)) {
+        
+        if (idx == 0 && ![self hasHeader] && self.customViewIndex != idx) {
+            // 没有 Header 的时候，首个 button 上方也没有 customView 时，不需要间隙
+        }
+        else if (obj.style == TBActionButtonStyleCancel
+                 || (idx > 0 && self.buttons[idx - 1].style == TBActionButtonStyleCancel && self.customViewIndex != idx)) {
+            //当前 button 如果是 cancel，或者上一个 button 是 cancel 且当前 button 没有插入 customView，就采用大间隙。
             [self addSeparatorLineAt:CGPointMake(0, lastY) isBigFragment:YES];
             lastY += self.bigFragment;
         }
