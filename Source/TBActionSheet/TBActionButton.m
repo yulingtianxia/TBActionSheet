@@ -22,14 +22,20 @@
 
 + (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style
 {
-    return [TBActionButton buttonWithTitle:title style:style handler:nil];
+    return [self buttonWithTitle:title style:style handler:nil];
 }
 
-+ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable TBActionButtonHandler)handler
+{
+    return [self buttonWithTitle:title style:style handler:handler animation:nil];
+}
+
++ (instancetype)buttonWithTitle:(NSString *)title style:(TBActionButtonStyle)style handler:(nullable TBActionButtonHandler)handler animation:(nullable TBActionSheetAnimation)animation
 {
     TBActionButton *button = [TBActionButton buttonWithType:UIButtonTypeCustom];
     button.style = style;
     button.handler = handler;
+    button.animation = animation;
     button.clipsToBounds = YES;
     [button setTitle:title forState:UIControlStateNormal];
     [button setBackgroundColor:[UIColor clearColor]];

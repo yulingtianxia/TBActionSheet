@@ -93,6 +93,21 @@ typedef void (^TBBlurEffectBlock)(void);
         _cancelButtonIndex = -1;
         _destructiveButtonIndex = -1;
         _windowLevel = UIWindowLevelStatusBar + 100;
+        TBWeakSelf(self);
+        _closeAnimation = ^(UIImageView * _Nonnull background, UIView * _Nonnull container, void (^ _Nonnull completion)(void)) {
+            TBStrongSelf(self);
+            void(^animations)(void) = ^() {
+                background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+                container.frame = CGRectMake(kContainerLeft, kScreenHeight, container.frame.size.width, container.frame.size.height);
+            };
+            [UIView animateWithDuration:self.animationDuration
+                                  delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:animations
+                             completion:^(BOOL finished) {
+                                 completion();
+                             }];
+        };
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChangeOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
@@ -160,9 +175,14 @@ typedef void (^TBBlurEffectBlock)(void);
     return [self addButtonWithTitle:title style:style handler:nil];
 }
 
-- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)( TBActionButton * button))handler
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable TBActionButtonHandler)handler
 {
-    TBActionButton *button = [TBActionButton buttonWithTitle:title style:style handler:handler];
+    return [self addButtonWithTitle:title style:style handler:handler animation:nil];
+}
+
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable TBActionButtonHandler)handler animation:(TBActionSheetAnimation)animation
+{
+    TBActionButton *button = [TBActionButton buttonWithTitle:title style:style handler:handler animation:animation];
     [button addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.buttons addObject:button];
     NSInteger index = self.buttons.count - 1;
@@ -254,7 +274,7 @@ typedef void (^TBBlurEffectBlock)(void);
     return !!self.window && self.window.rootViewController;
 }
 
-- (void)setBackgroundTouchClosureEnabled:(NSInteger)backgroundTouchClosureEnabled
+- (void)setBackgroundTouchClosureEnabled:(BOOL)backgroundTouchClosureEnabled
 {
     _backgroundTouchClosureEnabled = backgroundTouchClosureEnabled;
     self.background.userInteractionEnabled = backgroundTouchClosureEnabled;
@@ -264,6 +284,14 @@ typedef void (^TBBlurEffectBlock)(void);
 {
     _scrollEnabled = scrollEnabled;
     self.scrollView.scrollEnabled = scrollEnabled;
+}
+
+- (void)setCloseAnimation:(TBActionSheetAnimation)closeAnimation
+{
+    if (!closeAnimation) {
+        return;
+    }
+    _closeAnimation = closeAnimation;
 }
 
 #pragma mark - show action
@@ -303,16 +331,8 @@ typedef void (^TBBlurEffectBlock)(void);
         //获取当前文本的属性
         NSDictionary * tdic = @{NSFontAttributeName:label.font};
         CGSize actualsize;
-        if (kiOS7Later) {
-            //iOS7方法，获取文本需要的size，限制宽度
-            actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
-        }
-        else {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            actualsize = [content sizeWithFont:label.font];
-#pragma GCC diagnostic pop
-        }
+        //iOS7方法，获取文本需要的size，限制宽度
+        actualsize =[content boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:tdic context:nil].size;
         label.frame = CGRectMake(0, lastY, self.sheetWidth, actualsize.height);
         lastY = CGRectGetMaxY(label.frame);
     };
@@ -658,7 +678,7 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)updateContainerFrame
 {
-    CGFloat y = kScreenHeight - self.actionContainer.frame.size.height - (!kiOS7Later? 20: 0);
+    CGFloat y = kScreenHeight - self.actionContainer.frame.size.height;
     self.scrollView.frame = CGRectMake(kContainerLeft, MAX(0, y), self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
     self.scrollView.contentOffset = CGPointMake(0, MAX(0, -y));
 }
@@ -666,6 +686,12 @@ typedef void (^TBBlurEffectBlock)(void);
  *  显示 ActionSheet
  */
 - (void)show
+{
+    //弹出 ActionSheet 动画
+    [self showWithAnimation:nil];
+}
+
+- (void)showWithAnimation:(TBActionSheetAnimation)animation
 {
     if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
         [self.delegate willPresentActionSheet:self];
@@ -677,23 +703,31 @@ typedef void (^TBBlurEffectBlock)(void);
     
     [self setupStyle];
     
-    //弹出 ActionSheet 动画
-    void(^animations)(void) = ^() {
-        self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
-        [self updateContainerFrame];
-    };
-    void(^completion)(BOOL finished) = ^(BOOL finished) {
+    void(^completion)(void) = ^() {
         if ([self.delegate respondsToSelector:@selector(didPresentActionSheet:)]) {
             [self.delegate didPresentActionSheet:self];
         }
         self.visible = YES;
     };
-    if (kiOS7Later) {
-        [UIView animateWithDuration:self.animationDuration delay:0 usingSpringWithDamping:self.animationDampingRatio initialSpringVelocity:self.animationVelocity options:UIViewAnimationOptionCurveEaseInOut animations:animations completion:completion];
+    // 使用内置动画
+    if (!animation) {
+        animation = ^(UIImageView * _Nonnull background, UIView * _Nonnull container, void (^ _Nonnull completion)(void)) {
+            void(^animations)(void) = ^() {
+                background.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+                [self updateContainerFrame];
+            };
+            [UIView animateWithDuration:self.animationDuration
+                                  delay:0
+                 usingSpringWithDamping:self.animationDampingRatio
+                  initialSpringVelocity:self.animationVelocity
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:animations
+                             completion:^(BOOL finished) {
+                                 completion();
+                             }];
+        };
     }
-    else {
-        [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:animations completion:completion];
-    }
+    animation(self.background, self.scrollView, completion);
 }
 
 /**
@@ -720,10 +754,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     NSUInteger index = [self.buttons indexOfObject:sender];
     
-    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
-    } completion:^(BOOL finished) {
+    void(^completion)(void) = ^() {
         //这里之所以把各种 delegate 调用都放在动画完成后是有原因的：为了支持在回调方法中 show 另一个 actionsheet，系统的 UIActionSheet 的调用时机也是如此。
         
         if ([self.delegate respondsToSelector:@selector(actionSheet:willDismissWithButtonIndex:)]) {
@@ -744,8 +775,11 @@ typedef void (^TBBlurEffectBlock)(void);
             [self.delegate actionSheet:self didDismissWithButtonIndex:index];
         }
         self.visible = NO;
-    }];
+    };
+    // 优先使用按钮动画，其次是关闭动画
+    TBActionSheetAnimation animation = sender.animation ?: self.closeAnimation;
     
+    animation(self.background, self.scrollView, completion);
 }
 
 #pragma mark - handle close
@@ -754,14 +788,16 @@ typedef void (^TBBlurEffectBlock)(void);
  */
 - (void)close
 {
+    [self closeWithAnimation:nil];
+}
+
+- (void)closeWithAnimation:(TBActionSheetAnimation)animation
+{
     if (![self isVisible]) {
         return;
     }
     
-    [UIView animateWithDuration:self.animationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-        self.scrollView.frame = CGRectMake(kContainerLeft, kScreenHeight, self.scrollView.frame.size.width, MIN(self.actionContainer.frame.size.height, kScreenHeight));
-    } completion:^(BOOL finished) {
+    void(^completion)(void) = ^() {
         [self cleanWindow];
         
         if ([self.delegate respondsToSelector:@selector(actionSheetCancel:)]) {
@@ -786,9 +822,14 @@ typedef void (^TBBlurEffectBlock)(void);
                 [self.delegate actionSheet:self didDismissWithButtonIndex:self.cancelButtonIndex];
             }
         }
-
+        
         self.visible = NO;
-    }];
+    };
+    
+    // 关闭动画
+    animation = animation ?: self.closeAnimation;
+    
+    animation(self.background, self.scrollView, completion);
 }
 
 - (void)cleanWindow

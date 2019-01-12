@@ -66,13 +66,23 @@
 //    [addBtn addTarget:self action:@selector(addButton:) forControlEvents:UIControlEventTouchUpInside];
 //    self.actionSheet.customView = addBtn;
     
+    TBActionButton *destructiveBtn = [self.actionSheet buttonAtIndex:self.actionSheet.destructiveButtonIndex];
+    destructiveBtn.animation = ^(UIImageView * _Nonnull background, UIView * _Nonnull container, void (^ _Nonnull completion)(void)) {
+        [UIView animateWithDuration:0.5 animations:^{
+            background.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+            container.frame = CGRectMake(CGRectGetMidX(container.frame), CGRectGetMidY(container.frame), 0, 0);
+        } completion:^(BOOL finished) {
+            completion();
+        }];
+    };
+    
     __weak __typeof(ViewController *) weakSelf = self;
     [self.actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleCancel handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,weakSelf.leakTest);
     }];
-    TBActionButton *btn = [self.actionSheet buttonAtIndex:self.actionSheet.numberOfButtons - 1];
-    btn.normalColor = [UIColor yellowColor];
-    btn.highlightedColor = [UIColor greenColor];
+    TBActionButton *blockBtn = [self.actionSheet buttonAtIndex:self.actionSheet.numberOfButtons - 1];
+    blockBtn.normalColor = [UIColor yellowColor];
+    blockBtn.highlightedColor = [UIColor greenColor];
     
     //创建NSMutableAttributedString
     NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:@"支持 block\n限时推广"];
@@ -83,8 +93,8 @@
     [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor blackColor] range:NSMakeRange(0, 9)];
     [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor grayColor] range:NSMakeRange(9, 4)];
 
-    [btn setAttributedTitle:attrStr forState:UIControlStateNormal];
-    btn.height = 70;
+    [blockBtn setAttributedTitle:attrStr forState:UIControlStateNormal];
+    blockBtn.height = 70;
     [self.actionSheet show];
     [self.conditioner setUpUI];
 }

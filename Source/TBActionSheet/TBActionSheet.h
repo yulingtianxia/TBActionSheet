@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol TBActionSheetDelegate;
 
 @interface TBActionSheet : UIView
+
 @property (nullable, nonatomic, weak) id<TBActionSheetDelegate> delegate;
 @property (nullable, nonatomic, copy) NSString *title;
 @property (nullable, nonatomic, copy) NSString *message;
@@ -31,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title;
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style;    // returns index of button. 0 based.
 - (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable void (^)(TBActionButton * button))handler;
+- (NSInteger)addButtonWithTitle:(nullable NSString *)title style:(TBActionButtonStyle)style handler:(nullable TBActionButtonHandler)handler animation:(nullable TBActionSheetAnimation)animation;
 - (nullable NSString *)buttonTitleAtIndex:(NSInteger)buttonIndex;
 - (nullable TBActionButton *)buttonAtIndex:(NSInteger)buttonIndex;
 @property (nonatomic, readonly) NSInteger numberOfButtons;
@@ -53,6 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)show;
 /**
+ 使用自定义动画显示 ActionSheet
+
+ @param animation 自定义动画，传 nil 则等价于 show 方法，使用默认动画。
+ */
+- (void)showWithAnimation:(nullable TBActionSheetAnimation)animation;
+/**
  *  显示 ActionSheet，已废弃
  *
  *  @param view 此参数直接传 nil
@@ -60,9 +68,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showInView:(nullable UIView *)view __deprecated;
 
 /**
- *  取消 ActionSheet 的方法
+ 关闭动画，不设置则为默认动画。
+ NOTE: 设置 nil 是无效的。
+ */
+@property (nonatomic, strong) TBActionSheetAnimation closeAnimation;
+/**
+ *  关闭 ActionSheet 的方法
  */
 - (void)close;
+/**
+ 使用自定义动画关闭 ActionSheet
+ 
+ @param animation 自定义动画，传 nil 则等价于 close 方法，使用 closeAnimation。
+ */
+- (void)closeWithAnimation:(nullable TBActionSheetAnimation)animation;
 
 //custom UI
 /**
@@ -108,15 +127,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  是否让 ActionSheet 背景透明
  */
-@property (nonatomic, getter=isBackgroundTransparentEnabled) NSInteger backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBackgroundTransparentEnabled) BOOL backgroundTransparentEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否点击背景后关闭 ActionSheet
  */
-@property (nonatomic, getter=isBackgroundTouchClosureEnabled) NSInteger backgroundTouchClosureEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBackgroundTouchClosureEnabled) BOOL backgroundTouchClosureEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  是否启用毛玻璃效果
  */
-@property (nonatomic, getter=isBlurEffectEnabled) NSInteger blurEffectEnabled UI_APPEARANCE_SELECTOR;
+@property (nonatomic, getter=isBlurEffectEnabled) BOOL blurEffectEnabled UI_APPEARANCE_SELECTOR;
 /**
  *  矩形圆角半径
  */
@@ -130,15 +149,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable) UIView *customView;
 /**
- *  动画持续时长
+ *  默认动画的持续时长
  */
 @property (nonatomic, assign) NSTimeInterval animationDuration UI_APPEARANCE_SELECTOR;
 /**
- *  动画弹簧效果衰弱比例，值为 1 时无摆动，值越接近 0 摆动越大
+ *  默认动画的动画弹簧效果衰弱比例，值为 1 时无摆动，值越接近 0 摆动越大
  */
 @property (nonatomic, assign) CGFloat animationDampingRatio UI_APPEARANCE_SELECTOR;
 /**
- *  动画弹簧效果初速度。如果动画总距离为 200 点，想让初速度为每秒 100 点，那么将值设为 0.5
+ *  默认动画的动画弹簧效果初速度。如果动画总距离为 200 点，想让初速度为每秒 100 点，那么将值设为 0.5
  */
 @property (nonatomic, assign) CGFloat animationVelocity UI_APPEARANCE_SELECTOR;
 /**
@@ -174,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setupStyle;
 /**
- *  设置容器 frame
+ *  更新容器展示在屏幕上的 frame
  */
 - (void)updateContainerFrame;
 @end

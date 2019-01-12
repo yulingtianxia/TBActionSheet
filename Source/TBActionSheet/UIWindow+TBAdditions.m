@@ -16,10 +16,8 @@
 - (UIViewController *)tb_viewControllerForStatusBarStyle
 {
     UIViewController *currentViewController = [self currentViewController];
-    if (kiOS7Later) {
-        while ([currentViewController childViewControllerForStatusBarStyle]) {
-            currentViewController = [currentViewController childViewControllerForStatusBarStyle];
-        }
+    while ([currentViewController childViewControllerForStatusBarStyle]) {
+        currentViewController = [currentViewController childViewControllerForStatusBarStyle];
     }
     return currentViewController;
 }
@@ -27,10 +25,8 @@
 - (UIViewController *)tb_viewControllerForStatusBarHidden
 {
     UIViewController *currentViewController = [self currentViewController];
-    if (kiOS7Later) {
-        while ([currentViewController childViewControllerForStatusBarHidden]) {
-            currentViewController = [currentViewController childViewControllerForStatusBarHidden];
-        }
+    while ([currentViewController childViewControllerForStatusBarHidden]) {
+        currentViewController = [currentViewController childViewControllerForStatusBarHidden];
     }
     return currentViewController;
 }
