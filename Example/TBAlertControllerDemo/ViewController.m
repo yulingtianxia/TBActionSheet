@@ -66,6 +66,7 @@
 //    [addBtn addTarget:self action:@selector(addButton:) forControlEvents:UIControlEventTouchUpInside];
 //    self.actionSheet.customView = addBtn;
     
+    // Custom Animation Demo
     TBActionButton *destructiveBtn = [self.actionSheet buttonAtIndex:self.actionSheet.destructiveButtonIndex];
     destructiveBtn.animation = ^(UIImageView * _Nonnull background, UIView * _Nonnull container, void (^ _Nonnull completion)(void)) {
         [UIView animateWithDuration:0.5 animations:^{
@@ -76,6 +77,7 @@
         }];
     };
     
+    // Support Block and Attributed Title
     __weak __typeof(ViewController *) weakSelf = self;
     [self.actionSheet addButtonWithTitle:@"支持 block" style:TBActionButtonStyleCancel handler:^(TBActionButton * _Nonnull button) {
         NSLog(@"%@ %@",button.currentTitle,weakSelf.leakTest);
