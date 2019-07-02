@@ -40,6 +40,8 @@ typedef void (^TBBlurEffectBlock)(void);
 
 @implementation TBActionSheet
 
+@synthesize buttonFont = _buttonFont;
+
 + (void)initialize
 {
     if (self != [TBActionSheet class]) {
@@ -228,7 +230,8 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (void)setButtonFont:(UIFont *)buttonFont
 {
-    if (buttonFont && [self buttonFont] != buttonFont) {
+    if (buttonFont && _buttonFont != buttonFont) {
+        _buttonFont = buttonFont;
         for (TBActionButton *btn in self.buttons) {
             btn.titleLabel.font = buttonFont;
         }
@@ -237,7 +240,10 @@ typedef void (^TBBlurEffectBlock)(void);
 
 - (UIFont *)buttonFont
 {
-    return self.buttons.lastObject.titleLabel.font;
+    if (!_buttonFont) {
+        _buttonFont = self.buttons.lastObject.titleLabel.font;
+    }
+    return _buttonFont;
 }
 
 - (NSInteger)firstOtherButtonIndex
@@ -555,6 +561,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     for (TBActionButton *btn in self.buttons) {
         [btn setCornerRadius:self.rectCornerRadius];
+        btn.titleLabel.font = self.buttonFont;
     }
     
     [self.actionContainer.header setCornerRadius:self.rectCornerRadius];
