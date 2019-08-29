@@ -274,6 +274,37 @@ typedef void (^TBBlurEffectBlock)(void);
     }
 }
 
+- (UILabel *)titleLabel
+{
+    if (!_titleLabel) {
+        _titleLabel = [UILabel new];
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.2) {
+            _titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
+        }
+        else {
+            _titleLabel.font = [UIFont systemFontOfSize:13];
+        }
+        self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
+        self.titleLabel.numberOfLines = 0;
+        self.titleLabel.backgroundColor = [UIColor clearColor];
+        self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _titleLabel;
+}
+
+- (UILabel *)messageLabel
+{
+    if (!_messageLabel) {
+        _messageLabel = [UILabel new];
+        self.messageLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
+        self.messageLabel.font = [UIFont systemFontOfSize:13];
+        self.messageLabel.numberOfLines = 0;
+        self.messageLabel.backgroundColor = [UIColor clearColor];
+        self.messageLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _messageLabel;
+}
+
 - (BOOL)isVisible
 {
     // action sheet is visible iff it's associated with a window
@@ -333,7 +364,7 @@ typedef void (^TBBlurEffectBlock)(void);
     //inline block, 减少代码冗余
     void(^handleLabelFrameBlock)(UILabel *label, NSString *content) = ^(UILabel *label, NSString *content) {
         //给一个比较大的高度，宽度不变
-        CGSize size =CGSizeMake(self.sheetWidth,1000);
+        CGSize size =CGSizeMake(self.sheetWidth, 1000);
         //获取当前文本的属性
         NSDictionary * tdic = @{NSFontAttributeName:label.font};
         CGSize actualsize;
@@ -355,22 +386,9 @@ typedef void (^TBBlurEffectBlock)(void);
     //处理标题
     if ([self hasTitle]) {
         lastY += headerVerticalSpace;
-        if (!self.titleLabel) {
-            self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
-            [self.actionContainer.header addSubview:self.titleLabel];
-        }
-        self.titleLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.2) {
-            self.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightBold];
-        }
-        else {
-            self.titleLabel.font = [UIFont systemFontOfSize:13];
-        }
+        self.titleLabel.frame = CGRectMake(0, lastY, self.sheetWidth, 0);
+        [self.actionContainer.header addSubview:self.titleLabel];
         self.titleLabel.text = self.title;
-        self.titleLabel.numberOfLines = 0;
-        self.titleLabel.backgroundColor = [UIColor clearColor];
-        self.titleLabel.textAlignment = NSTextAlignmentCenter;
-        
         handleLabelFrameBlock(self.titleLabel, self.title);
     }
     //处理 message
@@ -378,17 +396,9 @@ typedef void (^TBBlurEffectBlock)(void);
         if (![self hasTitle]) {
             lastY += headerVerticalSpace;
         }
-        if (!self.messageLabel) {
-            self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, lastY, self.sheetWidth, 0)];
-            [self.actionContainer.header addSubview:self.messageLabel];
-        }
-        self.messageLabel.textColor = [UIColor colorWithWhite:0.56 alpha:1];
-        self.messageLabel.font = [UIFont systemFontOfSize:13];
+        self.messageLabel.frame = CGRectMake(0, lastY, self.sheetWidth, 0);
+        [self.actionContainer.header addSubview:self.messageLabel];
         self.messageLabel.text = self.message;
-        self.messageLabel.numberOfLines = 0;
-        self.messageLabel.backgroundColor = [UIColor clearColor];
-        self.messageLabel.textAlignment = NSTextAlignmentCenter;
-
         handleLabelFrameBlock(self.messageLabel, self.message);
     }
     
