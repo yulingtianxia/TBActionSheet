@@ -176,10 +176,29 @@ NS_ASSUME_NONNULL_BEGIN
  按钮之间的小间隙，default = 0.5
  */
 @property (nonatomic) CGFloat smallFragment UI_APPEARANCE_SELECTOR;
+
+/**
+ --------------------------
+ headerVerticalSpacing
+ --------------------------
+ title
+ --------------------------
+ headerLineSpacing
+ --------------------------
+ message
+ --------------------------
+ headerVerticalSpacing
+ --------------------------
+ */
+
 /**
  header 文字的纵向留白
  */
-@property (nonatomic) CGFloat headerVerticalSpace UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat headerVerticalSpacing UI_APPEARANCE_SELECTOR;
+/**
+ title 与 message 文字的行距
+ */
+@property (nonatomic) CGFloat headerLineSpacing UI_APPEARANCE_SELECTOR;
 /**
  ActionSheet 内容超出屏幕后是否开启滚动，默认为 YES
  */

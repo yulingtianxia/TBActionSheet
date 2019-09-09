@@ -14,7 +14,6 @@
 #import "UIWindow+TBAdditions.h"
 #import "UIView+TBAdditions.h"
 
-const CGFloat headerVerticalSpace = 10;
 const CGFloat blurRadius = 0.7;
 
 typedef void (^TBBlurEffectBlock)(void);
@@ -73,6 +72,7 @@ typedef void (^TBBlurEffectBlock)(void);
     appearance.animationVelocity = 1;
     appearance.supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
     appearance.scrollEnabled = YES;
+    appearance.headerVerticalSpacing = 10;
 }
 
 - (instancetype)init
@@ -385,7 +385,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     //处理标题
     if ([self hasTitle]) {
-        lastY += headerVerticalSpace;
+        lastY += self.headerVerticalSpacing;
         self.titleLabel.frame = CGRectMake(0, lastY, self.sheetWidth, 0);
         [self.actionContainer.header addSubview:self.titleLabel];
         self.titleLabel.text = self.title;
@@ -394,7 +394,10 @@ typedef void (^TBBlurEffectBlock)(void);
     //处理 message
     if ([self hasMessage]) {
         if (![self hasTitle]) {
-            lastY += headerVerticalSpace;
+            lastY += self.headerVerticalSpacing;
+        }
+        else {
+            lastY += self.headerLineSpacing;
         }
         self.messageLabel.frame = CGRectMake(0, lastY, self.sheetWidth, 0);
         [self.actionContainer.header addSubview:self.messageLabel];
@@ -404,7 +407,7 @@ typedef void (^TBBlurEffectBlock)(void);
     
     //处理title
     if ([self hasHeader]) {
-        lastY += headerVerticalSpace;
+        lastY += self.headerVerticalSpacing;
         self.actionContainer.header.frame = CGRectMake(0, 0, self.sheetWidth, lastY);
     }
     
