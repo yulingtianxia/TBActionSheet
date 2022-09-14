@@ -491,13 +491,12 @@ typedef void (^TBBlurEffectBlock)(void);
     
     CGFloat containerHeight = self.actionContainer.bounds.size.height;
     
-    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight - containerHeight, self.sheetWidth, containerHeight)];
-    
     __block BOOL useBoxBlurEffect = NO;
     
     if (!self.isBackgroundTransparentEnabled) {
         if (self.isBlurEffectEnabled) {
             if (![self.actionContainer useSystemBlurEffect]) {
+                self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight - containerHeight, self.sheetWidth, containerHeight)];
                 TBWeakSelf(self);
                 TBBlurEffectBlock blurBlock = ^void() {
                     TBStrongSelf(self);
@@ -682,18 +681,6 @@ typedef void (^TBBlurEffectBlock)(void);
             }
         }
     }];
-}
-
-- (void)refreshBlurEffect
-{
-    CGFloat containerHeight = self.actionContainer.bounds.size.height;
-    
-    self.originalBackgroundImage = [self screenShotRect:CGRectMake(kContainerLeft, kScreenHeight-containerHeight, self.sheetWidth, containerHeight)];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        for (void (^blurBlock)(void) in self.blurBlocks) {
-            blurBlock();
-        }
-    });
 }
 
 - (void)updateContainerFrame
@@ -893,10 +880,11 @@ typedef void (^TBBlurEffectBlock)(void);
     return [self hasTitle] || [self hasMessage];
 }
 
-- (void)addSeparatorLineAt:(CGPoint) point isBigFragment:(BOOL) isBigFragment
+- (void)addSeparatorLineAt:(CGPoint)point isBigFragment:(BOOL)isBigFragment
 {
     UIView *separatorLine = [[UIView alloc] initWithFrame:CGRectMake(point.x, point.y, self.sheetWidth, isBigFragment ? self.bigFragment : self.smallFragment)];
-    separatorLine.backgroundColor = self.separatorColor;
+    separatorLine.backgroundColor = isBigFragment ? [UIColor clearColor] : self.separatorColor;
+    
     [self.actionContainer addSubview:separatorLine];
     [self.separators addObject:separatorLine];
 }
